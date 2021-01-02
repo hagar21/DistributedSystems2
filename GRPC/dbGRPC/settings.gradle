@@ -1,4 +1,0 @@
-rootProject.name = 'GRPC'
-include 'server'
-include 'client'
-
