@@ -4,30 +4,28 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class UberServer {
-    private static final Logger logger = Logger.getLogger(UberServer.class.getName());
+public class CityServer {
+    private static final Logger logger = Logger.getLogger(CityServer.class.getName());
 
     private final int port;
     private final Server server;
 
-    public UberServer(int port) throws IOException {
+    public CityServer(int port) throws IOException {
         this(ServerBuilder.forPort(port), port);
     }
 
     /**
      * Create a Uber server using serverBuilder as a base and features as data.
      */
-    public UberServer(ServerBuilder<?> serverBuilder, int port) {
+    public CityServer(ServerBuilder<?> serverBuilder, int port) {
         this.port = port;
         String target = "localhost:8980";
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         // UberClient client = new UberClient(channel);
-        server = serverBuilder.addService(new UberService())
+        server = serverBuilder.addService(new CityService())
                 .build();
     }
 
@@ -47,7 +45,7 @@ public class UberServer {
                 // Use stderr here since the logger may have been reset by its JVM shutdown hook.
                 System.err.println("*** shutting down gRPC server since JVM is shutting down");
                 try {
-                    UberServer.this.stop();
+                    CityServer.this.stop();
                 } catch (InterruptedException e) {
                     e.printStackTrace(System.err);
                 }

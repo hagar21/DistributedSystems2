@@ -1,21 +1,16 @@
 import generated.*;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
-import io.grpc.stub.StreamObserver;
 
-import java.util.Iterator;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class UberClient {
-    private static final Logger logger = Logger.getLogger(UberClient.class.getName());
+public class CityClient {
+    private static final Logger logger = Logger.getLogger(CityClient.class.getName());
 
     private final UberGrpc.UberBlockingStub blockingStub;
     private final UberGrpc.UberStub asyncStub;
 
-    public UberClient(Channel channel) {
+    public CityClient(Channel channel) {
         blockingStub = UberGrpc.newBlockingStub(channel);
         asyncStub = UberGrpc.newStub(channel);
     }

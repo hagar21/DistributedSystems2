@@ -11,13 +11,14 @@ import java.util.concurrent.ConcurrentMap;
 import static java.lang.Integer.max;
 import static java.lang.Integer.min;
 
-public class UberService extends UberGrpc.UberImplBase {
+public class CityService extends UberGrpc.UberImplBase {
 
     // private final UberClient client;
-//    private final ConcurrentMap<Point, List<RouteNote>> routeNotes =
-//            new ConcurrentHashMap<Point, List<RouteNote>>();
-//
-    public UberService(/*UberClient client*/) {
+
+    public CityService(/*UberClient client*/) {
+//        String target = "localhost:8980";
+//        ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+//        CityClient client = new CityClient(channel);
         // this.client = client;
     }
 

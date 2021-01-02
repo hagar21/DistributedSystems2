@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         String target = "localhost:8980";
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-        UberClient client = new UberClient(channel);
+        CityClient client = new CityClient(channel);
         // Call server streaming call
 
         client.postRide("shai", "porath", 123, "haifa", "monash", "1/1/21", 4, 5);
