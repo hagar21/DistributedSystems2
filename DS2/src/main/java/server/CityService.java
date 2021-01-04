@@ -44,21 +44,31 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
     @Override
     public StreamObserver<CustomerRequest> postPathPlanningRequest(
             StreamObserver<Ride> responseObserver) {
-        Iterator<Ride> rides = this.client.getExistingRides();
-        while (rides.hasNext()) {
-            Ride ride = rides.next();
-            System.out.println("ride id : " + ride.getId());
-            System.out.println("-------------");
-        }
 
-        return new StreamObserver<RouteNote>() {
+        return new StreamObserver<CustomerRequest>() {
             @Override
-            public void onNext(RouteNote note) {
-                System.out.println("Request of " + note.getMessage());
-                RouteNote serverNote = RouteNote.newBuilder()
-                        .setLocation(note.getLocation())
-                        .setMessage("Respond to " + note.getMessage()).build();
-                responseObserver.onNext(serverNote);
+            public void onNext(CustomerRequest req) {
+                System.out.println("Request of " + req.getFirstName() + " " + req.getLastName());
+                Rout rout = Rout.newBuilder()
+                        .setDate(req.getDate())
+                        .setDstCity(req.getDstCity())
+                        .setSrcCity(req.getSrcCity()).build();
+
+                // check for relevant rides in local db,
+                // if there is no ride check in other cities
+                List<Ride> rides = CityUtil.getExistingRides(rout);
+
+                for (Ride ride : rides) {
+                    System.out.println("ride id : " + ride.getId());
+                    System.out.println("-------------");
+                    if (CityUtil.isMatch(ride, req)) {
+                        // get consensus to use this ride
+                        // save to db the updated ride
+                        responseObserver.onNext(ride);
+                        return;
+                    }
+                }
+                responseObserver.onNext(CityUtil.noRide());
             }
 
             @Override
@@ -72,60 +82,4 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
             }
         };
     }
-//
-//    // Accept a user's request to join a ride and check if there is a relevant ride.
-//    // lb->cityS
-//    rpc PostPathPlanningRequest(stream CustomerRequest) returns (Result) {}
-//
-//    // Accept a list of cities and return all rides contains all these cities.
-//    rpc GetExistingRides(Rout) returns (stream Ride) {}
-//
-//    // Update a ride's record to update current vacancies.
-//    rpc UpdateRide(Ride) returns (Result) {}
-//
-//    // Accept a user's ride and save it in the DB.
-//    rpc InsertRideToDb(Ride) returns (Result) {}
-//
-//    @Override
-//    public void PostPathPlanningRequest(Ride request, StreamObserver<CustomerRequest> responseObserver) {
-//        // Calculate the rectangle boundaries
-//        int left = min(request.getLo().getLongitude(), request.getHi().getLongitude());
-//        int right = max(request.getLo().getLongitude(), request.getHi().getLongitude());
-//        int top = max(request.getLo().getLatitude(), request.getHi().getLatitude());
-//        int bottom = min(request.getLo().getLatitude(), request.getHi().getLatitude());
-//
-//        for (Feature feature : features) {
-//            int lat = feature.getLocation().getLatitude();
-//            int lon = feature.getLocation().getLongitude();
-//            // Check whether the feature is in the rectangle
-//            if (lon >= left && lon <= right && lat >= bottom && lat <= top) {
-//                responseObserver.onNext(feature);
-//            }
-//        }
-//        responseObserver.onCompleted();
-//    }
-//
-//    // Bidirectional streaming
-//    @Override
-//    public StreamObserver<RouteNote> routeChat(final StreamObserver<RouteNote> responseObserver) {
-//        return new StreamObserver<RouteNote>() {
-//            @Override
-//            public void onNext(RouteNote note) {
-//                System.out.println("Request of " + note.getMessage());
-//                RouteNote serverNote = RouteNote.newBuilder()
-//                        .setLocation(note.getLocation())
-//                        .setMessage("Respond to " + note.getMessage()).build();
-//                responseObserver.onNext(serverNote);
-//            }
-//
-//            @Override
-//            public void onError(Throwable t) {
-//            }
-//
-//            @Override
-//            public void onCompleted() {
-//                System.out.println("Server side stream completed");
-//                responseObserver.onCompleted();
-//            }
-//        };
 }
