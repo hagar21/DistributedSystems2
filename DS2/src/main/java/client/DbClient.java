@@ -107,21 +107,22 @@ public class DbClient {
         }
     }
 
-    public Ride[] getExistingRides(String date, String src, String dst) {
-            Rout rout = Rout.newBuilder()
-                    .setDate(date)
-                    .setSrcCity(src)
-                    .setDstCity(dst).build();
-            System.out.println("db client send getExistingRides request");
-            System.out.println("-------------");
-            Iterator<Ride> rides;
+    public Iterator<Ride> getExistingRides(String date, String src, String dst) {
+        Rout rout = Rout.newBuilder()
+                .setDate(date)
+                .setSrcCity(src)
+                .setDstCity(dst).build();
+        System.out.println("db client send getExistingRides request");
+        System.out.println("-------------");
+        Iterator<Ride> rides;
         try {
             rides = blockingStub.getExistingRides(rout);
-            for (int i = 1; rides.hasNext(); i++) {
+
+            while (rides.hasNext()) {
                 Ride ride = rides.next();
                 System.out.println("ride id : " + ride.getId());
                 System.out.println("-------------");
-
+            }
 
         } catch (StatusRuntimeException e) {
             e.printStackTrace();

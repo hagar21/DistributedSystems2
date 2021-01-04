@@ -12,17 +12,14 @@ service UberService {
   rpc PostRide(Ride) returns (Result) {}
 
   // Accept a user's request to join a ride and check if there is a relevant ride.
-  rpc PostCustomerRequest(CustomerRequest) returns (Result) {}
+  rpc PostPathPlanningRequest(stream CustomerRequest) returns (stream Ride) {}
 
-  // Accept a user's request to join a ride and check if there is a relevant ride.
-  rpc PostPathPlanningRequest(stream CustomerRequest) returns (Result) {}
-
-  // Accept a list of cities and return all rides contains all these cities.
-  rpc GetExistingRides(Rout) returns (stream Ride) {}
+  // Accept a list of routs and return all rides that have same date and same src or dst.
+  rpc GetExistingRides(stream Rout) returns (stream Ride) {}
 
   // Save customer request to db
   // If found a relevant ride, update it's current vacancies
-  rpc UpdateRide(CustomerRequest) returns (Result) {}
+  rpc UpdateRide(InsertCustomerRequestToDb) returns (Result) {}
 
   // Accept a user's ride and save it in the DB.
   rpc InsertRideToDb(Ride) returns (Result) {}
@@ -59,4 +56,10 @@ message Rout {
 
 message Result {
   bool isSuccess = 1;
+}
+
+message InsertCustomerRequestToDb {
+  CustomerRequest customerReq = 1;
+  int32 rideId = 2;
+  int32 vacancies = 3;
 }

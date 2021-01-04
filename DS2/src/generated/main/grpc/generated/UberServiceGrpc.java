@@ -22,7 +22,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
  */
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.33.0)",
-    comments = "Source: city.proto")
+    comments = "Source: scheme.proto")
 public final class UberServiceGrpc {
 
   private UberServiceGrpc() {}
@@ -62,59 +62,28 @@ public final class UberServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<generated.CustomerRequest,
-      generated.Result> getPostCustomerRequestMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "PostCustomerRequest",
-      requestType = generated.CustomerRequest.class,
-      responseType = generated.Result.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<generated.CustomerRequest,
-      generated.Result> getPostCustomerRequestMethod() {
-    io.grpc.MethodDescriptor<generated.CustomerRequest, generated.Result> getPostCustomerRequestMethod;
-    if ((getPostCustomerRequestMethod = UberServiceGrpc.getPostCustomerRequestMethod) == null) {
-      synchronized (UberServiceGrpc.class) {
-        if ((getPostCustomerRequestMethod = UberServiceGrpc.getPostCustomerRequestMethod) == null) {
-          UberServiceGrpc.getPostCustomerRequestMethod = getPostCustomerRequestMethod =
-              io.grpc.MethodDescriptor.<generated.CustomerRequest, generated.Result>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "PostCustomerRequest"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.CustomerRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.Result.getDefaultInstance()))
-              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("PostCustomerRequest"))
-              .build();
-        }
-      }
-    }
-    return getPostCustomerRequestMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<generated.CustomerRequest,
-      generated.Result> getPostPathPlanningRequestMethod;
+      generated.Ride> getPostPathPlanningRequestMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "PostPathPlanningRequest",
       requestType = generated.CustomerRequest.class,
-      responseType = generated.Result.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
+      responseType = generated.Ride.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
   public static io.grpc.MethodDescriptor<generated.CustomerRequest,
-      generated.Result> getPostPathPlanningRequestMethod() {
-    io.grpc.MethodDescriptor<generated.CustomerRequest, generated.Result> getPostPathPlanningRequestMethod;
+      generated.Ride> getPostPathPlanningRequestMethod() {
+    io.grpc.MethodDescriptor<generated.CustomerRequest, generated.Ride> getPostPathPlanningRequestMethod;
     if ((getPostPathPlanningRequestMethod = UberServiceGrpc.getPostPathPlanningRequestMethod) == null) {
       synchronized (UberServiceGrpc.class) {
         if ((getPostPathPlanningRequestMethod = UberServiceGrpc.getPostPathPlanningRequestMethod) == null) {
           UberServiceGrpc.getPostPathPlanningRequestMethod = getPostPathPlanningRequestMethod =
-              io.grpc.MethodDescriptor.<generated.CustomerRequest, generated.Result>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
+              io.grpc.MethodDescriptor.<generated.CustomerRequest, generated.Ride>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "PostPathPlanningRequest"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   generated.CustomerRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.Result.getDefaultInstance()))
+                  generated.Ride.getDefaultInstance()))
               .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("PostPathPlanningRequest"))
               .build();
         }
@@ -130,7 +99,7 @@ public final class UberServiceGrpc {
       fullMethodName = SERVICE_NAME + '/' + "GetExistingRides",
       requestType = generated.Rout.class,
       responseType = generated.Ride.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
   public static io.grpc.MethodDescriptor<generated.Rout,
       generated.Ride> getGetExistingRidesMethod() {
     io.grpc.MethodDescriptor<generated.Rout, generated.Ride> getGetExistingRidesMethod;
@@ -139,7 +108,7 @@ public final class UberServiceGrpc {
         if ((getGetExistingRidesMethod = UberServiceGrpc.getGetExistingRidesMethod) == null) {
           UberServiceGrpc.getGetExistingRidesMethod = getGetExistingRidesMethod =
               io.grpc.MethodDescriptor.<generated.Rout, generated.Ride>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "GetExistingRides"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
@@ -154,27 +123,27 @@ public final class UberServiceGrpc {
     return getGetExistingRidesMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<generated.CustomerRequest,
+  private static volatile io.grpc.MethodDescriptor<generated.InsertCustomerRequestToDb,
       generated.Result> getUpdateRideMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "UpdateRide",
-      requestType = generated.CustomerRequest.class,
+      requestType = generated.InsertCustomerRequestToDb.class,
       responseType = generated.Result.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<generated.CustomerRequest,
+  public static io.grpc.MethodDescriptor<generated.InsertCustomerRequestToDb,
       generated.Result> getUpdateRideMethod() {
-    io.grpc.MethodDescriptor<generated.CustomerRequest, generated.Result> getUpdateRideMethod;
+    io.grpc.MethodDescriptor<generated.InsertCustomerRequestToDb, generated.Result> getUpdateRideMethod;
     if ((getUpdateRideMethod = UberServiceGrpc.getUpdateRideMethod) == null) {
       synchronized (UberServiceGrpc.class) {
         if ((getUpdateRideMethod = UberServiceGrpc.getUpdateRideMethod) == null) {
           UberServiceGrpc.getUpdateRideMethod = getUpdateRideMethod =
-              io.grpc.MethodDescriptor.<generated.CustomerRequest, generated.Result>newBuilder()
+              io.grpc.MethodDescriptor.<generated.InsertCustomerRequestToDb, generated.Result>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "UpdateRide"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.CustomerRequest.getDefaultInstance()))
+                  generated.InsertCustomerRequestToDb.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   generated.Result.getDefaultInstance()))
               .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("UpdateRide"))
@@ -282,29 +251,19 @@ public final class UberServiceGrpc {
      * Accept a user's request to join a ride and check if there is a relevant ride.
      * </pre>
      */
-    public void postCustomerRequest(generated.CustomerRequest request,
-        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
-      asyncUnimplementedUnaryCall(getPostCustomerRequestMethod(), responseObserver);
-    }
-
-    /**
-     * <pre>
-     * Accept a user's request to join a ride and check if there is a relevant ride.
-     * </pre>
-     */
     public io.grpc.stub.StreamObserver<generated.CustomerRequest> postPathPlanningRequest(
-        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
+        io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
       return asyncUnimplementedStreamingCall(getPostPathPlanningRequestMethod(), responseObserver);
     }
 
     /**
      * <pre>
-     * Accept a list of cities and return all rides contains all these cities.
+     * Accept a list of routs and return all rides that have same date and same src or dst.
      * </pre>
      */
-    public void getExistingRides(generated.Rout request,
+    public io.grpc.stub.StreamObserver<generated.Rout> getExistingRides(
         io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetExistingRidesMethod(), responseObserver);
+      return asyncUnimplementedStreamingCall(getGetExistingRidesMethod(), responseObserver);
     }
 
     /**
@@ -313,7 +272,7 @@ public final class UberServiceGrpc {
      * If found a relevant ride, update it's current vacancies
      * </pre>
      */
-    public void updateRide(generated.CustomerRequest request,
+    public void updateRide(generated.InsertCustomerRequestToDb request,
         io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
       asyncUnimplementedUnaryCall(getUpdateRideMethod(), responseObserver);
     }
@@ -338,22 +297,15 @@ public final class UberServiceGrpc {
                 generated.Result>(
                   this, METHODID_POST_RIDE)))
           .addMethod(
-            getPostCustomerRequestMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                generated.CustomerRequest,
-                generated.Result>(
-                  this, METHODID_POST_CUSTOMER_REQUEST)))
-          .addMethod(
             getPostPathPlanningRequestMethod(),
-            asyncClientStreamingCall(
+            asyncBidiStreamingCall(
               new MethodHandlers<
                 generated.CustomerRequest,
-                generated.Result>(
+                generated.Ride>(
                   this, METHODID_POST_PATH_PLANNING_REQUEST)))
           .addMethod(
             getGetExistingRidesMethod(),
-            asyncServerStreamingCall(
+            asyncBidiStreamingCall(
               new MethodHandlers<
                 generated.Rout,
                 generated.Ride>(
@@ -362,7 +314,7 @@ public final class UberServiceGrpc {
             getUpdateRideMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                generated.CustomerRequest,
+                generated.InsertCustomerRequestToDb,
                 generated.Result>(
                   this, METHODID_UPDATE_RIDE)))
           .addMethod(
@@ -409,32 +361,21 @@ public final class UberServiceGrpc {
      * Accept a user's request to join a ride and check if there is a relevant ride.
      * </pre>
      */
-    public void postCustomerRequest(generated.CustomerRequest request,
-        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getPostCustomerRequestMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     * <pre>
-     * Accept a user's request to join a ride and check if there is a relevant ride.
-     * </pre>
-     */
     public io.grpc.stub.StreamObserver<generated.CustomerRequest> postPathPlanningRequest(
-        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
-      return asyncClientStreamingCall(
+        io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
+      return asyncBidiStreamingCall(
           getChannel().newCall(getPostPathPlanningRequestMethod(), getCallOptions()), responseObserver);
     }
 
     /**
      * <pre>
-     * Accept a list of cities and return all rides contains all these cities.
+     * Accept a list of routs and return all rides that have same date and same src or dst.
      * </pre>
      */
-    public void getExistingRides(generated.Rout request,
+    public io.grpc.stub.StreamObserver<generated.Rout> getExistingRides(
         io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
-      asyncServerStreamingCall(
-          getChannel().newCall(getGetExistingRidesMethod(), getCallOptions()), request, responseObserver);
+      return asyncBidiStreamingCall(
+          getChannel().newCall(getGetExistingRidesMethod(), getCallOptions()), responseObserver);
     }
 
     /**
@@ -443,7 +384,7 @@ public final class UberServiceGrpc {
      * If found a relevant ride, update it's current vacancies
      * </pre>
      */
-    public void updateRide(generated.CustomerRequest request,
+    public void updateRide(generated.InsertCustomerRequestToDb request,
         io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getUpdateRideMethod(), getCallOptions()), request, responseObserver);
@@ -490,32 +431,11 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Accept a user's request to join a ride and check if there is a relevant ride.
-     * </pre>
-     */
-    public generated.Result postCustomerRequest(generated.CustomerRequest request) {
-      return blockingUnaryCall(
-          getChannel(), getPostCustomerRequestMethod(), getCallOptions(), request);
-    }
-
-    /**
-     * <pre>
-     * Accept a list of cities and return all rides contains all these cities.
-     * </pre>
-     */
-    public java.util.Iterator<generated.Ride> getExistingRides(
-        generated.Rout request) {
-      return blockingServerStreamingCall(
-          getChannel(), getGetExistingRidesMethod(), getCallOptions(), request);
-    }
-
-    /**
-     * <pre>
      * Save customer request to db
      * If found a relevant ride, update it's current vacancies
      * </pre>
      */
-    public generated.Result updateRide(generated.CustomerRequest request) {
+    public generated.Result updateRide(generated.InsertCustomerRequestToDb request) {
       return blockingUnaryCall(
           getChannel(), getUpdateRideMethod(), getCallOptions(), request);
     }
@@ -561,23 +481,12 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Accept a user's request to join a ride and check if there is a relevant ride.
-     * </pre>
-     */
-    public com.google.common.util.concurrent.ListenableFuture<generated.Result> postCustomerRequest(
-        generated.CustomerRequest request) {
-      return futureUnaryCall(
-          getChannel().newCall(getPostCustomerRequestMethod(), getCallOptions()), request);
-    }
-
-    /**
-     * <pre>
      * Save customer request to db
      * If found a relevant ride, update it's current vacancies
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<generated.Result> updateRide(
-        generated.CustomerRequest request) {
+        generated.InsertCustomerRequestToDb request) {
       return futureUnaryCall(
           getChannel().newCall(getUpdateRideMethod(), getCallOptions()), request);
     }
@@ -595,11 +504,10 @@ public final class UberServiceGrpc {
   }
 
   private static final int METHODID_POST_RIDE = 0;
-  private static final int METHODID_POST_CUSTOMER_REQUEST = 1;
-  private static final int METHODID_GET_EXISTING_RIDES = 2;
-  private static final int METHODID_UPDATE_RIDE = 3;
-  private static final int METHODID_INSERT_RIDE_TO_DB = 4;
-  private static final int METHODID_POST_PATH_PLANNING_REQUEST = 5;
+  private static final int METHODID_UPDATE_RIDE = 1;
+  private static final int METHODID_INSERT_RIDE_TO_DB = 2;
+  private static final int METHODID_POST_PATH_PLANNING_REQUEST = 3;
+  private static final int METHODID_GET_EXISTING_RIDES = 4;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -622,16 +530,8 @@ public final class UberServiceGrpc {
           serviceImpl.postRide((generated.Ride) request,
               (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
           break;
-        case METHODID_POST_CUSTOMER_REQUEST:
-          serviceImpl.postCustomerRequest((generated.CustomerRequest) request,
-              (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
-          break;
-        case METHODID_GET_EXISTING_RIDES:
-          serviceImpl.getExistingRides((generated.Rout) request,
-              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
-          break;
         case METHODID_UPDATE_RIDE:
-          serviceImpl.updateRide((generated.CustomerRequest) request,
+          serviceImpl.updateRide((generated.InsertCustomerRequestToDb) request,
               (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
           break;
         case METHODID_INSERT_RIDE_TO_DB:
@@ -650,7 +550,10 @@ public final class UberServiceGrpc {
       switch (methodId) {
         case METHODID_POST_PATH_PLANNING_REQUEST:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.postPathPlanningRequest(
-              (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
+              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
+        case METHODID_GET_EXISTING_RIDES:
+          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.getExistingRides(
+              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
         default:
           throw new AssertionError();
       }
@@ -703,7 +606,6 @@ public final class UberServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new UberServiceFileDescriptorSupplier())
               .addMethod(getPostRideMethod())
-              .addMethod(getPostCustomerRequestMethod())
               .addMethod(getPostPathPlanningRequestMethod())
               .addMethod(getGetExistingRidesMethod())
               .addMethod(getUpdateRideMethod())

@@ -42,9 +42,35 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
 //    // Accept a user's request to join a ride and check if there is a relevant ride.
 //    // lb->cityS
     @Override
-    public void postCustomerRequest(CustomerRequest request,
-                                    StreamObserver<Result> responseObserver) {
-        this.client.getExistingRides()
+    public StreamObserver<CustomerRequest> postPathPlanningRequest(
+            StreamObserver<Ride> responseObserver) {
+        Iterator<Ride> rides = this.client.getExistingRides();
+        while (rides.hasNext()) {
+            Ride ride = rides.next();
+            System.out.println("ride id : " + ride.getId());
+            System.out.println("-------------");
+        }
+
+        return new StreamObserver<RouteNote>() {
+            @Override
+            public void onNext(RouteNote note) {
+                System.out.println("Request of " + note.getMessage());
+                RouteNote serverNote = RouteNote.newBuilder()
+                        .setLocation(note.getLocation())
+                        .setMessage("Respond to " + note.getMessage()).build();
+                responseObserver.onNext(serverNote);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("Server side stream completed");
+                responseObserver.onCompleted();
+            }
+        };
     }
 //
 //    // Accept a user's request to join a ride and check if there is a relevant ride.
