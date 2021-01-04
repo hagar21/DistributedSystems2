@@ -79,7 +79,7 @@ public class CustomerController {
 
     @ResponseBody
     @DeleteMapping("/customerRequests/{id}")
-    CustomerRequest deleteCustomerRequest(@PathVariable Long id) {
+    CustomerRequest deleteCustomerRequest(@PathVariable Long id) throws CustomerRequestNotFoundException {
         CustomerRequest customerRequest = oneCustomerRequest(id);
         repository.delete(customerRequest);
         return customerRequest;

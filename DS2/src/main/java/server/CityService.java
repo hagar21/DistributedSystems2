@@ -17,19 +17,20 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
 
     private final DbClient client;
 
-    public CityService(/*UberClient client*/) {
+    public CityService() {
         String target = "localhost:8980";
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         DbClient client = new DbClient(channel);
         this.client = client;
-        System.out.println("City server is up!\n -------------");
+        System.out.println("City server is up!");
+        System.out.println("-------------");
     }
 
     // city server
     @Override
     public void postRide(Ride request, StreamObserver<Result> responseObserver) {
         // this.client.insertRideToDb(request);
-        System.out.println("City server got post ride request!");
+        System.out.println("City server got post ride request");
         System.out.println("-------------");
 
         this.client.insertRideToDb(request);
@@ -40,8 +41,11 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
 
 //    // Accept a user's request to join a ride and check if there is a relevant ride.
 //    // lb->cityS
-//    @Override
-//    public void PostCustomerRequest(final StreamObserver<CustomerRequest>) returns (Result) {}
+    @Override
+    public void postCustomerRequest(CustomerRequest request,
+                                    StreamObserver<Result> responseObserver) {
+        this.client.getExistingRides()
+    }
 //
 //    // Accept a user's request to join a ride and check if there is a relevant ride.
 //    // lb->cityS

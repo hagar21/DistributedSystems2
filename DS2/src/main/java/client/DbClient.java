@@ -4,6 +4,7 @@ import generated.*;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 public class DbClient {
@@ -100,6 +101,27 @@ public class DbClient {
             blockingStub.insertRideToDb(ride);
             System.out.println("db client send post ride request");
             System.out.println("-------------");
+
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Ride[] getExistingRides(String date, String src, String dst) {
+            Rout rout = Rout.newBuilder()
+                    .setDate(date)
+                    .setSrcCity(src)
+                    .setDstCity(dst).build();
+            System.out.println("db client send getExistingRides request");
+            System.out.println("-------------");
+            Iterator<Ride> rides;
+        try {
+            rides = blockingStub.getExistingRides(rout);
+            for (int i = 1; rides.hasNext(); i++) {
+                Ride ride = rides.next();
+                System.out.println("ride id : " + ride.getId());
+                System.out.println("-------------");
+
 
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
