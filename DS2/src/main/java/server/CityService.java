@@ -1,5 +1,6 @@
 package server;
 
+import client.CityClient;
 import client.DbClient;
 import generated.*;
 import io.grpc.ManagedChannel;
@@ -17,10 +18,12 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
 
     private List<Ride> rides;
     private List<CustomerRequest> customerRequests;
+    private ArrayList<CityClient> shards;
 
     public CityService() {
         this.rides = new ArrayList<Ride>();
         this.customerRequests = new ArrayList<CustomerRequest>();
+        this.shards = CityUtil.initShards();
         System.out.println("City server is up!");
         System.out.println("-------------");
     }
@@ -37,8 +40,6 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
         responseObserver.onCompleted();
     }
 
-//    // Accept a user's request to join a ride and check if there is a relevant ride.
-//    // lb->cityS
     @Override
     public StreamObserver<CustomerRequest> postPathPlanningRequest(
             StreamObserver<Ride> responseObserver) {

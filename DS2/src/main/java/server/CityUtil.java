@@ -1,8 +1,11 @@
 package server;
 
+import client.CityClient;
 import generated.CustomerRequest;
 import generated.Ride;
 import generated.Rout;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -22,6 +25,9 @@ class Point {
 }
 
 public class CityUtil {
+
+    public static int shardsNumber = 5;
+
     public static Point mapCityToLocation(String city) {
         switch(city) {
             case "haifa":
@@ -91,5 +97,17 @@ public class CityUtil {
 
     public static Ride noRide() {
         return Ride.newBuilder().setId(-1).build();
+    }
+
+    public static ArrayList<CityClient> initShards() {
+        ArrayList<CityClient> shards = new ArrayList<CityClient>();
+        for(int i = 0; i < shardsNumber; i++) {
+            String target = "localhost:" + String.valueOf(8980 + i);
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+
+            shards.add(client);
+        }
+        return shards;
     }
 }
