@@ -5,19 +5,24 @@ option java_package = "generated";
 option java_outer_classname = "CityProto";
 option objc_class_prefix = "RTG";
 
+import "google/protobuf/empty.proto";
+
 service UberService {
   // Accept a user's ride and save it in the DB.
   rpc PostRide(Ride) returns (Result) {}
 
-  // Accept a user's request to join a ride and check if there is a relevant ride.
-  rpc PostPathPlanningRequest(stream CustomerRequest) returns (stream Ride) {}
+  // Accept a user's request to join a ride and check if there are relevant rides.
+  rpc PostPathPlanningRequest(CustomerRequest) returns (stream Ride) {}
 
-  // Accept a rout and return a compatible ride if found, otherwise noRide.
-  rpc GetRideForRout(Rout) returns (Ride) {}
+  // Accept a user's request from other city
+  // return a compatible ride and update it in local db if found, otherwise noRide.
+  rpc ReserveRide(Rout) returns (Ride) {}
 
-  // Save customer request to db
-  // If found a relevant ride, update it's current vacancies
-  rpc OccupyRide(InsertCustomerRequestToDb) returns (Result) {}
+  // if part of the path couldn't be satisfied revert intermediate commits
+  rpc RevertCommit(Ride) returns (Result);
+
+  // Returns all Rides in the database
+  rpc Snapshot(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
 message Ride {
@@ -34,13 +39,9 @@ message Ride {
 
 message CustomerRequest {
   int32 id = 1;
-  string firstName = 2;
-  string lastName = 3;
-  int32 phoneNum = 4;
-  string srcCity = 5;
-  string dstCity = 6;
-  string date = 7;
-  int32 rideId = 8;
+  repeated string path = 5;
+  string date = 6;
+  repeated int32 rideId = 7;
 }
 
 message Rout {
@@ -51,10 +52,4 @@ message Rout {
 
 message Result {
   bool isSuccess = 1;
-}
-
-message InsertCustomerRequestToDb {
-  CustomerRequest customerReq = 1;
-  int32 rideId = 2;
-  int32 vacancies = 3;
 }

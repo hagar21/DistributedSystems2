@@ -7,6 +7,7 @@ import generated.Rout;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -42,6 +43,9 @@ public class CityUtil {
     }
 
     public static boolean isMatch(Ride ride, CustomerRequest req) {
+
+        if(!ride.getDate().equals(req.getDate())) return false;
+
         Point rideSrc = mapCityToLocation(ride.getSrcCity());
         Point rideDst = mapCityToLocation(ride.getDstCity());
         Point reqSrc = mapCityToLocation(req.getSrcCity());
@@ -99,15 +103,19 @@ public class CityUtil {
         return Ride.newBuilder().setId(-1).build();
     }
 
-    public static ArrayList<CityClient> initShards() {
-        ArrayList<CityClient> shards = new ArrayList<CityClient>();
+    public static List<CityClient> initShards() {
+        List<CityClient> shards = new ArrayList<>();
         for(int i = 0; i < shardsNumber; i++) {
-            String target = "localhost:" + String.valueOf(8980 + i);
+            String target = "localhost:" + (8980 + i);
             ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
             CityClient client = new CityClient(channel);
 
             shards.add(client);
         }
-        return shards;
+        return Collections.unmodifiableList(shards);
+    }
+
+    public static boolean consensus() {
+        return true;
     }
 }

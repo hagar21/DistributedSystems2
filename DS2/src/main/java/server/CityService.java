@@ -1,7 +1,6 @@
 package server;
 
 import client.CityClient;
-import client.DbClient;
 import generated.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -16,25 +15,24 @@ import static java.lang.Integer.min;
 
 public class CityService extends UberServiceGrpc.UberServiceImplBase {
 
-    private List<Ride> rides;
-    private List<CustomerRequest> customerRequests;
-    private ArrayList<CityClient> shards;
+    public static final ConcurrentMap<Integer, Ride> rides =
+            new ConcurrentHashMap<>();
+    public static final ConcurrentMap<Integer, CustomerRequest> customerRequests =
+            new ConcurrentHashMap<>();
+    private final List<CityClient> shards;
 
     public CityService() {
-        this.rides = new ArrayList<Ride>();
-        this.customerRequests = new ArrayList<CustomerRequest>();
-        this.shards = CityUtil.initShards();
+        shards = CityUtil.initShards();
         System.out.println("City server is up!");
         System.out.println("-------------");
     }
 
-    // city server
     @Override
     public void postRide(Ride request, StreamObserver<Result> responseObserver) {
-        // this.client.insertRideToDb(request);
         System.out.println("City server got post ride request");
         System.out.println("-------------");
 
+        rides.put(request.getId(), request);
         Result res = Result.newBuilder().setIsSuccess(true).build();
         responseObserver.onNext(res);
         responseObserver.onCompleted();
@@ -46,23 +44,54 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
 
         return new StreamObserver<CustomerRequest>() {
             @Override
-            public void onNext(CustomerRequest req) {
-                System.out.println("Request of " + req.getFirstName() + " " + req.getLastName());
+            public void onNext(CustomerRequest request) {
+                System.out.println("Request of " + request.getFirstName() + " " + request.getLastName());
                 Rout rout = Rout.newBuilder()
-                        .setDate(req.getDate())
-                        .setDstCity(req.getDstCity())
-                        .setSrcCity(req.getSrcCity()).build();
+                        .setDate(request.getDate())
+                        .setDstCity(request.getDstCity())
+                        .setSrcCity(request.getSrcCity()).build();
 
-                // check for relevant rides in local db,
-                // if there is no ride check in other cities
-                List<Ride> rides = CityUtil.getExistingRides(rout);
-
-                for (Ride ride : rides) {
+                // check for relevant rides in local db
+                for (Ride ride : CityService.rides.values()) {
                     System.out.println("ride id : " + ride.getId());
                     System.out.println("-------------");
-                    if (CityUtil.isMatch(ride, req)) {
+                    if (CityUtil.isMatch(ride, request)) {
+                        System.out.println("match");
                         // get consensus to use this ride
-                        // save to db the updated ride
+                        if (CityUtil.consensus()) {
+                            Ride updatedRide = Ride.newBuilder()
+                                    .setId(ride.getId())
+                                    .setFirstName(ride.getFirstName())
+                                    .setLastName(ride.getLastName())
+                                    .setPhoneNum(ride.getPhoneNum())
+                                    .setSrcCity(ride.getSrcCity())
+                                    .setDstCity(ride.getDstCity())
+                                    .setDate(ride.getDate())
+                                    .setVacancies(ride.getVacancies() - 1)
+                                    .setPd(ride.getPd()).build(); // shai - update pd
+                            CityService.rides.put(updatedRide.getId(), updatedRide);
+
+                            CustomerRequest updatedRequest = CustomerRequest.newBuilder()
+                                    .setId(ride.getId())
+                                    .setFirstName(ride.getFirstName())
+                                    .setLastName(ride.getLastName())
+                                    .setPhoneNum(ride.getPhoneNum())
+                                    .setSrcCity(ride.getSrcCity())
+                                    .setDstCity(ride.getDstCity())
+                                    .setDate(ride.getDate())
+                                    .setRideId(updatedRide.getId()).build();
+                            CityService.customerRequests.put(updatedRequest.getId(), updatedRequest);
+
+                            responseObserver.onNext(updatedRide);
+                            return;
+                        }
+                    }
+                }
+
+                // ask other shards
+                for(CityClient client : shards){
+                    Ride ride = client.postCustomerRequest(request);
+                    if(!ride.equals(CityUtil.noRide())) {
                         responseObserver.onNext(ride);
                         return;
                     }

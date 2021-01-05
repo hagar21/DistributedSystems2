@@ -14,74 +14,56 @@ public interface CustomerRequestOrBuilder extends
   int getId();
 
   /**
-   * <code>string firstName = 2;</code>
-   * @return The firstName.
+   * <code>repeated string path = 5;</code>
+   * @return A list containing the path.
    */
-  java.lang.String getFirstName();
+  java.util.List<java.lang.String>
+      getPathList();
   /**
-   * <code>string firstName = 2;</code>
-   * @return The bytes for firstName.
+   * <code>repeated string path = 5;</code>
+   * @return The count of path.
    */
-  com.google.protobuf.ByteString
-      getFirstNameBytes();
-
+  int getPathCount();
   /**
-   * <code>string lastName = 3;</code>
-   * @return The lastName.
+   * <code>repeated string path = 5;</code>
+   * @param index The index of the element to return.
+   * @return The path at the given index.
    */
-  java.lang.String getLastName();
+  java.lang.String getPath(int index);
   /**
-   * <code>string lastName = 3;</code>
-   * @return The bytes for lastName.
-   */
-  com.google.protobuf.ByteString
-      getLastNameBytes();
-
-  /**
-   * <code>int32 phoneNum = 4;</code>
-   * @return The phoneNum.
-   */
-  int getPhoneNum();
-
-  /**
-   * <code>string srcCity = 5;</code>
-   * @return The srcCity.
-   */
-  java.lang.String getSrcCity();
-  /**
-   * <code>string srcCity = 5;</code>
-   * @return The bytes for srcCity.
+   * <code>repeated string path = 5;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the path at the given index.
    */
   com.google.protobuf.ByteString
-      getSrcCityBytes();
+      getPathBytes(int index);
 
   /**
-   * <code>string dstCity = 6;</code>
-   * @return The dstCity.
-   */
-  java.lang.String getDstCity();
-  /**
-   * <code>string dstCity = 6;</code>
-   * @return The bytes for dstCity.
-   */
-  com.google.protobuf.ByteString
-      getDstCityBytes();
-
-  /**
-   * <code>string date = 7;</code>
+   * <code>string date = 6;</code>
    * @return The date.
    */
   java.lang.String getDate();
   /**
-   * <code>string date = 7;</code>
+   * <code>string date = 6;</code>
    * @return The bytes for date.
    */
   com.google.protobuf.ByteString
       getDateBytes();
 
   /**
-   * <code>int32 rideId = 8;</code>
-   * @return The rideId.
+   * <code>repeated int32 rideId = 7;</code>
+   * @return A list containing the rideId.
    */
-  int getRideId();
+  java.util.List<java.lang.Integer> getRideIdList();
+  /**
+   * <code>repeated int32 rideId = 7;</code>
+   * @return The count of rideId.
+   */
+  int getRideIdCount();
+  /**
+   * <code>repeated int32 rideId = 7;</code>
+   * @param index The index of the element to return.
+   * @return The rideId at the given index.
+   */
+  int getRideId(int index);
 }

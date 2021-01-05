@@ -16,9 +16,6 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
- * <pre>
- * Interface exported by the server.
- * </pre>
  */
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.33.0)",
@@ -68,7 +65,7 @@ public final class UberServiceGrpc {
       fullMethodName = SERVICE_NAME + '/' + "PostPathPlanningRequest",
       requestType = generated.CustomerRequest.class,
       responseType = generated.Ride.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
   public static io.grpc.MethodDescriptor<generated.CustomerRequest,
       generated.Ride> getPostPathPlanningRequestMethod() {
     io.grpc.MethodDescriptor<generated.CustomerRequest, generated.Ride> getPostPathPlanningRequestMethod;
@@ -77,7 +74,7 @@ public final class UberServiceGrpc {
         if ((getPostPathPlanningRequestMethod = UberServiceGrpc.getPostPathPlanningRequestMethod) == null) {
           UberServiceGrpc.getPostPathPlanningRequestMethod = getPostPathPlanningRequestMethod =
               io.grpc.MethodDescriptor.<generated.CustomerRequest, generated.Ride>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "PostPathPlanningRequest"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
@@ -93,96 +90,96 @@ public final class UberServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<generated.Rout,
-      generated.Ride> getGetExistingRidesMethod;
+      generated.Ride> getReserveRideMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "GetExistingRides",
+      fullMethodName = SERVICE_NAME + '/' + "ReserveRide",
       requestType = generated.Rout.class,
       responseType = generated.Ride.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<generated.Rout,
-      generated.Ride> getGetExistingRidesMethod() {
-    io.grpc.MethodDescriptor<generated.Rout, generated.Ride> getGetExistingRidesMethod;
-    if ((getGetExistingRidesMethod = UberServiceGrpc.getGetExistingRidesMethod) == null) {
+      generated.Ride> getReserveRideMethod() {
+    io.grpc.MethodDescriptor<generated.Rout, generated.Ride> getReserveRideMethod;
+    if ((getReserveRideMethod = UberServiceGrpc.getReserveRideMethod) == null) {
       synchronized (UberServiceGrpc.class) {
-        if ((getGetExistingRidesMethod = UberServiceGrpc.getGetExistingRidesMethod) == null) {
-          UberServiceGrpc.getGetExistingRidesMethod = getGetExistingRidesMethod =
+        if ((getReserveRideMethod = UberServiceGrpc.getReserveRideMethod) == null) {
+          UberServiceGrpc.getReserveRideMethod = getReserveRideMethod =
               io.grpc.MethodDescriptor.<generated.Rout, generated.Ride>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "GetExistingRides"))
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "ReserveRide"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   generated.Rout.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   generated.Ride.getDefaultInstance()))
-              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("GetExistingRides"))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("ReserveRide"))
               .build();
         }
       }
     }
-    return getGetExistingRidesMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<generated.InsertCustomerRequestToDb,
-      generated.Result> getUpdateRideMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "UpdateRide",
-      requestType = generated.InsertCustomerRequestToDb.class,
-      responseType = generated.Result.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<generated.InsertCustomerRequestToDb,
-      generated.Result> getUpdateRideMethod() {
-    io.grpc.MethodDescriptor<generated.InsertCustomerRequestToDb, generated.Result> getUpdateRideMethod;
-    if ((getUpdateRideMethod = UberServiceGrpc.getUpdateRideMethod) == null) {
-      synchronized (UberServiceGrpc.class) {
-        if ((getUpdateRideMethod = UberServiceGrpc.getUpdateRideMethod) == null) {
-          UberServiceGrpc.getUpdateRideMethod = getUpdateRideMethod =
-              io.grpc.MethodDescriptor.<generated.InsertCustomerRequestToDb, generated.Result>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "UpdateRide"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.InsertCustomerRequestToDb.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.Result.getDefaultInstance()))
-              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("UpdateRide"))
-              .build();
-        }
-      }
-    }
-    return getUpdateRideMethod;
+    return getReserveRideMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<generated.Ride,
-      generated.Result> getInsertRideToDbMethod;
+      generated.Result> getRevertCommitMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "InsertRideToDb",
+      fullMethodName = SERVICE_NAME + '/' + "RevertCommit",
       requestType = generated.Ride.class,
       responseType = generated.Result.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<generated.Ride,
-      generated.Result> getInsertRideToDbMethod() {
-    io.grpc.MethodDescriptor<generated.Ride, generated.Result> getInsertRideToDbMethod;
-    if ((getInsertRideToDbMethod = UberServiceGrpc.getInsertRideToDbMethod) == null) {
+      generated.Result> getRevertCommitMethod() {
+    io.grpc.MethodDescriptor<generated.Ride, generated.Result> getRevertCommitMethod;
+    if ((getRevertCommitMethod = UberServiceGrpc.getRevertCommitMethod) == null) {
       synchronized (UberServiceGrpc.class) {
-        if ((getInsertRideToDbMethod = UberServiceGrpc.getInsertRideToDbMethod) == null) {
-          UberServiceGrpc.getInsertRideToDbMethod = getInsertRideToDbMethod =
+        if ((getRevertCommitMethod = UberServiceGrpc.getRevertCommitMethod) == null) {
+          UberServiceGrpc.getRevertCommitMethod = getRevertCommitMethod =
               io.grpc.MethodDescriptor.<generated.Ride, generated.Result>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "InsertRideToDb"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "RevertCommit"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   generated.Ride.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   generated.Result.getDefaultInstance()))
-              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("InsertRideToDb"))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("RevertCommit"))
               .build();
         }
       }
     }
-    return getInsertRideToDbMethod;
+    return getRevertCommitMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      com.google.protobuf.Empty> getSnapshotMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "Snapshot",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = com.google.protobuf.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      com.google.protobuf.Empty> getSnapshotMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.google.protobuf.Empty> getSnapshotMethod;
+    if ((getSnapshotMethod = UberServiceGrpc.getSnapshotMethod) == null) {
+      synchronized (UberServiceGrpc.class) {
+        if ((getSnapshotMethod = UberServiceGrpc.getSnapshotMethod) == null) {
+          UberServiceGrpc.getSnapshotMethod = getSnapshotMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, com.google.protobuf.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "Snapshot"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("Snapshot"))
+              .build();
+        }
+      }
+    }
+    return getSnapshotMethod;
   }
 
   /**
@@ -230,9 +227,6 @@ public final class UberServiceGrpc {
   }
 
   /**
-   * <pre>
-   * Interface exported by the server.
-   * </pre>
    */
   public static abstract class UberServiceImplBase implements io.grpc.BindableService {
 
@@ -248,43 +242,43 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Accept a user's request to join a ride and check if there is a relevant ride.
+     * Accept a user's request to join a ride and check if there are relevant rides.
      * </pre>
      */
-    public io.grpc.stub.StreamObserver<generated.CustomerRequest> postPathPlanningRequest(
+    public void postPathPlanningRequest(generated.CustomerRequest request,
         io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
-      return asyncUnimplementedStreamingCall(getPostPathPlanningRequestMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getPostPathPlanningRequestMethod(), responseObserver);
     }
 
     /**
      * <pre>
-     * Accept a list of routs and return all rides that have same date and same src or dst.
+     * Accept a user's request from other city
+     * return a compatible ride and update it in local db if found, otherwise noRide.
      * </pre>
      */
-    public io.grpc.stub.StreamObserver<generated.Rout> getExistingRides(
+    public void reserveRide(generated.Rout request,
         io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
-      return asyncUnimplementedStreamingCall(getGetExistingRidesMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getReserveRideMethod(), responseObserver);
     }
 
     /**
      * <pre>
-     * Save customer request to db
-     * If found a relevant ride, update it's current vacancies
+     * if part of the path couldn't be satisfied revert intermediate commits
      * </pre>
      */
-    public void updateRide(generated.InsertCustomerRequestToDb request,
+    public void revertCommit(generated.Ride request,
         io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
-      asyncUnimplementedUnaryCall(getUpdateRideMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getRevertCommitMethod(), responseObserver);
     }
 
     /**
      * <pre>
-     * Accept a user's ride and save it in the DB.
+     * Returns all Rides in the database
      * </pre>
      */
-    public void insertRideToDb(generated.Ride request,
-        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
-      asyncUnimplementedUnaryCall(getInsertRideToDbMethod(), responseObserver);
+    public void snapshot(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getSnapshotMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -298,40 +292,37 @@ public final class UberServiceGrpc {
                   this, METHODID_POST_RIDE)))
           .addMethod(
             getPostPathPlanningRequestMethod(),
-            asyncBidiStreamingCall(
+            asyncServerStreamingCall(
               new MethodHandlers<
                 generated.CustomerRequest,
                 generated.Ride>(
                   this, METHODID_POST_PATH_PLANNING_REQUEST)))
           .addMethod(
-            getGetExistingRidesMethod(),
-            asyncBidiStreamingCall(
+            getReserveRideMethod(),
+            asyncUnaryCall(
               new MethodHandlers<
                 generated.Rout,
                 generated.Ride>(
-                  this, METHODID_GET_EXISTING_RIDES)))
+                  this, METHODID_RESERVE_RIDE)))
           .addMethod(
-            getUpdateRideMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                generated.InsertCustomerRequestToDb,
-                generated.Result>(
-                  this, METHODID_UPDATE_RIDE)))
-          .addMethod(
-            getInsertRideToDbMethod(),
+            getRevertCommitMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 generated.Ride,
                 generated.Result>(
-                  this, METHODID_INSERT_RIDE_TO_DB)))
+                  this, METHODID_REVERT_COMMIT)))
+          .addMethod(
+            getSnapshotMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                com.google.protobuf.Empty>(
+                  this, METHODID_SNAPSHOT)))
           .build();
     }
   }
 
   /**
-   * <pre>
-   * Interface exported by the server.
-   * </pre>
    */
   public static final class UberServiceStub extends io.grpc.stub.AbstractAsyncStub<UberServiceStub> {
     private UberServiceStub(
@@ -358,54 +349,51 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Accept a user's request to join a ride and check if there is a relevant ride.
+     * Accept a user's request to join a ride and check if there are relevant rides.
      * </pre>
      */
-    public io.grpc.stub.StreamObserver<generated.CustomerRequest> postPathPlanningRequest(
+    public void postPathPlanningRequest(generated.CustomerRequest request,
         io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
-      return asyncBidiStreamingCall(
-          getChannel().newCall(getPostPathPlanningRequestMethod(), getCallOptions()), responseObserver);
+      asyncServerStreamingCall(
+          getChannel().newCall(getPostPathPlanningRequestMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
      * <pre>
-     * Accept a list of routs and return all rides that have same date and same src or dst.
+     * Accept a user's request from other city
+     * return a compatible ride and update it in local db if found, otherwise noRide.
      * </pre>
      */
-    public io.grpc.stub.StreamObserver<generated.Rout> getExistingRides(
+    public void reserveRide(generated.Rout request,
         io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
-      return asyncBidiStreamingCall(
-          getChannel().newCall(getGetExistingRidesMethod(), getCallOptions()), responseObserver);
+      asyncUnaryCall(
+          getChannel().newCall(getReserveRideMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
      * <pre>
-     * Save customer request to db
-     * If found a relevant ride, update it's current vacancies
+     * if part of the path couldn't be satisfied revert intermediate commits
      * </pre>
      */
-    public void updateRide(generated.InsertCustomerRequestToDb request,
+    public void revertCommit(generated.Ride request,
         io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getUpdateRideMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getRevertCommitMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
      * <pre>
-     * Accept a user's ride and save it in the DB.
+     * Returns all Rides in the database
      * </pre>
      */
-    public void insertRideToDb(generated.Ride request,
-        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
+    public void snapshot(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getInsertRideToDbMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getSnapshotMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
   /**
-   * <pre>
-   * Interface exported by the server.
-   * </pre>
    */
   public static final class UberServiceBlockingStub extends io.grpc.stub.AbstractBlockingStub<UberServiceBlockingStub> {
     private UberServiceBlockingStub(
@@ -431,30 +419,48 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Save customer request to db
-     * If found a relevant ride, update it's current vacancies
+     * Accept a user's request to join a ride and check if there are relevant rides.
      * </pre>
      */
-    public generated.Result updateRide(generated.InsertCustomerRequestToDb request) {
-      return blockingUnaryCall(
-          getChannel(), getUpdateRideMethod(), getCallOptions(), request);
+    public java.util.Iterator<generated.Ride> postPathPlanningRequest(
+        generated.CustomerRequest request) {
+      return blockingServerStreamingCall(
+          getChannel(), getPostPathPlanningRequestMethod(), getCallOptions(), request);
     }
 
     /**
      * <pre>
-     * Accept a user's ride and save it in the DB.
+     * Accept a user's request from other city
+     * return a compatible ride and update it in local db if found, otherwise noRide.
      * </pre>
      */
-    public generated.Result insertRideToDb(generated.Ride request) {
+    public generated.Ride reserveRide(generated.Rout request) {
       return blockingUnaryCall(
-          getChannel(), getInsertRideToDbMethod(), getCallOptions(), request);
+          getChannel(), getReserveRideMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * if part of the path couldn't be satisfied revert intermediate commits
+     * </pre>
+     */
+    public generated.Result revertCommit(generated.Ride request) {
+      return blockingUnaryCall(
+          getChannel(), getRevertCommitMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Returns all Rides in the database
+     * </pre>
+     */
+    public com.google.protobuf.Empty snapshot(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getSnapshotMethod(), getCallOptions(), request);
     }
   }
 
   /**
-   * <pre>
-   * Interface exported by the server.
-   * </pre>
    */
   public static final class UberServiceFutureStub extends io.grpc.stub.AbstractFutureStub<UberServiceFutureStub> {
     private UberServiceFutureStub(
@@ -481,33 +487,44 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Save customer request to db
-     * If found a relevant ride, update it's current vacancies
+     * Accept a user's request from other city
+     * return a compatible ride and update it in local db if found, otherwise noRide.
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<generated.Result> updateRide(
-        generated.InsertCustomerRequestToDb request) {
+    public com.google.common.util.concurrent.ListenableFuture<generated.Ride> reserveRide(
+        generated.Rout request) {
       return futureUnaryCall(
-          getChannel().newCall(getUpdateRideMethod(), getCallOptions()), request);
+          getChannel().newCall(getReserveRideMethod(), getCallOptions()), request);
     }
 
     /**
      * <pre>
-     * Accept a user's ride and save it in the DB.
+     * if part of the path couldn't be satisfied revert intermediate commits
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<generated.Result> insertRideToDb(
+    public com.google.common.util.concurrent.ListenableFuture<generated.Result> revertCommit(
         generated.Ride request) {
       return futureUnaryCall(
-          getChannel().newCall(getInsertRideToDbMethod(), getCallOptions()), request);
+          getChannel().newCall(getRevertCommitMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     * Returns all Rides in the database
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> snapshot(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getSnapshotMethod(), getCallOptions()), request);
     }
   }
 
   private static final int METHODID_POST_RIDE = 0;
-  private static final int METHODID_UPDATE_RIDE = 1;
-  private static final int METHODID_INSERT_RIDE_TO_DB = 2;
-  private static final int METHODID_POST_PATH_PLANNING_REQUEST = 3;
-  private static final int METHODID_GET_EXISTING_RIDES = 4;
+  private static final int METHODID_POST_PATH_PLANNING_REQUEST = 1;
+  private static final int METHODID_RESERVE_RIDE = 2;
+  private static final int METHODID_REVERT_COMMIT = 3;
+  private static final int METHODID_SNAPSHOT = 4;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -530,13 +547,21 @@ public final class UberServiceGrpc {
           serviceImpl.postRide((generated.Ride) request,
               (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
           break;
-        case METHODID_UPDATE_RIDE:
-          serviceImpl.updateRide((generated.InsertCustomerRequestToDb) request,
+        case METHODID_POST_PATH_PLANNING_REQUEST:
+          serviceImpl.postPathPlanningRequest((generated.CustomerRequest) request,
+              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
+          break;
+        case METHODID_RESERVE_RIDE:
+          serviceImpl.reserveRide((generated.Rout) request,
+              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
+          break;
+        case METHODID_REVERT_COMMIT:
+          serviceImpl.revertCommit((generated.Ride) request,
               (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
           break;
-        case METHODID_INSERT_RIDE_TO_DB:
-          serviceImpl.insertRideToDb((generated.Ride) request,
-              (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
+        case METHODID_SNAPSHOT:
+          serviceImpl.snapshot((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -548,12 +573,6 @@ public final class UberServiceGrpc {
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
-        case METHODID_POST_PATH_PLANNING_REQUEST:
-          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.postPathPlanningRequest(
-              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
-        case METHODID_GET_EXISTING_RIDES:
-          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.getExistingRides(
-              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
         default:
           throw new AssertionError();
       }
@@ -607,9 +626,9 @@ public final class UberServiceGrpc {
               .setSchemaDescriptor(new UberServiceFileDescriptorSupplier())
               .addMethod(getPostRideMethod())
               .addMethod(getPostPathPlanningRequestMethod())
-              .addMethod(getGetExistingRidesMethod())
-              .addMethod(getUpdateRideMethod())
-              .addMethod(getInsertRideToDbMethod())
+              .addMethod(getReserveRideMethod())
+              .addMethod(getRevertCommitMethod())
+              .addMethod(getSnapshotMethod())
               .build();
         }
       }
