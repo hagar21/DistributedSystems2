@@ -1,6 +1,8 @@
 package client;
 
-import generated.*;
+import generated.Ride;
+import generated.CustomerRequest;
+import generated.UberServiceGrpc;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 
@@ -95,18 +97,33 @@ public class CityClient {
 //        }
 //    }
 
-    public void postRide(String firstName, String lastName, int phoneNum, String srcCity, String dstCity, String date, int vacancies, int pd) {
+    public void postRide(Rest.entities.Ride restRide) {
         Ride ride = Ride.newBuilder()
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setPhoneNum(phoneNum)
-                .setSrcCity(srcCity)
-                .setDstCity(dstCity)
-                .setDate(date)
-                .setVacancies(vacancies)
-                .setPd(pd).build();
+                .setFirstName(restRide.getFirstName())
+                .setLastName(restRide.getLastName())
+                .setPhoneNum(restRide.getVacancies()) /* shai change type */
+                .setSrcCity(restRide.getStartingPosition())
+                .setDstCity(restRide.getEndingPosition())
+                .setDate(restRide.getDepartureDate())
+                .setVacancies(restRide.getVacancies())
+                .setPd(restRide.getPd()).build();
         try {
             blockingStub.postRide(ride);
+            System.out.println("city client send post ride request");
+            System.out.println("-------------");
+
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Accept a user's request to join a ride and check if there is a relevant ride.
+    public void PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
+        CustomerRequest request = CustomerRequest.newBuilder()
+                .setFirstName(customerRequest.getFirstName())
+                .setLastName(customerRequest.getLastName()).build();
+        try {
+            //blockingStub.PostPathPlanningRequest(request);
             System.out.println("city client send post ride request");
             System.out.println("-------------");
 

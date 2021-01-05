@@ -21,14 +21,14 @@ public class Ride {
 
     Ride() {}
 
-    Ride(String firstName,
-         String lastName,
-         String phoneNumber,
-         String startingPosition,
-         String endingPosition,
-         String departureDate,
-         int vacancies,
-         int pd) {
+    public Ride(String firstName,
+                String lastName,
+                String phoneNumber,
+                String startingPosition,
+                String endingPosition,
+                String departureDate,
+                int vacancies,
+                int pd) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;

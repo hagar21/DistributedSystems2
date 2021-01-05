@@ -15,13 +15,12 @@ import static java.lang.Integer.min;
 
 public class CityService extends UberServiceGrpc.UberServiceImplBase {
 
-    private final DbClient client;
+    private List<Ride> rides;
+    private List<CustomerRequest> customerRequests;
 
     public CityService() {
-        String target = "localhost:8980";
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-        DbClient client = new DbClient(channel);
-        this.client = client;
+        this.rides = new ArrayList<Ride>();
+        this.customerRequests = new ArrayList<CustomerRequest>();
         System.out.println("City server is up!");
         System.out.println("-------------");
     }
@@ -33,7 +32,6 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
         System.out.println("City server got post ride request");
         System.out.println("-------------");
 
-        this.client.insertRideToDb(request);
         Result res = Result.newBuilder().setIsSuccess(true).build();
         responseObserver.onNext(res);
         responseObserver.onCompleted();

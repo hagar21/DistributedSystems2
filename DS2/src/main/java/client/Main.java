@@ -11,8 +11,8 @@ public class Main {
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         CityClient client = new CityClient(channel);
         // Call server streaming call
-
-        client.postRide("shai", "porath", 123, "haifa", "monash", "1/1/21", 4, 5);
+        Rest.entities.Ride restRide = new Rest.entities.Ride("shai", "porath", "porath", "haifa", "monash", "1/1/21", 4, 5);
+        client.postRide(restRide);
         // Call bi-directional call
         //client.routeChat();
         System.out.println("Waiting");
