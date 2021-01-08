@@ -92,4 +92,23 @@ public class CityClient {
         return rides; /* shai still missing return empty in case of error */
     }
 
+    public Ride reserveRide(Rout rout) {
+        try {
+            return blockingStub.reserveRide(rout);
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+        return CityUtil.noRide();
+    }
+
+
+    public void revertCommit(Ride ride) {
+        try {
+            blockingStub.revertCommit(ride);
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

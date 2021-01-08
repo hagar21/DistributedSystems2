@@ -4,6 +4,7 @@ import client.CityClient;
 import generated.CustomerRequest;
 import generated.Ride;
 import generated.Rout;
+import generated.UberServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -42,20 +43,20 @@ public class CityUtil {
         }
     }
 
-    public static boolean isMatch(Ride ride, CustomerRequest req) {
+    public static boolean isMatch(Ride ride, Rout rout) {
 
-        if(!ride.getDate().equals(req.getDate())) return false;
+        if(!ride.getDate().equals(rout.getDate())) return false;
 
         Point rideSrc = mapCityToLocation(ride.getSrcCity());
         Point rideDst = mapCityToLocation(ride.getDstCity());
-        Point reqSrc = mapCityToLocation(req.getSrcCity());
-        Point reqDst = mapCityToLocation(req.getDstCity());
+        Point reqSrc = mapCityToLocation(rout.getSrcCity());
+        Point reqDst = mapCityToLocation(rout.getDstCity());
 
         Point p0;
         if(rideSrc.equals(reqSrc)) {
-            p0 = mapCityToLocation(req.getDstCity());
+            p0 = mapCityToLocation(rout.getDstCity());
         } else if (rideDst.equals(reqDst)) {
-            p0 = mapCityToLocation(req.getSrcCity());
+            p0 = mapCityToLocation(rout.getSrcCity());
         } else {
             return false;
         }
@@ -63,40 +64,6 @@ public class CityUtil {
         int numerator = Math.abs((rideDst.x - rideSrc.x) * (rideSrc.y - p0.y) - (rideSrc.x-p0.x) * (rideDst.y - rideSrc.y));
         double denominator = Math.sqrt(Math.pow(rideDst.x - rideSrc.x, 2)+ Math.pow(rideDst.y - rideSrc.y, 2));
         return (numerator / denominator) <= ride.getPd();
-    }
-
-    public static List<Ride> getExistingRides(Rout rout) {
-        // mock db
-        return new ArrayList<Ride>() {
-            {
-                add(
-                        Ride.newBuilder()
-                        .setDate("1/1/21")
-                        .setFirstName("a")
-                        .setLastName("a")
-                        .setPhoneNum(1)
-                        .setPd(1)
-                        .setVacancies(3)
-                        .setSrcCity("haifa")
-                        .setDstCity("karkur")
-                        .setId(1)
-                        .build()
-                );
-                add(
-                        Ride.newBuilder()
-                                .setDate("1/1/21")
-                                .setFirstName("b")
-                                .setLastName("b")
-                                .setPhoneNum(2)
-                                .setPd(1)
-                                .setVacancies(3)
-                                .setSrcCity("karkur")
-                                .setDstCity("monash")
-                                .setId(2)
-                                .build()
-                );
-            }
-        };
     }
 
     public static Ride noRide() {
@@ -115,7 +82,41 @@ public class CityUtil {
         return Collections.unmodifiableList(shards);
     }
 
-    public static boolean consensus() {
+    public static boolean consensus(Ride ride) {
         return true;
+    }
+
+    public static int getShardNumber() {
+        return 1;
+    }
+
+    public static Ride getLocalMatchingRide(Rout rout) {
+        for (Ride ride : CityService.rides.values()) {
+            System.out.println("ride id : " + ride.getId());
+            System.out.println("-------------");
+            if (CityUtil.isMatch(ride, rout) && CityUtil.consensus(ride)) {
+                System.out.println("match");
+                 {
+                    Ride updatedRide = Ride.newBuilder(ride)
+                            .setVacancies(ride.getVacancies() - 1).build();
+                     CityService.rides.put(updatedRide.getId(), updatedRide);
+                     return updatedRide;
+                }
+            }
+        }
+        return CityUtil.noRide();
+    }
+
+    public static Ride getRemoteMatchingRide(List<CityClient> shards, Rout rout) {
+        int index = 0;
+        for(CityClient client : shards){
+            Ride ride = client.reserveRide(rout);
+            if(!ride.equals(CityUtil.noRide())) {
+                return ride;
+                // should also return index
+            }
+            index++;
+        }
+        return CityUtil.noRide();
     }
 }
