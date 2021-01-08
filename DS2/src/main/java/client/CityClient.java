@@ -46,6 +46,23 @@ public class CityClient {
         // shai
     }
 
-    // rpc reserveRide(Rout) returns (Ride) {} hagar
-    // rpc revertCommit(Ride) returns (Result); hagar
+    public Ride reserveRide(Rout rout) {
+        try {
+            return blockingStub.reserveRide(rout);
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+        return CityUtil.noRide();
+    }
+
+
+    public void revertCommit(Ride ride) {
+        try {
+            blockingStub.revertCommit(ride);
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

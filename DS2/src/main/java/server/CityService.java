@@ -39,75 +39,43 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
     }
 
     @Override
-    public StreamObserver<CustomerRequest> postPathPlanningRequest(
-            StreamObserver<Ride> responseObserver) {
+    public void postPathPlanningRequest(
+            CustomerRequest request, StreamObserver<Ride> responseObserver) {
 
-        return new StreamObserver<CustomerRequest>() {
-            @Override
-            public void onNext(CustomerRequest request) {
-                System.out.println("Request of " + request.getFirstName() + " " + request.getLastName());
-                Rout rout = Rout.newBuilder()
-                        .setDate(request.getDate())
-                        .setDstCity(request.getDstCity())
-                        .setSrcCity(request.getSrcCity()).build();
+        // map of (shardId: rideId)
+        Map<Integer, Integer> reservedRides = new HashMap<>();
+        String src, dst;
+        Rout rout;
 
-                // check for relevant rides in local db
-                for (Ride ride : CityService.rides.values()) {
-                    System.out.println("ride id : " + ride.getId());
-                    System.out.println("-------------");
-                    if (CityUtil.isMatch(ride, request)) {
-                        System.out.println("match");
-                        // get consensus to use this ride
-                        if (CityUtil.consensus()) {
-                            Ride updatedRide = Ride.newBuilder()
-                                    .setId(ride.getId())
-                                    .setFirstName(ride.getFirstName())
-                                    .setLastName(ride.getLastName())
-                                    .setPhoneNum(ride.getPhoneNum())
-                                    .setSrcCity(ride.getSrcCity())
-                                    .setDstCity(ride.getDstCity())
-                                    .setDate(ride.getDate())
-                                    .setVacancies(ride.getVacancies() - 1)
-                                    .setPd(ride.getPd()).build(); // shai - update pd
-                            CityService.rides.put(updatedRide.getId(), updatedRide);
+        outerloop:
+        for(int i = 0; i < request.getPathCount() - 1; i++) {
+            src = request.getPath(i);
+            dst = request.getPath(i+1);
 
-                            CustomerRequest updatedRequest = CustomerRequest.newBuilder()
-                                    .setId(ride.getId())
-                                    .setFirstName(ride.getFirstName())
-                                    .setLastName(ride.getLastName())
-                                    .setPhoneNum(ride.getPhoneNum())
-                                    .setSrcCity(ride.getSrcCity())
-                                    .setDstCity(ride.getDstCity())
-                                    .setDate(ride.getDate())
-                                    .setRideId(updatedRide.getId()).build();
-                            CityService.customerRequests.put(updatedRequest.getId(), updatedRequest);
+            rout = Rout.newBuilder()
+                    .setDate(request.getDate())
+                    .setDstCity(src)
+                    .setSrcCity(dst).build();
+            // check for relevant rides in local db
+            Ride foundRide = CityUtil.getLocalMatchingRide(rout);
+            if (!foundRide.equals(CityUtil.noRide())) {
+                reservedRides.put(CityUtil.getShardNumber(), foundRide.getId());
+                continue;
+            }
 
-                            responseObserver.onNext(updatedRide);
-                            return;
-                        }
-                    }
+            // check in other shards
+            for(CityClient client : shards){
+                Ride ride = client.reserveRide(rout);
+                if(!ride.equals(CityUtil.noRide())) {
+                    Ride updatedRide = Ride.newBuilder(ride)
+                            .setVacancies(ride.getVacancies() - 1).build();
+                    rides.put(updatedRide.getId(), updatedRide);
+                    reservedRides.put(CityUtil.getShardNumber(), updatedRide.getId());
+                    break;
                 }
-
-                // ask other shards
-                for(CityClient client : shards){
-                    Ride ride = client.postCustomerRequest(request);
-                    if(!ride.equals(CityUtil.noRide())) {
-                        responseObserver.onNext(ride);
-                        return;
-                    }
-                }
-                responseObserver.onNext(CityUtil.noRide());
             }
-
-            @Override
-            public void onError(Throwable t) {
-            }
-
-            @Override
-            public void onCompleted() {
-                System.out.println("Server side stream completed");
-                responseObserver.onCompleted();
-            }
-        };
+            responseObserver.onNext(CityUtil.noRide());
+        }
+                CityService.customerRequests.put(updatedRequest.getId(), updatedRequest);
     }
 }
