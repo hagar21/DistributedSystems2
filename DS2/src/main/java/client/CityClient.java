@@ -5,11 +5,22 @@ import generated.CustomerRequest;
 import generated.Ride;
 import generated.Rout;
 import generated.UberServiceGrpc;
+import Rest.utils.RideAlreadyExistsException;
+import generated.*;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import server.CityUtil;
 
+import Rest.utils.RideAlreadyExistsException;
+import Rest.utils.CustomerRequestAlreadyExistsException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
+
+import static server.CityUtil.noRide;
 
 public class CityClient {
     private static final Logger logger = Logger.getLogger(CityClient.class.getName());
@@ -26,26 +37,61 @@ public class CityClient {
         Ride ride = Ride.newBuilder()
                 .setFirstName(restRide.getFirstName())
                 .setLastName(restRide.getLastName())
-                .setPhoneNum(restRide.getVacancies()) /* shai change type */
+                .setPhoneNum(restRide.getPhoneNumber())
                 .setSrcCity(restRide.getStartingPosition())
                 .setDstCity(restRide.getEndingPosition())
                 .setDate(restRide.getDepartureDate())
                 .setOfferedPlaces(restRide.getVacancies())
                 .setTakenPlaces(0)
                 .setPd(restRide.getPd()).build();
+
         try {
-            blockingStub.postRide(ride);
+            Result result = blockingStub.postRide(ride);
+            if (!result.getIsSuccess())
+            {
+                throw new Rest.utils.RideAlreadyExistsException();
+            }
             System.out.println("city client send post ride request");
             System.out.println("-------------");
 
-        } catch (StatusRuntimeException e) {
+        } catch (StatusRuntimeException | RideAlreadyExistsException e) {
             e.printStackTrace();
         }
     }
 
     // Accept a user's request to join a ride and check if there is a relevant ride.
-    public void PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
-        // shai
+    public List<Rest.entities.Ride> postPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
+        System.out.println("city client send PostPathPlanningRequest request");
+        System.out.println("-------------");
+
+        CustomerRequest request = CustomerRequest.newBuilder()
+                .addAllPath(customerRequest.getPath())
+                .setDate(customerRequest.getDepartureDate())
+                .build();
+
+        List<Rest.entities.Ride> restRides = new ArrayList<>();
+        Iterator<Ride> grpcRides;
+
+        try {
+            grpcRides = blockingStub.postPathPlanningRequest(request);
+
+            while(grpcRides.hasNext()) {
+                Ride ride = grpcRides.next();
+                restRides.add(new Rest.entities.Ride(
+                            ride.getFirstName(),
+                            ride.getLastName(),
+                            ride.getPhoneNum(),
+                            ride.getSrcCity(),
+                            ride.getDstCity(),
+                            ride.getDate(),
+                            ride.getOfferedPlaces(),
+                            ride.getPd()));
+            }
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+        return restRides; /* shai still missing return empty in case of error */
     }
 
     public Ride reserveRide(Rout rout) {
@@ -55,7 +101,7 @@ public class CityClient {
             e.printStackTrace();
         }
 
-        return CityUtil.noRide();
+        return noRide();
     }
 
 

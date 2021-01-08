@@ -7,7 +7,6 @@ import generated.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,9 +21,11 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
     public static final ConcurrentMap<String, CustomerRequest> customerRequests =
             new ConcurrentHashMap<>();
     private final List<CityClient> shards;
+    public static int port;
 
-    public CityService() {
-        shards = initShards();
+    public CityService(int port) {
+        shards = initShards(port);
+        CityService.port = port;
         System.out.println("City server is up!");
         System.out.println("-------------");
     }
@@ -35,6 +36,7 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
         System.out.println("-------------");
 
         String rideId = request.getFirstName() + request.getLastName() + request.getDate() + request.getSrcCity() + request.getDstCity();
+        System.out.println(rideId);
 
         Result.Builder res = Result.newBuilder();
         if(rides.containsKey(rideId)) {
@@ -43,8 +45,8 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
         }
 
         Ride ride = Ride.newBuilder(request).setId(rideId).build();
-        if(rideConsensus(request)) {
-            rides.put(request.getId(), request);
+        if(rideConsensus(ride)) {
+            rides.put(ride.getId(), ride);
         }
         responseObserver.onNext(res.setIsSuccess(true).build());
         responseObserver.onCompleted();
@@ -66,8 +68,8 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
 
             rout = Rout.newBuilder()
                     .setDate(request.getDate())
-                    .setDstCity(src)
-                    .setSrcCity(dst).build();
+                    .setSrcCity(src)
+                    .setDstCity(dst).build();
 
             // check for relevant rides in local db
             Ride foundRide = getLocalMatchingRide(rout);
@@ -78,7 +80,6 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
 
             // check in other shards
             ShardRide remoteRide = getRemoteMatchingRide(shards, rout);
-            reservedRides.put(remoteRide.shardId, remoteRide.ride);
 
             if(remoteRide.ride.equals(noRide())) {
                 revertPath(reservedRides, shards);
@@ -86,10 +87,12 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
                 responseObserver.onCompleted();
                 return;
             }
+            reservedRides.put(remoteRide.shardId, remoteRide.ride);
         }
 
         // Entire path satisfied
-        CustomerRequest updatedRequest = CustomerRequest.newBuilder(request).addAllRides(reservedRides.values()).build();
+        String id = request.getDate() + request.getPathList().toString() + request.getDate();
+        CustomerRequest updatedRequest = CustomerRequest.newBuilder(request).addAllRides(reservedRides.values()).setId(id).build();
         if(customerConsensus(updatedRequest)) {
             customerRequests.put(updatedRequest.getId(), updatedRequest);
             for (Map.Entry<Integer, Ride> entry : reservedRides.entrySet()) {

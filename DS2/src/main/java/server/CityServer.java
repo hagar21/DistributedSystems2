@@ -1,8 +1,5 @@
 package server;
 
-import client.DbClient;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
@@ -25,7 +22,7 @@ public class CityServer {
      */
     public CityServer(ServerBuilder<?> serverBuilder, int port) {
         this.port = port;
-        server = serverBuilder.addService(new CityService())
+        server = serverBuilder.addService(new CityService(port))
                 .build();
     }
 

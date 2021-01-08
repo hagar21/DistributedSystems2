@@ -22,13 +22,13 @@ class Point {
         this.y = y;
     }
 
-    public boolean equals(Point p1, Point p2){
-        return p1.x == p2.x && p1.y == p2.y;
+    public boolean equals(Point p){
+        return this.x == p.x && this.y == p.y;
     }
 }
 
 public class CityUtil {
-    public static int shardsNumber = 5;
+    public static int shardsNumber = 2;
 
     public static Point mapCityToLocation(String city) {
         switch(city) {
@@ -70,15 +70,57 @@ public class CityUtil {
         return Ride.newBuilder().setId("noRide").build();
     }
 
-    public static List<CityClient> initShards() {
+    public static List<CityClient> initShards(int port) {
         List<CityClient> shards = new ArrayList<>();
-        for(int i = 0; i < shardsNumber; i++) {
-            String target = "localhost:" + (8980 + i);
-            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-            CityClient client = new CityClient(channel);
-
-            shards.add(client);
-        }
+//        for(int i = 0; i < shardsNumber; i++) {
+//            String target = "localhost:" + (8980 + i);
+//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+//            CityClient client = new CityClient(channel);
+//
+//            shards.add(client);
+//        }
+//
+//        if (port == 8980) {
+//            String target = "localhost:" + (8981);
+//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+//            CityClient client = new CityClient(channel);
+//
+//            shards.add(client);
+//
+//            String target1 = "localhost:" + (8982);
+//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+//            CityClient client1 = new CityClient(channel1);
+//
+//            shards.add(client1);
+//        }
+//
+//        if (port == 8981) {
+//            String target = "localhost:" + (8980);
+//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+//            CityClient client = new CityClient(channel);
+//
+//            shards.add(client);
+//
+//            String target1 = "localhost:" + (8982);
+//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+//            CityClient client1 = new CityClient(channel1);
+//
+//            shards.add(client1);
+//        }
+//
+//        if (port == 8982) {
+//            String target = "localhost:" + (8980);
+//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+//            CityClient client = new CityClient(channel);
+//
+//            shards.add(client);
+//
+//            String target1 = "localhost:" + (8981);
+//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+//            CityClient client1 = new CityClient(channel1);
+//
+//            shards.add(client1);
+//        }
         return Collections.unmodifiableList(shards);
     }
 
@@ -86,7 +128,7 @@ public class CityUtil {
     public static boolean customerConsensus(CustomerRequest req) { return true; }
 
     public static int getShardNumber() {
-        return 1;
+        return CityService.port;
     }
 
     public static Ride getLocalMatchingRide(Rout rout) {
@@ -136,7 +178,7 @@ public class CityUtil {
     }
 
     public static void printRide(Ride ride){
-        System.out.println("Name: " + ride.getFirstName() + ride.getLastName());
+        System.out.println("Name: " + ride.getFirstName() + " " + ride.getLastName());
         System.out.println("Phone number: " + ride.getPhoneNum());
         System.out.println("Date: " + ride.getDate());
         System.out.println("Path: " + ride.getSrcCity() + "to " + ride.getDstCity());
@@ -154,8 +196,7 @@ public class CityUtil {
 
         System.out.println("Date: " + req.getDate());
 
-        Descriptors.FieldDescriptor fd = req.getDescriptorForType().findFieldByName("rides");
-        if(req.hasField(fd)) {
+        if(req.getRidesCount() > 0) {
             System.out.println("The request is satisfied by:");
             for(Ride ride : req.getRidesList()) {
                 System.out.println(ride.getFirstName() + " " + ride.getLastName());
