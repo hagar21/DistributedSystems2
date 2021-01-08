@@ -29,7 +29,7 @@ message Ride {
   int32 id = 1;
   string firstName = 2;
   string lastName = 3;
-  int32 phoneNum = 4;
+  string phoneNum = 4;
   string srcCity = 5;
   string dstCity = 6;
   string date = 7;

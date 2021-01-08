@@ -6,8 +6,11 @@ import generated.Rout;
 import generated.UberServiceGrpc;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import server.CityUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class CityClient {
@@ -42,10 +45,51 @@ public class CityClient {
     }
 
     // Accept a user's request to join a ride and check if there is a relevant ride.
-    public void PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
-        // shai
+    public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
+
+        List<Rest.entities.Ride> rides = new ArrayList<Rest.entities.Ride>();
+
+        CustomerRequest request = CustomerRequest.newBuilder()
+                .setPath(customerRequest.getPath())
+                .setDate(customerRequest.getDepartureDate()).build();
+
+        try {
+            asyncStub.postPathPlanningRequest(request, new StreamObserver<Ride>() {
+                @Override
+                public void onNext(Ride ride) {
+                    if (!ride.isInitialized()) /* shai, if not found need to throw error */
+                    {
+                        return;
+                    }
+
+                    rides.add(new Rest.entities.Ride(
+                            ride.getFirstName(),
+                            ride.getLastName(),
+                            ride.getPhoneNum(),
+                            ride.getSrcCity(),
+                            ride.getDstCity(),
+                            ride.getDate(),
+                            ride.getVacancies(),
+                            ride.getPd()));
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    System.out.println(t.getMessage());
+                    System.out.println("No ride found, path planning failed"); /* shai not ride*/
+                }
+
+                @Override
+                public void onCompleted() {
+                    System.out.println("path planning complete for client");
+                }
+            });
+
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+        return rides; /* shai still missing return empty in case of error */
     }
 
-    // rpc reserveRide(Rout) returns (Ride) {} hagar
-    // rpc revertCommit(Ride) returns (Result); hagar
 }

@@ -26,28 +26,37 @@ public class CustomerController {
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         this.redirectionService = new CityClient(channel);
     }
+    /*
+        @GetMapping("/rides")
+        List<Ride> allRides() {
+            return repository.findAllRides();
+        }
 
-    @GetMapping("/rides")
-    List<Ride> allRides() {
-        return repository.findAllRides();
-    }
-
-    @GetMapping("/customerRequests")
-    List<CustomerRequest> allCustomerRequests() {
-        return repository.findAllCustomerRequests();
-    }
-
+        @GetMapping("/customerRequests")
+        List<CustomerRequest> allCustomerRequests() {
+            return repository.findAllCustomerRequests();
+        }
+    */
     @PostMapping("/rides")
     void newRide(@RequestBody Ride newRide) throws RideAlreadyExistsException {
         redirectionService.postRide(newRide); /* shai is it void? */
     }
 
+    /*
     @PostMapping("/customerRequests")
     CustomerRequest newCustomerRequest(@RequestBody CustomerRequest newCustomerRequest)
             throws CustomerRequestAlreadyExistsException {
         return repository.save(newCustomerRequest);
     }
+    */
 
+    @PostMapping("/customerRequests")
+    List<Ride> newCustomerRequest(@RequestBody CustomerRequest newCustomerRequest)
+            throws CustomerRequestAlreadyExistsException {
+        return redirectionService.PostPathPlanningRequest(newCustomerRequest);
+    }
+
+    /*
     // Single item
     @ResponseBody
     @GetMapping("/rides/{id}")
@@ -91,5 +100,5 @@ public class CustomerController {
         repository.delete(customerRequest);
         return customerRequest;
     }
+*/
 }
-
