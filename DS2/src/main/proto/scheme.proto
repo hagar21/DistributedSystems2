@@ -26,22 +26,23 @@ service UberService {
 }
 
 message Ride {
-  int32 id = 1;
+  string id = 1;
   string firstName = 2;
   string lastName = 3;
   int32 phoneNum = 4;
   string srcCity = 5;
   string dstCity = 6;
   string date = 7;
-  int32 vacancies = 8;
-  int32 pd = 9;
+  int32 offeredPlaces = 8;
+  int32 takenPlaces = 9;
+  int32 pd = 10;
 }
 
 message CustomerRequest {
-  int32 id = 1;
-  repeated string path = 5;
-  string date = 6;
-  repeated int32 rideId = 7;
+  string id = 1;
+  repeated string path = 2;
+  string date = 3;
+  repeated Ride rides = 4;
 }
 
 message Rout {

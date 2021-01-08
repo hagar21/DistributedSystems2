@@ -1,5 +1,6 @@
 package client;
 
+import com.google.protobuf.Empty;
 import generated.CustomerRequest;
 import generated.Ride;
 import generated.Rout;
@@ -29,7 +30,8 @@ public class CityClient {
                 .setSrcCity(restRide.getStartingPosition())
                 .setDstCity(restRide.getEndingPosition())
                 .setDate(restRide.getDepartureDate())
-                .setVacancies(restRide.getVacancies())
+                .setOfferedPlaces(restRide.getVacancies())
+                .setTakenPlaces(0)
                 .setPd(restRide.getPd()).build();
         try {
             blockingStub.postRide(ride);
@@ -63,6 +65,14 @@ public class CityClient {
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
         }
+    }
 
+    public void snapshot() {
+        com.google.protobuf.Empty req = Empty.newBuilder().build();
+        try {
+            blockingStub.snapshot(req);
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
     }
 }
