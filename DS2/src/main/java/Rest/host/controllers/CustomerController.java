@@ -6,22 +6,20 @@ import client.CityClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.web.bind.annotation.*;
-import Rest.repositories.CustomerRepository;
+//import Rest.repositories.CustomerRepository;
 import Rest.utils.RideAlreadyExistsException;
 import Rest.utils.CustomerRequestAlreadyExistsException;
-import Rest.utils.RideNotFoundException;
-import Rest.utils.CustomerRequestNotFoundException;
+//import Rest.utils.RideNotFoundException;
+//import Rest.utils.CustomerRequestNotFoundException;
 
 
 import java.util.List;
 
 @RestController
 public class CustomerController {
-    private final CustomerRepository repository;
     private final CityClient redirectionService;
 
     public CustomerController() {
-        this.repository = new CustomerRepository();
         String target = "localhost:8990";
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         this.redirectionService = new CityClient(channel);
@@ -39,7 +37,7 @@ public class CustomerController {
     */
     @PostMapping("/rides")
     void newRide(@RequestBody Ride newRide) throws RideAlreadyExistsException {
-        redirectionService.postRide(newRide); /* shai is it void? */
+        redirectionService.postRide(newRide);
     }
 
     /*

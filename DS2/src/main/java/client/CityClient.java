@@ -1,13 +1,14 @@
 package client;
 
-import generated.CustomerRequest;
-import generated.Ride;
-import generated.Rout;
-import generated.UberServiceGrpc;
+import Rest.utils.RideAlreadyExistsException;
+import generated.*;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import server.CityUtil;
+
+import Rest.utils.RideAlreadyExistsException;
+import Rest.utils.CustomerRequestAlreadyExistsException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +29,23 @@ public class CityClient {
         Ride ride = Ride.newBuilder()
                 .setFirstName(restRide.getFirstName())
                 .setLastName(restRide.getLastName())
-                .setPhoneNum(restRide.getVacancies()) /* shai change type */
+                .setPhoneNum(restRide.getPhoneNumber())
                 .setSrcCity(restRide.getStartingPosition())
                 .setDstCity(restRide.getEndingPosition())
                 .setDate(restRide.getDepartureDate())
                 .setVacancies(restRide.getVacancies())
                 .setPd(restRide.getPd()).build();
+
         try {
-            blockingStub.postRide(ride);
+            Result result = blockingStub.postRide(ride);
+            if (!result.getIsSuccess())
+            {
+                throw new Rest.utils.RideAlreadyExistsException();
+            }
             System.out.println("city client send post ride request");
             System.out.println("-------------");
 
-        } catch (StatusRuntimeException e) {
+        } catch (StatusRuntimeException | RideAlreadyExistsException e) {
             e.printStackTrace();
         }
     }
@@ -47,11 +53,15 @@ public class CityClient {
     // Accept a user's request to join a ride and check if there is a relevant ride.
     public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
 
-        List<Rest.entities.Ride> rides = new ArrayList<Rest.entities.Ride>();
+        //Creates the builder object
+        CustomerRequest.Builder builder = CustomerRequest.newBuilder();
+        //populate fields
+        builder.addAllPath(customerRequest.getPath());
+        builder.setDate(customerRequest.getDepartureDate());
+        //This should build out a request object
+        CustomerRequest request =builder.build();
 
-        CustomerRequest request = CustomerRequest.newBuilder()
-                .setPath(customerRequest.getPath())
-                .setDate(customerRequest.getDepartureDate()).build();
+        List<Rest.entities.Ride> rides = new ArrayList<>();
 
         try {
             asyncStub.postPathPlanningRequest(request, new StreamObserver<Ride>() {

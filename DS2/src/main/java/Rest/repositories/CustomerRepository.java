@@ -30,7 +30,7 @@ public class CustomerRepository {
 
     public Ride save(Ride newRide) throws RideAlreadyExistsException {
         if (rides.contains(newRide)) {
-            throw new RideAlreadyExistsException(newRide.getId());
+            throw new RideAlreadyExistsException();
         }
         newRide.setId(rideIdIndex++);
         saveRide(newRide);

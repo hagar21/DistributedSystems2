@@ -12,12 +12,12 @@ import javax.persistence.Id;
 @Entity
 public class CustomerRequest {
     private Long id;
-    private ArrayList<String> path;
+    private List<String> path;
     private String departureDate;
 
     CustomerRequest() {}
 
-    CustomerRequest(ArrayList<String> path,
+    CustomerRequest(List<String> path,
                     String departureDate) {
         this.path = path;
         this.departureDate = departureDate;
@@ -27,7 +27,7 @@ public class CustomerRequest {
         return this.id;
     }
 
-    public ArrayList<String> getPath() {
+    public List<String> getPath() {
         return this.path;
     }
 
@@ -39,7 +39,7 @@ public class CustomerRequest {
         this.id = id;
     }
 
-    public void setPath(ArrayList<String> path) {
+    public void setPath(List<String> path) {
         this.path = path;
     }
 
