@@ -4,17 +4,25 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import ZkService.ZkServiceImpl;
+import ZkService.utils.ClusterInfo;
+import org.I0Itec.zkclient.IZkChildListener;
 
 public class CityServer {
     private static final Logger logger = Logger.getLogger(CityServer.class.getName());
 
     private final int port;
     private final Server server;
+    private ZkServiceImpl zkService;
+    private String city;
 
     public CityServer(int port) throws IOException {
         this(ServerBuilder.forPort(port), port);
+        System.out.println("CityServer c'tor1 called");
     }
 
     /**
@@ -22,10 +30,72 @@ public class CityServer {
      */
     public CityServer(ServerBuilder<?> serverBuilder, int port) {
         this.port = port;
-        server = serverBuilder.addService(new CityService())
+        this.server = serverBuilder.addService(new CityService())
                 .build();
+        this.city = "mock";
+
+        System.out.println("CityServer c'tor2 called");
+
+        ConnectToZk();
     }
 
+    public void ConnectToZk() {
+        try {
+
+            this.zkService = new ZkServiceImpl();
+
+            // create all parent nodes /election, /all_nodes, /live_nodes
+            // Shai - not sure we need to create root
+            // zkService.createAllParentNodes();
+
+            zkService.createAllParentNodes(this.city);
+            /*
+            // add this server to cluster by creating znode under /all_nodes, with name as "host:port"
+            zkService.addToAllNodes(getHostPostOfServer(), "cluster node");
+            ClusterInfo.getClusterInfo().getAllNodes().clear();
+            ClusterInfo.getClusterInfo().getAllNodes().addAll(zkService.getAllNodes());
+
+            // check which leader election algorithm(1 or 2) need is used
+            String leaderElectionAlgo = System.getProperty("leader.algo");
+
+            // if approach 2 - create ephemeral sequential znode in /election
+            // then get children of  /election and fetch least sequenced znode, among children znodes
+            if (isEmpty(leaderElectionAlgo) || "2".equals(leaderElectionAlgo)) {
+                zkService.createNodeInElectionZnode(getHostPostOfServer());
+                ClusterInfo.getClusterInfo().setMaster(zkService.getLeaderNodeData2());
+            } else {
+                if (!zkService.masterExists()) {
+                    zkService.electForMaster();
+                } else {
+                    ClusterInfo.getClusterInfo().setMaster(zkService.getLeaderNodeData());
+                }
+            }
+
+            // sync person data from master
+            syncDataFromMaster();
+
+            // add child znode under /live_node, to tell other servers that this server is ready to serve
+            // read request
+            zkService.addToLiveNodes(getHostPostOfServer(), "cluster node");
+            ClusterInfo.getClusterInfo().getLiveNodes().clear();
+            ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes());
+
+            // register watchers for leader change, live nodes change, all nodes change and zk session
+            // state change
+            if (isEmpty(leaderElectionAlgo) || "2".equals(leaderElectionAlgo)) {
+                zkService.registerChildrenChangeWatcher(ELECTION_NODE_2, masterChangeListener);
+            } else {
+                zkService.registerChildrenChangeWatcher(ELECTION_NODE, masterChangeListener);
+            }
+            zkService.registerChildrenChangeWatcher(LIVE_NODES, liveNodeChangeListener);
+            zkService.registerChildrenChangeWatcher(ALL_NODES, allNodesChangeListener);
+            zkService.registerZkSessionStateListener(connectStateChangeListener);
+             */
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Startup failed!", e);
+        }
+    }
     /**
      * Start serving requests.
      */

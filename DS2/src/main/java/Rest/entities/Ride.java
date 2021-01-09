@@ -19,7 +19,7 @@ public class Ride {
     private int vacancies;
     private int pd; // permitted deviation
 
-    Ride() {}
+    public Ride() {}
 
     public Ride(String firstName,
                 String lastName,
