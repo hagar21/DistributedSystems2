@@ -54,6 +54,10 @@ dependencies {
     compile group: 'com.101tec', name: 'zkclient', version: '0.2'
 }
 
+configurations.all {
+    exclude module: 'slf4j-log4j12'
+}
+
 protobuf {
     generateProtoTasks.generatedFilesBaseDir = 'src/generated' // <- that line
 

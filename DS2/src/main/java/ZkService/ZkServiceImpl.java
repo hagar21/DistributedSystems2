@@ -2,6 +2,7 @@ package ZkService;
 
 import java.util.Collections;
 import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkStateListener;
@@ -10,10 +11,16 @@ import org.I0Itec.zkclient.exception.ZkNodeExistsException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 
+import ZkService.utils.StringSerializer;
+
 @Slf4j
 public class ZkServiceImpl implements ZkService{
 
-    private ZkClient zkClient;
+    private final ZkClient zkClient;
+
+    public ZkServiceImpl(String hostPort) {
+        zkClient = new ZkClient(hostPort, 12000, 30000, new StringSerializer());
+    }
 
     @Override
     public void createAllParentNodes(String city) {
@@ -79,7 +86,7 @@ public class ZkServiceImpl implements ZkService{
     }
 
     @Override
-    public void registerChildrenChangeWatcher(String path, IZkChildListener iZkChildListener) {
+    public void registerChildrenChangeListener(String path, IZkChildListener iZkChildListener) {
         zkClient.subscribeChildChanges(path, iZkChildListener);
     }
 }
