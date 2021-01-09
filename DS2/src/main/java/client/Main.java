@@ -51,7 +51,7 @@ public class Main {
 
 
         Rest.entities.CustomerRequest customerRequest = new Rest.entities.CustomerRequest(
-                path, "1/1/21");
+                "tal", path, "1/1/21");
 
         List<Rest.entities.Ride> ridesList = client1.postPathPlanningRequest(customerRequest);
 

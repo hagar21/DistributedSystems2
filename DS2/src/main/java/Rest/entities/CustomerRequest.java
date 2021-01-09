@@ -9,44 +9,50 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
 @Entity
 public class CustomerRequest {
     private Long id;
     private List<String> path;
     private String departureDate;
+    private String name;
 
     public CustomerRequest() {}
 
-    public CustomerRequest(List<String> path,
+    public CustomerRequest(String name, List<String> path,
                            String departureDate) {
         this.path = path;
         this.departureDate = departureDate;
+        this.name = name;
     }
 
     @Id
     public Long getId() {
         return this.id;
     }
-
-    public List<String> getPath() {
-        return this.path;
-    }
-
-    public String getDepartureDate() {
-        return this.departureDate;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setPath(List<String> path) {
-        this.path = path;
-    }
-
-    public void setDepartureDate(String departureDate) {
-        this.departureDate = departureDate;
-    }
+//
+//    public List<String> getPath() {
+//        return this.path;
+//    }
+//
+//    public String getDepartureDate() {
+//        return this.departureDate;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//
+//    public void setPath(List<String> path) {
+//        this.path = path;
+//    }
+//
+//    public void setDepartureDate(String departureDate) {
+//        this.departureDate = departureDate;
+//    }
 
     @Override
     public boolean equals(Object o) {

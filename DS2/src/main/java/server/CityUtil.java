@@ -46,6 +46,7 @@ public class CityUtil {
     public static boolean isMatch(Ride ride, Rout rout) {
         if(!ride.getDate().equals(rout.getDate())) return false;
         if(ride.getOfferedPlaces() == ride.getTakenPlaces()) return false;
+        if(customerAlreadyInRide(ride, rout.getName())) return false;
 
         Point rideSrc = mapCityToLocation(ride.getSrcCity());
         Point rideDst = mapCityToLocation(ride.getDstCity());
@@ -64,6 +65,13 @@ public class CityUtil {
         int numerator = Math.abs((rideDst.x - rideSrc.x) * (rideSrc.y - p0.y) - (rideSrc.x-p0.x) * (rideDst.y - rideSrc.y));
         double denominator = Math.sqrt(Math.pow(rideDst.x - rideSrc.x, 2)+ Math.pow(rideDst.y - rideSrc.y, 2));
         return (numerator / denominator) <= ride.getPd();
+    }
+
+    private static boolean customerAlreadyInRide(Ride ride, String name) {
+        for(int i = 0; i < ride.getCustomersCount(); i++) {
+            if(name.equals(ride.getCustomers(i))) return false;
+        }
+        return true;
     }
 
     public static Ride noRide() {
@@ -139,7 +147,8 @@ public class CityUtil {
                 System.out.println("match");
                  {
                     Ride updatedRide = Ride.newBuilder(ride)
-                            .setTakenPlaces(ride.getTakenPlaces() + 1).build();
+                            .setTakenPlaces(ride.getTakenPlaces() + 1)
+                            .addCustomers(rout.getName()).build();
                     CityService.rides.put(updatedRide.getId(), updatedRide);
                     return updatedRide;
                 }
@@ -167,12 +176,12 @@ public class CityUtil {
         }
     }
 
-    public static void revertPath(Map<Integer, Ride> reservedRides, List<CityClient> shards){
-        for (Map.Entry<Integer, Ride> entry : reservedRides.entrySet()) {
-            if (entry.getKey() == getShardNumber()) {
-                revertLocalCommit(entry.getValue());
+    public static void revertPath(Map<Ride, Integer> reservedRides, List<CityClient> shards){
+        for (Map.Entry<Ride, Integer> entry : reservedRides.entrySet()) {
+            if (entry.getValue() == getShardNumber()) {
+                revertLocalCommit(entry.getKey());
             } else {
-                shards.get(entry.getKey()).revertCommit(entry.getValue());
+                shards.get(entry.getValue()).revertCommit(entry.getKey());
             }
         }
     }
