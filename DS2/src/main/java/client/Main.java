@@ -36,7 +36,7 @@ public class Main {
                 "hagar",
                 "sheffer",
                 "111",
-                "monash",
+                "haifa",
                 "karkur",
                 "1/1/21",
                 4,
@@ -61,7 +61,18 @@ public class Main {
             System.out.println(ride.getFirstName() + " " + ride.getLastName());
         }
 
-//        client1.snapshot();
+        Rest.entities.Ride restRide3 = new Rest.entities.Ride(
+                "tal",
+                "gelbard",
+                "222",
+                "haifa",
+                "karkur",
+                "1/1/21",
+                4,
+                5);
+        client3.postRide(restRide3);
+
+        client1.snapshot();
         client2.snapshot();
         client3.snapshot();
 

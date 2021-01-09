@@ -37,7 +37,7 @@ public class CityUtil {
             case "karkur":
                 return new Point(0,1);
             case "monash":
-                return new Point(0,2);
+                return new Point(1,0);
             default:
                 return new Point(1,1);
         }
@@ -75,7 +75,7 @@ public class CityUtil {
     }
 
     public static Ride noRide() {
-        return Ride.newBuilder().setId("noRide").build();
+        return Ride.newBuilder().setId("noRide").setFirstName("no").setLastName("ride").build();
     }
 
     public static List<CityClient> initShards(int port) {
@@ -141,10 +141,7 @@ public class CityUtil {
 
     public static Ride getLocalMatchingRide(Rout rout) {
         for (Ride ride : CityService.rides.values()) {
-            System.out.println("ride id : " + ride.getId());
-            System.out.println("-------------");
             if (CityUtil.isMatch(ride, rout) && rideConsensus(ride)) {
-                System.out.println("match");
                  {
                     Ride updatedRide = Ride.newBuilder(ride)
                             .setTakenPlaces(ride.getTakenPlaces() + 1)
@@ -197,7 +194,7 @@ public class CityUtil {
     }
 
     public static void printCustomerRequest(CustomerRequest req){
-        System.out.println("Customer's id: " + req.getId());
+        System.out.println("Name: " + req.getName());
         System.out.print("Path: ");
         for (String path : req.getPathList()) {
             System.out.print(" " + path);

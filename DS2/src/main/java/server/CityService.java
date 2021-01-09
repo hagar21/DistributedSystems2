@@ -26,8 +26,6 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
     public CityService(int port) {
         shards = initShards(port);
         CityService.port = port;
-        System.out.println("City server is up!");
-        System.out.println("-------------");
     }
 
     @Override
@@ -137,5 +135,6 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
         for (CustomerRequest req : customerRequests.values()) {
             printCustomerRequest(req);
         }
+        responseObserver.onCompleted();
     }
 }
