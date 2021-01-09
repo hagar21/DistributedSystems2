@@ -1,5 +1,10 @@
 package client;
 
+import com.google.protobuf.Empty;
+import generated.CustomerRequest;
+import generated.Ride;
+import generated.Rout;
+import generated.UberServiceGrpc;
 import Rest.utils.RideAlreadyExistsException;
 import generated.*;
 import io.grpc.Channel;
@@ -11,8 +16,11 @@ import Rest.utils.RideAlreadyExistsException;
 import Rest.utils.CustomerRequestAlreadyExistsException;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static server.CityUtil.noRide;
 
 public class CityClient {
     private static final Logger logger = Logger.getLogger(CityClient.class.getName());
@@ -33,7 +41,8 @@ public class CityClient {
                 .setSrcCity(restRide.getStartingPosition())
                 .setDstCity(restRide.getEndingPosition())
                 .setDate(restRide.getDepartureDate())
-                .setVacancies(restRide.getVacancies())
+                .setOfferedPlaces(restRide.getVacancies())
+                .setTakenPlaces(0)
                 .setPd(restRide.getPd()).build();
 
         try {
@@ -51,55 +60,38 @@ public class CityClient {
     }
 
     // Accept a user's request to join a ride and check if there is a relevant ride.
-    public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
+    public List<Rest.entities.Ride> postPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
+        System.out.println("city client send PostPathPlanningRequest request");
+        System.out.println("-------------");
 
-        //Creates the builder object
-        CustomerRequest.Builder builder = CustomerRequest.newBuilder();
-        //populate fields
-        builder.addAllPath(customerRequest.getPath());
-        builder.setDate(customerRequest.getDepartureDate());
-        //This should build out a request object
-        CustomerRequest request =builder.build();
+        CustomerRequest request = CustomerRequest.newBuilder()
+                .addAllPath(customerRequest.getPath())
+                .setDate(customerRequest.getDepartureDate())
+                .build();
 
-        List<Rest.entities.Ride> rides = new ArrayList<>();
+        List<Rest.entities.Ride> restRides = new ArrayList<>();
+        Iterator<Ride> grpcRides;
 
         try {
-            asyncStub.postPathPlanningRequest(request, new StreamObserver<Ride>() {
-                @Override
-                public void onNext(Ride ride) {
-                    if (!ride.isInitialized()) /* shai, if not found need to throw error */
-                    {
-                        return;
-                    }
+            grpcRides = blockingStub.postPathPlanningRequest(request);
 
-                    rides.add(new Rest.entities.Ride(
+            while(grpcRides.hasNext()) {
+                Ride ride = grpcRides.next();
+                restRides.add(new Rest.entities.Ride(
                             ride.getFirstName(),
                             ride.getLastName(),
                             ride.getPhoneNum(),
                             ride.getSrcCity(),
                             ride.getDstCity(),
                             ride.getDate(),
-                            ride.getVacancies(),
+                            ride.getOfferedPlaces(),
                             ride.getPd()));
-                }
-
-                @Override
-                public void onError(Throwable t) {
-                    System.out.println(t.getMessage());
-                    System.out.println("No ride found, path planning failed"); /* shai not ride*/
-                }
-
-                @Override
-                public void onCompleted() {
-                    System.out.println("path planning complete for client");
-                }
-            });
-
+            }
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
         }
 
-        return rides; /* shai still missing return empty in case of error */
+        return restRides; /* shai still missing return empty in case of error */
     }
 
     public Ride reserveRide(Rout rout) {
@@ -109,7 +101,7 @@ public class CityClient {
             e.printStackTrace();
         }
 
-        return CityUtil.noRide();
+        return noRide();
     }
 
 
@@ -119,6 +111,14 @@ public class CityClient {
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
         }
+    }
 
+    public void snapshot() {
+        com.google.protobuf.Empty req = Empty.newBuilder().build();
+        try {
+            blockingStub.snapshot(req);
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
     }
 }

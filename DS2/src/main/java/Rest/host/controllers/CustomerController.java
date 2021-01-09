@@ -51,7 +51,7 @@ public class CustomerController {
     @PostMapping("/customerRequests")
     List<Ride> newCustomerRequest(@RequestBody CustomerRequest newCustomerRequest)
             throws CustomerRequestAlreadyExistsException {
-        return redirectionService.PostPathPlanningRequest(newCustomerRequest);
+        return redirectionService.postPathPlanningRequest(newCustomerRequest);
     }
 
     /*

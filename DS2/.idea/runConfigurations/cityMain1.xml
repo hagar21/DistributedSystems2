@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="cityServer" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="server.CityMain" />
-    <module name="DS2.main" />
+  <configuration default="false" name="cityMain1" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="server.CityMain1" />
+    <module name="hw2.DS2.main" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="server.*" />
