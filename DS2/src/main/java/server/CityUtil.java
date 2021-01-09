@@ -69,9 +69,9 @@ public class CityUtil {
 
     private static boolean customerAlreadyInRide(Ride ride, String name) {
         for(int i = 0; i < ride.getCustomersCount(); i++) {
-            if(name.equals(ride.getCustomers(i))) return false;
+            if(name.equals(ride.getCustomers(i))) return true;
         }
-        return true;
+        return false;
     }
 
     public static Ride noRide() {
@@ -87,49 +87,49 @@ public class CityUtil {
 //
 //            shards.add(client);
 //        }
-//
-//        if (port == 8980) {
-//            String target = "localhost:" + (8981);
-//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-//            CityClient client = new CityClient(channel);
-//
-//            shards.add(client);
-//
-//            String target1 = "localhost:" + (8982);
-//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-//            CityClient client1 = new CityClient(channel1);
-//
-//            shards.add(client1);
-//        }
-//
-//        if (port == 8981) {
-//            String target = "localhost:" + (8980);
-//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-//            CityClient client = new CityClient(channel);
-//
-//            shards.add(client);
-//
-//            String target1 = "localhost:" + (8982);
-//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-//            CityClient client1 = new CityClient(channel1);
-//
-//            shards.add(client1);
-//        }
-//
-//        if (port == 8982) {
-//            String target = "localhost:" + (8980);
-//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-//            CityClient client = new CityClient(channel);
-//
-//            shards.add(client);
-//
-//            String target1 = "localhost:" + (8981);
-//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-//            CityClient client1 = new CityClient(channel1);
-//
-//            shards.add(client1);
-//        }
-        return Collections.unmodifiableList(shards);
+
+        if (port == 8990) {
+            String target = "localhost:8991";
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+
+            shards.add(client);
+
+            String target1 = "localhost:8992";
+            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+            CityClient client1 = new CityClient(channel1);
+
+            shards.add(client1);
+        }
+
+        if (port == 8991) {
+            String target = "localhost:8990";
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+
+            shards.add(client);
+
+            String target1 = "localhost:8992";
+            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+            CityClient client1 = new CityClient(channel1);
+
+            shards.add(client1);
+        }
+
+        if (port == 8992) {
+            String target = "localhost:8990";
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+
+            shards.add(client);
+
+            String target1 = "localhost:8991";
+            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+            CityClient client1 = new CityClient(channel1);
+
+            shards.add(client1);
+        }
+        return shards;
     }
 
     public static boolean rideConsensus(Ride ride) { return true; }
@@ -190,7 +190,7 @@ public class CityUtil {
         System.out.println("Name: " + ride.getFirstName() + " " + ride.getLastName());
         System.out.println("Phone number: " + ride.getPhoneNum());
         System.out.println("Date: " + ride.getDate());
-        System.out.println("Path: " + ride.getSrcCity() + "to " + ride.getDstCity());
+        System.out.println("Path: " + ride.getSrcCity() + " to " + ride.getDstCity());
         System.out.println("Offered places: " + ride.getOfferedPlaces());
         System.out.println("Taken places: " + ride.getTakenPlaces());
         System.out.println("-------------");

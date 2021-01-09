@@ -14,8 +14,6 @@ import lombok.Setter;
 
 
 @Entity
-@Getter
-@Setter
 public class CustomerRequest {
     private Long id;
     private List<String> path;
@@ -39,23 +37,31 @@ public class CustomerRequest {
     public void setId(Long id) {
         this.id = id;
     }
-//
-//    public List<String> getPath() {
-//        return this.path;
-//    }
-//
-//    public String getDepartureDate() {
-//        return this.departureDate;
-//    }
-//
-//
-//    public void setPath(List<String> path) {
-//        this.path = path;
-//    }
-//
-//    public void setDepartureDate(String departureDate) {
-//        this.departureDate = departureDate;
-//    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<String> getPath() {
+        return this.path;
+    }
+
+    public String getDepartureDate() {
+        return this.departureDate;
+    }
+
+
+    public void setPath(List<String> path) {
+        this.path = path;
+    }
+
+    public void setDepartureDate(String departureDate) {
+        this.departureDate = departureDate;
+    }
 
     @Override
     public boolean equals(Object o) {
