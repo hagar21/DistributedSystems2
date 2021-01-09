@@ -14,6 +14,8 @@ import lombok.Setter;
 
 
 @Entity
+@Getter
+@Setter
 public class CustomerRequest {
     private Long id;
     private List<String> path;
@@ -33,6 +35,10 @@ public class CustomerRequest {
     public Long getId() {
         return this.id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 //
 //    public List<String> getPath() {
 //        return this.path;
@@ -42,9 +48,6 @@ public class CustomerRequest {
 //        return this.departureDate;
 //    }
 //
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
 //
 //    public void setPath(List<String> path) {
 //        this.path = path;

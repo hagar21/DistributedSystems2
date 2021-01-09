@@ -30,7 +30,7 @@ public class CityServer {
      */
     public CityServer(ServerBuilder<?> serverBuilder, int port) {
         this.port = port;
-        server = serverBuilder.addService(port)
+        server = serverBuilder.addService(new CityService(port))
                 .build();
         this.city = "mock";
 
