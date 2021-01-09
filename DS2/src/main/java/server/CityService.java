@@ -26,8 +26,6 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
     public CityService(int port) {
         shards = initShards(port);
         CityService.port = port;
-        System.out.println("City server is up!");
-        System.out.println("-------------");
     }
 
     @Override
@@ -57,24 +55,26 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
             CustomerRequest request, StreamObserver<Ride> responseObserver) {
         System.out.println("City server got postPathPlanningRequest request");
         System.out.println("-------------");
-        // map of (shardId: ride)
-        Map<Integer, Ride> reservedRides = new HashMap<>();
+        // map of (ride: shardId)
+        Map<Ride, Integer> reservedRides = new HashMap<>();
         String src, dst;
+        Rout.Builder routBuilder = Rout.newBuilder()
+                .setName(request.getName())
+                .setDate(request.getDate());
         Rout rout;
 
         for(int i = 0; i < request.getPathCount() - 1; i++) {
             src = request.getPath(i);
             dst = request.getPath(i + 1);
 
-            rout = Rout.newBuilder()
-                    .setDate(request.getDate())
+            rout = routBuilder
                     .setSrcCity(src)
                     .setDstCity(dst).build();
 
             // check for relevant rides in local db
             Ride foundRide = getLocalMatchingRide(rout);
             if (!foundRide.equals(noRide())) {
-                reservedRides.put(getShardNumber(), foundRide);
+                reservedRides.put(foundRide, getShardNumber());
                 continue;
             }
 
@@ -87,16 +87,16 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
                 responseObserver.onCompleted();
                 return;
             }
-            reservedRides.put(remoteRide.shardId, remoteRide.ride);
+            reservedRides.put(remoteRide.ride, remoteRide.shardId);
         }
 
         // Entire path satisfied
-        String id = request.getDate() + request.getPathList().toString() + request.getDate();
-        CustomerRequest updatedRequest = CustomerRequest.newBuilder(request).addAllRides(reservedRides.values()).setId(id).build();
+        String id = request.getName() + request.getPathList().toString() + request.getDate();
+        CustomerRequest updatedRequest = CustomerRequest.newBuilder(request).addAllRides(reservedRides.keySet()).setId(id).build();
         if(customerConsensus(updatedRequest)) {
             customerRequests.put(updatedRequest.getId(), updatedRequest);
-            for (Map.Entry<Integer, Ride> entry : reservedRides.entrySet()) {
-                responseObserver.onNext(entry.getValue());
+            for (Ride ride : reservedRides.keySet()) {
+                responseObserver.onNext(ride);
             }
         }
 
@@ -135,5 +135,6 @@ public class CityService extends UberServiceGrpc.UberServiceImplBase {
         for (CustomerRequest req : customerRequests.values()) {
             printCustomerRequest(req);
         }
+        responseObserver.onCompleted();
     }
 }

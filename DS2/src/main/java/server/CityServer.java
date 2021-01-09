@@ -28,7 +28,6 @@ public class CityServer {
 
     public CityServer(int port) throws IOException {
         this(ServerBuilder.forPort(port), port);
-        System.out.println("CityServer c'tor1 called");
     }
 
     /**
@@ -36,13 +35,11 @@ public class CityServer {
      */
     public CityServer(ServerBuilder<?> serverBuilder, int port) {
         this.port = port;
-        this.server = serverBuilder.addService(new CityService(port))
+        server = serverBuilder.addService(port)
                 .build();
         this.city = "mock";
 
-        System.out.println("CityServer c'tor2 called");
-
-        //ConnectToZk();
+        // ConnectToZk();
     }
 
     public void ConnectToZk() {

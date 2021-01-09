@@ -9,23 +9,41 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
 @Entity
 public class CustomerRequest {
     private Long id;
     private List<String> path;
     private String departureDate;
+    private String name;
 
     public CustomerRequest() {}
 
-    public CustomerRequest(List<String> path,
+    public CustomerRequest(String name, List<String> path,
                            String departureDate) {
         this.path = path;
         this.departureDate = departureDate;
+        this.name = name;
     }
 
     @Id
     public Long getId() {
         return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<String> getPath() {
@@ -36,11 +54,8 @@ public class CustomerRequest {
         return this.departureDate;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public void setPath(ArrayList<String> path) {
+    public void setPath(List<String> path) {
         this.path = path;
     }
 

@@ -37,7 +37,7 @@ public class CityUtil {
             case "karkur":
                 return new Point(0,1);
             case "monash":
-                return new Point(0,2);
+                return new Point(1,0);
             default:
                 return new Point(1,1);
         }
@@ -46,6 +46,7 @@ public class CityUtil {
     public static boolean isMatch(Ride ride, Rout rout) {
         if(!ride.getDate().equals(rout.getDate())) return false;
         if(ride.getOfferedPlaces() == ride.getTakenPlaces()) return false;
+        if(customerAlreadyInRide(ride, rout.getName())) return false;
 
         Point rideSrc = mapCityToLocation(ride.getSrcCity());
         Point rideDst = mapCityToLocation(ride.getDstCity());
@@ -66,8 +67,15 @@ public class CityUtil {
         return (numerator / denominator) <= ride.getPd();
     }
 
+    private static boolean customerAlreadyInRide(Ride ride, String name) {
+        for(int i = 0; i < ride.getCustomersCount(); i++) {
+            if(name.equals(ride.getCustomers(i))) return true;
+        }
+        return false;
+    }
+
     public static Ride noRide() {
-        return Ride.newBuilder().setId("noRide").build();
+        return Ride.newBuilder().setId("noRide").setFirstName("no").setLastName("ride").build();
     }
 
     public static List<CityClient> initShards(int port) {
@@ -79,49 +87,49 @@ public class CityUtil {
 //
 //            shards.add(client);
 //        }
-//
-//        if (port == 8980) {
-//            String target = "localhost:" + (8981);
-//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-//            CityClient client = new CityClient(channel);
-//
-//            shards.add(client);
-//
-//            String target1 = "localhost:" + (8982);
-//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-//            CityClient client1 = new CityClient(channel1);
-//
-//            shards.add(client1);
-//        }
-//
-//        if (port == 8981) {
-//            String target = "localhost:" + (8980);
-//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-//            CityClient client = new CityClient(channel);
-//
-//            shards.add(client);
-//
-//            String target1 = "localhost:" + (8982);
-//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-//            CityClient client1 = new CityClient(channel1);
-//
-//            shards.add(client1);
-//        }
-//
-//        if (port == 8982) {
-//            String target = "localhost:" + (8980);
-//            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-//            CityClient client = new CityClient(channel);
-//
-//            shards.add(client);
-//
-//            String target1 = "localhost:" + (8981);
-//            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-//            CityClient client1 = new CityClient(channel1);
-//
-//            shards.add(client1);
-//        }
-        return Collections.unmodifiableList(shards);
+
+        if (port == 8990) {
+            String target = "localhost:8991";
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+
+            shards.add(client);
+
+            String target1 = "localhost:8992";
+            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+            CityClient client1 = new CityClient(channel1);
+
+            shards.add(client1);
+        }
+
+        if (port == 8991) {
+            String target = "localhost:8990";
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+
+            shards.add(client);
+
+            String target1 = "localhost:8992";
+            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+            CityClient client1 = new CityClient(channel1);
+
+            shards.add(client1);
+        }
+
+        if (port == 8992) {
+            String target = "localhost:8990";
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+
+            shards.add(client);
+
+            String target1 = "localhost:8991";
+            ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+            CityClient client1 = new CityClient(channel1);
+
+            shards.add(client1);
+        }
+        return shards;
     }
 
     public static boolean rideConsensus(Ride ride) { return true; }
@@ -133,13 +141,11 @@ public class CityUtil {
 
     public static Ride getLocalMatchingRide(Rout rout) {
         for (Ride ride : CityService.rides.values()) {
-            System.out.println("ride id : " + ride.getId());
-            System.out.println("-------------");
             if (CityUtil.isMatch(ride, rout) && rideConsensus(ride)) {
-                System.out.println("match");
                  {
                     Ride updatedRide = Ride.newBuilder(ride)
-                            .setTakenPlaces(ride.getTakenPlaces() + 1).build();
+                            .setTakenPlaces(ride.getTakenPlaces() + 1)
+                            .addCustomers(rout.getName()).build();
                     CityService.rides.put(updatedRide.getId(), updatedRide);
                     return updatedRide;
                 }
@@ -167,12 +173,12 @@ public class CityUtil {
         }
     }
 
-    public static void revertPath(Map<Integer, Ride> reservedRides, List<CityClient> shards){
-        for (Map.Entry<Integer, Ride> entry : reservedRides.entrySet()) {
-            if (entry.getKey() == getShardNumber()) {
-                revertLocalCommit(entry.getValue());
+    public static void revertPath(Map<Ride, Integer> reservedRides, List<CityClient> shards){
+        for (Map.Entry<Ride, Integer> entry : reservedRides.entrySet()) {
+            if (entry.getValue() == getShardNumber()) {
+                revertLocalCommit(entry.getKey());
             } else {
-                shards.get(entry.getKey()).revertCommit(entry.getValue());
+                shards.get(entry.getValue()).revertCommit(entry.getKey());
             }
         }
     }
@@ -181,14 +187,14 @@ public class CityUtil {
         System.out.println("Name: " + ride.getFirstName() + " " + ride.getLastName());
         System.out.println("Phone number: " + ride.getPhoneNum());
         System.out.println("Date: " + ride.getDate());
-        System.out.println("Path: " + ride.getSrcCity() + "to " + ride.getDstCity());
+        System.out.println("Path: " + ride.getSrcCity() + " to " + ride.getDstCity());
         System.out.println("Offered places: " + ride.getOfferedPlaces());
         System.out.println("Taken places: " + ride.getTakenPlaces());
         System.out.println("-------------");
     }
 
     public static void printCustomerRequest(CustomerRequest req){
-        System.out.println("Customer's id: " + req.getId());
+        System.out.println("Name: " + req.getName());
         System.out.print("Path: ");
         for (String path : req.getPathList()) {
             System.out.print(" " + path);

@@ -15,11 +15,11 @@ public class Main {
 
         String target2 = "localhost:8991";
         ManagedChannel channel2 = ManagedChannelBuilder.forTarget(target2).usePlaintext().build();
-//        CityClient client2 = new CityClient(channel2);
+        CityClient client2 = new CityClient(channel2);
 
         String target3 = "localhost:8992";
         ManagedChannel channel3 = ManagedChannelBuilder.forTarget(target3).usePlaintext().build();
-//        CityClient client3 = new CityClient(channel3);
+        CityClient client3 = new CityClient(channel3);
 
         // Call server streaming call
         Rest.entities.Ride restRide1 = new Rest.entities.Ride(
@@ -36,13 +36,13 @@ public class Main {
                 "hagar",
                 "sheffer",
                 "111",
-                "monash",
+                "haifa",
                 "karkur",
                 "1/1/21",
                 4,
                 5);
         client1.postRide(restRide1);
-        client1.postRide(restRide2);
+        client2.postRide(restRide2);
 
         List<String> path = new ArrayList<String>();
         path.add("haifa");
@@ -51,9 +51,9 @@ public class Main {
 
 
         Rest.entities.CustomerRequest customerRequest = new Rest.entities.CustomerRequest(
-                path, "1/1/21");
+                "tal", path, "1/1/21");
 
-        List<Rest.entities.Ride> ridesList = client1.postPathPlanningRequest(customerRequest);
+        List<Rest.entities.Ride> ridesList = client3.postPathPlanningRequest(customerRequest);
 
         System.out.println("Path planning returned:");
 
@@ -61,7 +61,20 @@ public class Main {
             System.out.println(ride.getFirstName() + " " + ride.getLastName());
         }
 
+        Rest.entities.Ride restRide3 = new Rest.entities.Ride(
+                "tal",
+                "gelbard",
+                "222",
+                "haifa",
+                "karkur",
+                "1/1/21",
+                4,
+                5);
+        client3.postRide(restRide3);
+
         client1.snapshot();
+        client2.snapshot();
+        client3.snapshot();
 
         System.out.println("Waiting");
         Scanner sc= new Scanner(System.in);

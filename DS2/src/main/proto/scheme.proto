@@ -36,19 +36,22 @@ message Ride {
   int32 offeredPlaces = 8;
   int32 takenPlaces = 9;
   int32 pd = 10;
+  repeated string customers = 11;
 }
 
 message CustomerRequest {
   string id = 1;
-  repeated string path = 2;
-  string date = 3;
-  repeated Ride rides = 4;
+  string name = 2;
+  repeated string path = 3;
+  string date = 4;
+  repeated Ride rides = 5;
 }
 
 message Rout {
-  string date = 1;
-  string srcCity = 2;
-  string dstCity = 3;
+  string name = 1;
+  string date = 2;
+  string srcCity = 3;
+  string dstCity = 4;
 }
 
 message Result {
