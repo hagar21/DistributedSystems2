@@ -23,6 +23,12 @@ service UberService {
 
   // Returns all Rides in the database
   rpc Snapshot(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+
+  // City request Ride from different city
+  rpc CityRequestRide(CityRequest) returns (Ride) {}
+
+  // City revert request Ride from different city
+  rpc CityRevertRequestRide(CityRevertRequest) returns (google.protobuf.Empty) {}
 }
 
 message Ride {
@@ -66,4 +72,14 @@ message Rout {
 
 message Result {
   bool isSuccess = 1;
+}
+
+message CityRequest {
+  string destCityName = 1;
+  Rout rout = 2;
+}
+
+message CityRevertRequest {
+  string destCityName = 1;
+  string rideId = 2;
 }

@@ -28,6 +28,7 @@ import ZkService.Listeners.LiveNodeChangeListener;
 import static ZkService.ZkService.ELECTION_NODE;
 import static ZkService.ZkService.LIVE_NODES;
 import static ZkService.utils.Host.getHostPostOfServer;
+import static server.CityUtil.*;
 
 public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private static final Logger logger = Logger.getLogger(CityServer.class.getName());
@@ -265,6 +266,18 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             printCustomerRequest(req);
         }
         responseObserver.onCompleted();
+    }
+
+    public Ride cityRequestRide(CityRequest cityRequest) {
+
+        // test if with have a ride to go with it - only locally
+        return getLocalMatchingRide(cityRequest.getRout());
+    }
+
+    public void CityRevertRequestRide(CityRevertRequest revertRequest) {
+        String rideId = revertRequest.getRideId();
+
+        // shai ++
     }
 
     private Boolean isNodeLeader(){

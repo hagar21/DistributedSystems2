@@ -5,6 +5,10 @@ import generated.CustomerRequest;
 import generated.Ride;
 import generated.Rout;
 import generated.UberServiceGrpc;
+import generated.CityRequest;
+
+import client.utils.*;
+
 import Rest.utils.RideAlreadyExistsException;
 import generated.*;
 import io.grpc.Channel;
@@ -18,13 +22,19 @@ import Rest.utils.CustomerRequestAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
+
+import static server.CityServer.*;
 
 public class CityClient {
     private static final Logger logger = Logger.getLogger(CityClient.class.getName());
 
     private final UberServiceGrpc.UberServiceBlockingStub blockingStub;
     private final UberServiceGrpc.UberServiceStub asyncStub;
+    private final ConcurrentMap<String, LBCityConnections> CityConnections =
+            new ConcurrentHashMap<>();
 
     public CityClient(Channel channel) {
         blockingStub = UberServiceGrpc.newBlockingStub(channel);
@@ -99,7 +109,7 @@ public class CityClient {
             e.printStackTrace();
         }
 
-        return CityServer.noRide();
+        return noRide();
     }
 
 
@@ -118,5 +128,33 @@ public class CityClient {
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
         }
+    }
+
+    // Accept a user's request to join a ride and check if there is a relevant ride.
+    public Ride cityRequestRide(CityRequest cityRequest) {
+        System.out.println("LB got cityRequest to dest city " + cityRequest.getDestCityName() + " sending city request");
+        System.out.println("------------");
+
+        if (!CityConnections.containsKey(cityRequest.getDestCityName())) {
+            System.out.println("error: LB got cityRequest to dest city " + cityRequest.getDestCityName() + " not in system");
+            return noRide(); // Shai Ilegal ride - so it won't keep looking
+        }
+
+        // Shai should be done with lock
+        CityServer destService = CityConnections.get(cityRequest.getDestCityName()).getNextService();
+        return destService.cityRequestRide(cityRequest);
+    }
+
+    public void CityRevertRequestRide(CityRevertRequest revertRequest) {
+        System.out.println("LB got CityRevertRequest to dest city " + revertRequest.getDestCityName() + " sending city request");
+        System.out.println("------------");
+
+        if (!CityConnections.containsKey(revertRequest.getDestCityName())) {
+            System.out.println("error: LB got cityRequest to dest city " + revertRequest.getDestCityName() + " not in system");
+        }
+
+        // Shai should be done with lock
+        CityServer destService = CityConnections.get(revertRequest.getDestCityName()).getNextService();
+        destService.cityRevertRequestRide(revertRequest);
     }
 }
