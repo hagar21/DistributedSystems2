@@ -276,12 +276,6 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         return getLocalMatchingRide(cityRequest.getRout());
     }
 
-    public void CityRevertRequestRide(CityRevertRequest revertRequest) {
-        String rideId = revertRequest.getRideId();
-
-        // shai ++
-    }
-
     private Boolean isNodeLeader(){
         return zkService.getLeaderNodeData(shardName).equals(this.HostName);
     }
@@ -409,11 +403,14 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     public static ShardRide getRemoteMatchingRide(List<CityClient> shards, Rout rout) {
         int index = 0;
         for(CityClient client : shards){
+            /*
             Ride ride = client.reserveRide(rout);
             if(!ride.equals(noRide())) {
                 return new ShardRide(index, ride);
             }
             index++;
+            Shai - send request to LB
+             */
         }
         return new ShardRide(-1, noRide());
     }

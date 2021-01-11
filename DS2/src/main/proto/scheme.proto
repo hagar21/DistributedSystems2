@@ -81,5 +81,5 @@ message CityRequest {
 
 message CityRevertRequest {
   string destCityName = 1;
-  string rideId = 2;
+  Ride ride = 2;
 }

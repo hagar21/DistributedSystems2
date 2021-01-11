@@ -13,13 +13,7 @@ import Rest.utils.RideAlreadyExistsException;
 import generated.*;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
-import io.grpc.stub.StreamObserver;
 import server.CityServer;
-import server.CityService;
-import server.CityUtil;
-
-import Rest.utils.RideAlreadyExistsException;
-import Rest.utils.CustomerRequestAlreadyExistsException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,7 +29,7 @@ public class CityClient {
 
     private final UberServiceGrpc.UberServiceBlockingStub blockingStub;
     private final UberServiceGrpc.UberServiceStub asyncStub;
-    private final ConcurrentMap<String, LBCityConnections> CityConnections =
+    private final ConcurrentMap<String, LBShardConnections> shardConnections =
             new ConcurrentHashMap<>();
 
     public CityClient(Channel channel) {
@@ -137,13 +131,12 @@ public class CityClient {
         System.out.println("LB got cityRequest to dest city " + cityRequest.getDestCityName() + " sending city request");
         System.out.println("------------");
 
-        if (!CityConnections.containsKey(cityRequest.getDestCityName())) {
+        if (!shardConnections.containsKey(cityRequest.getDestCityName())) {
             System.out.println("error: LB got cityRequest to dest city " + cityRequest.getDestCityName() + " not in system");
             return noRide(); // Shai Ilegal ride - so it won't keep looking
         }
 
-        // Shai should be done with lock
-        CityServer destService = CityConnections.get(cityRequest.getDestCityName()).getNextService();
+        CityServer destService = shardConnections.get(cityRequest.getDestCityName()).getNextService();
         return destService.cityRequestRide(cityRequest);
     }
 
@@ -151,12 +144,12 @@ public class CityClient {
         System.out.println("LB got CityRevertRequest to dest city " + revertRequest.getDestCityName() + " sending city request");
         System.out.println("------------");
 
-        if (!CityConnections.containsKey(revertRequest.getDestCityName())) {
+        if (!shardConnections.containsKey(revertRequest.getDestCityName())) {
             System.out.println("error: LB got cityRequest to dest city " + revertRequest.getDestCityName() + " not in system");
         }
 
         // Shai should be done with lock
-        CityServer destService = CityConnections.get(revertRequest.getDestCityName()).getNextService();
-        destService.cityRevertRequestRide(revertRequest);
+        CityServer destService = shardConnections.get(revertRequest.getDestCityName()).getNextService();
+        destService.revertCommit(revertRequest.getRide());
     }
 }
