@@ -28,7 +28,6 @@ import ZkService.Listeners.LiveNodeChangeListener;
 import static ZkService.ZkService.ELECTION_NODE;
 import static ZkService.ZkService.LIVE_NODES;
 import static ZkService.utils.Host.getHostPostOfServer;
-import static server.CityUtil.*;
 
 public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private static final Logger logger = Logger.getLogger(CityServer.class.getName());
