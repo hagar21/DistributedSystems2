@@ -21,4 +21,10 @@ public final class ClusterInfo {
     private List<String> liveNodes = new ArrayList<>();
 
     private String leader;
+
+    public List<String> getLiveNodes() { return this.liveNodes; }
+    public void setLiveNodes(List<String> ln) { this.liveNodes = ln; }
+
+    public String getLeader() { return this.leader; }
+    public void setLeader(String l) { this.leader = l; }
 }

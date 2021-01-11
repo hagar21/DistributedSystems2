@@ -10,7 +10,7 @@ import generated.*;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
-import server.CityUtil;
+import server.CityServer;
 
 import Rest.utils.RideAlreadyExistsException;
 import Rest.utils.CustomerRequestAlreadyExistsException;
@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static server.CityUtil.noRide;
 
 public class CityClient {
     private static final Logger logger = Logger.getLogger(CityClient.class.getName());
@@ -101,7 +99,7 @@ public class CityClient {
             e.printStackTrace();
         }
 
-        return noRide();
+        return CityServer.noRide();
     }
 
 

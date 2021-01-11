@@ -1,5 +1,6 @@
 package server;
 
+import ZkService.utils.Host;
 import client.CityClient;
 import generated.*;
 import io.grpc.ManagedChannel;
@@ -27,7 +28,6 @@ import ZkService.Listeners.LiveNodeChangeListener;
 import static ZkService.ZkService.ELECTION_NODE;
 import static ZkService.ZkService.LIVE_NODES;
 import static ZkService.utils.Host.getHostPostOfServer;
-import static server.CityUtil.*;
 
 public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private static final Logger logger = Logger.getLogger(CityServer.class.getName());
@@ -46,10 +46,6 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private final ConcurrentMap<String, CustomerRequest> customerRequests =
             new ConcurrentHashMap<>();
 
-//    public CityServer(int port) throws IOException {
-//        this(ServerBuilder.forPort(port), port);
-//    }
-
     /**
      * Create a Uber server using serverBuilder as a base and features as data.
      */
@@ -61,8 +57,9 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         this.server = ServerBuilder.forPort(Integer.parseInt(port))
                 .addService(this)
                 .build();
-//        HostName = HostIP.getIp()+":" + port;
-        // ConnectToZk(hostList);
+        // HostName = HostIP.getIp()+":" + port;
+        ConnectToZk(hostList);
+
     }
 
     public void ConnectToZk(String hostList) {
@@ -75,7 +72,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // zkService.createAllParentNodes();
 
             // create all parent nodes /election/city, /all_nodes/city, /live_nodes/city
-            zkService.createAllParentNodes(city);
+            zkService.createAllParentNodes(shardName);
 
             /*
             // add this server to cluster by creating znode under /all_nodes, with name as "host:port"
@@ -90,8 +87,8 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // create ephemeral sequential znode in /election/city
             // then get children of  /election/city and fetch least sequenced znode, among children znodes
             System.out.println("ConnectToZk createNodeInElectionZnode");
-            zkService.createNodeInElectionZnode(getHostPostOfServer(), city);
-            ClusterInfo.getClusterInfo().setLeader(zkService.getLeaderNodeData(city));
+            zkService.createNodeInElectionZnode(getHostPostOfServer(), shardName);
+            ClusterInfo.getClusterInfo().setLeader(zkService.getLeaderNodeData(shardName));
 
             // If will will support server coming back to life
             // syncDataFromLeader();
@@ -99,23 +96,24 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // add child znode under /live_node, to tell other servers that this server is ready to serve
             // read request
             System.out.println("ConnectToZk addToLiveNodes");
-            zkService.addToLiveNodes(getHostPostOfServer(), "I am alive", city);
+            zkService.addToLiveNodes(getHostPostOfServer(), "I am alive", shardName);
             System.out.println("Shai check ip host wasn't null");
             ClusterInfo.getClusterInfo().getLiveNodes().clear();
-            ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes(city));
+            ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes(shardName));
 
             // register watchers for leader change, live nodes change, all nodes change and zk session
             // state change
-            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + city, new LeaderChangeListener());
-            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + city, new LiveNodeChangeListener());
+            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener());
+            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener());
 
-            System.out.println("Finished ConnectToZk for city " + city + " host " + getHostPostOfServer());
+            System.out.println("Finished ConnectToZk for city " + shardName + " host " + getHostPostOfServer());
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Startup failed!", e);
         }
     }
+
     /**
      * Start serving requests.
      */
@@ -125,7 +123,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         }catch (Exception e){
             e.printStackTrace();
         }
-        logger.info("Server started, listening on " + port);
+        logger.info("Server started, listening on " + HostName);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -218,7 +216,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
                 responseObserver.onCompleted();
                 return;
             }
-            reservedRides.put(remoteRide.ride, remoteRide.shardId);
+            reservedRides.put(remoteRide.ride, remoteRide.shardName);
         }
 
         // Entire path satisfied
@@ -273,7 +271,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         return zkService.getLeaderNodeData(shardName).equals(this.HostName);
     }
 
-    public static Point mapCityToLocation(String city) {
+    private Point mapCityToLocation(String city) {
         switch(city) {
             case "haifa":
                 return new Point(0,0);
@@ -286,7 +284,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         }
     }
 
-    public static boolean isMatch(Ride ride, Rout rout) {
+    private boolean isMatch(Ride ride, Rout rout) {
         if(!ride.getDate().equals(rout.getDate())) return false;
         if(ride.getOfferedPlaces() == ride.getTakenPlaces()) return false;
         if(customerAlreadyInRide(ride, rout.getName())) return false;
@@ -310,7 +308,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         return (numerator / denominator) <= ride.getPd();
     }
 
-    private static boolean customerAlreadyInRide(Ride ride, String name) {
+    private boolean customerAlreadyInRide(Ride ride, String name) {
         for(int i = 0; i < ride.getCustomersCount(); i++) {
             if(name.equals(ride.getCustomers(i))) return true;
         }
@@ -321,7 +319,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         return Ride.newBuilder().setId("noRide").setFirstName("no").setLastName("ride").build();
     }
 
-    public static List<CityClient> initShards(int port) {
+    private List<CityClient> initShards(int port) {
         List<CityClient> shards = new ArrayList<>();
 //        for(int i = 0; i < shardsNumber; i++) {
 //            String target = "localhost:" + (8980 + i);
@@ -375,25 +373,23 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         return shards;
     }
 
-    public static boolean rideConsensus(Ride ride) { return true; }
-    public static boolean customerConsensus(CustomerRequest req) { return true; }
+    public boolean rideConsensus(Ride ride) { return true; }
+    public boolean customerConsensus(CustomerRequest req) { return true; }
 
     private Ride getLocalMatchingRide(Rout rout) {
         for (Ride ride : this.rides.values()) {
             if (isMatch(ride, rout) && rideConsensus(ride)) {
-                {
                     Ride updatedRide = Ride.newBuilder(ride)
                             .setTakenPlaces(ride.getTakenPlaces() + 1)
                             .addCustomers(rout.getName()).build();
                     this.rides.put(updatedRide.getId(), updatedRide);
                     return updatedRide;
-                }
             }
         }
         return noRide();
     }
 
-    public static ShardRide getRemoteMatchingRide(List<CityClient> shards, Rout rout) {
+    private ShardRide getRemoteMatchingRide(List<CityClient> shards, Rout rout) {
         int index = 0;
         for(CityClient client : shards){
             Ride ride = client.reserveRide(rout);
@@ -405,7 +401,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         return new ShardRide(-1, noRide());
     }
 
-    public void revertLocalCommit(Ride ride) {
+    private void revertLocalCommit(Ride ride) {
         Ride updatedRide = Ride.newBuilder(ride).setTakenPlaces(ride.getTakenPlaces() - 1).build();
         if(rideConsensus(updatedRide)) {
             this.rides.put(updatedRide.getId(), updatedRide);
@@ -422,7 +418,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         }
     }
 
-    public static void printRide(Ride ride){
+    private void printRide(Ride ride){
         System.out.println("Name: " + ride.getFirstName() + " " + ride.getLastName());
         System.out.println("Phone number: " + ride.getPhoneNum());
         System.out.println("Date: " + ride.getDate());
@@ -432,7 +428,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         System.out.println("-------------");
     }
 
-    public static void printCustomerRequest(CustomerRequest req){
+    private void printCustomerRequest(CustomerRequest req){
         System.out.println("Name: " + req.getName());
         System.out.print("Path: ");
         for (String path : req.getPathList()) {
