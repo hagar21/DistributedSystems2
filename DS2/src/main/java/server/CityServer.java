@@ -11,6 +11,12 @@ import java.util.logging.Logger;
 import ZkService.ZkServiceImpl;
 import ZkService.utils.ClusterInfo;
 import org.I0Itec.zkclient.IZkChildListener;
+import ZkService.Listeners.LeaderChangeListener;
+import ZkService.Listeners.LiveNodeChangeListener;
+
+import static ZkService.ZkService.ELECTION_NODE;
+import static ZkService.ZkService.LIVE_NODES;
+import static ZkService.utils.Host.getHostPostOfServer;
 
 public class CityServer {
     private static final Logger logger = Logger.getLogger(CityServer.class.getName());
@@ -30,7 +36,7 @@ public class CityServer {
      */
     public CityServer(ServerBuilder<?> serverBuilder, int port) {
         this.port = port;
-        server = serverBuilder.addService(new CityService(port))
+        server = serverBuilder.addService(port)
                 .build();
         this.city = "mock";
         this.service_up = false;
@@ -41,13 +47,15 @@ public class CityServer {
     public void ConnectToZk() {
         try {
 
-            this.zkService = new ZkServiceImpl();
+            this.zkService = new ZkServiceImpl("localhost:5050"); // one city
 
             // create all parent nodes /election, /all_nodes, /live_nodes
             // Shai - not sure we need to create root
             // zkService.createAllParentNodes();
 
-            zkService.createAllParentNodes(this.city);
+            // create all parent nodes /election/city, /all_nodes/city, /live_nodes/city
+            zkService.createAllParentNodes(city);
+
             /*
             // add this server to cluster by creating znode under /all_nodes, with name as "host:port"
             zkService.addToAllNodes(getHostPostOfServer(), "cluster node");
@@ -56,40 +64,32 @@ public class CityServer {
 
             // check which leader election algorithm(1 or 2) need is used
             String leaderElectionAlgo = System.getProperty("leader.algo");
+            */
 
-            // if approach 2 - create ephemeral sequential znode in /election
-            // then get children of  /election and fetch least sequenced znode, among children znodes
-            if (isEmpty(leaderElectionAlgo) || "2".equals(leaderElectionAlgo)) {
-                zkService.createNodeInElectionZnode(getHostPostOfServer());
-                ClusterInfo.getClusterInfo().setMaster(zkService.getLeaderNodeData2());
-            } else {
-                if (!zkService.masterExists()) {
-                    zkService.electForMaster();
-                } else {
-                    ClusterInfo.getClusterInfo().setMaster(zkService.getLeaderNodeData());
-                }
-            }
+            // create ephemeral sequential znode in /election/city
+            // then get children of  /election/city and fetch least sequenced znode, among children znodes
+            System.out.println("ConnectToZk createNodeInElectionZnode");
+            zkService.createNodeInElectionZnode(getHostPostOfServer(), city);
+            ClusterInfo.getClusterInfo().setLeader(zkService.getLeaderNodeData(city));
 
-            // sync person data from master
-            syncDataFromMaster();
+            // If will will support server coming back to life
+            // syncDataFromLeader();
 
             // add child znode under /live_node, to tell other servers that this server is ready to serve
             // read request
-            zkService.addToLiveNodes(getHostPostOfServer(), "cluster node");
+            System.out.println("ConnectToZk addToLiveNodes");
+            zkService.addToLiveNodes(getHostPostOfServer(), "I am alive", city);
+            System.out.println("Shai check ip host wasn't null");
             ClusterInfo.getClusterInfo().getLiveNodes().clear();
-            ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes());
+            ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes(city));
 
             // register watchers for leader change, live nodes change, all nodes change and zk session
             // state change
-            if (isEmpty(leaderElectionAlgo) || "2".equals(leaderElectionAlgo)) {
-                zkService.registerChildrenChangeWatcher(ELECTION_NODE_2, masterChangeListener);
-            } else {
-                zkService.registerChildrenChangeWatcher(ELECTION_NODE, masterChangeListener);
-            }
-            zkService.registerChildrenChangeWatcher(LIVE_NODES, liveNodeChangeListener);
-            zkService.registerChildrenChangeWatcher(ALL_NODES, allNodesChangeListener);
-            zkService.registerZkSessionStateListener(connectStateChangeListener);
-             */
+            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + city, new LeaderChangeListener());
+            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + city, new LiveNodeChangeListener());
+
+            System.out.println("Finished ConnectToZk for city " + city + " host " + getHostPostOfServer());
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Startup failed!", e);
