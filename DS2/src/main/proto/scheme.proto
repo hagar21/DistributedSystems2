@@ -37,6 +37,11 @@ message Ride {
   int32 takenPlaces = 9;
   int32 pd = 10;
   repeated string customers = 11;
+  string time = 12; //default = ""
+  bool leader_sent = 13; //default = false
+  string accepted_by = 14; //default = false
+  bool vote_accepted = 15; //default = false
+  bool leader_done = 16; //default = false
 }
 
 message CustomerRequest {
@@ -45,6 +50,11 @@ message CustomerRequest {
   repeated string path = 3;
   string date = 4;
   repeated Ride rides = 5;
+  string time = 6; //default = ""
+  bool leader_sent = 7; //default = false
+  string accepted_by = 8; //default = false
+  bool vote_accepted = 9; //default = false
+  bool leader_done = 10; //default = false
 }
 
 message Rout {
