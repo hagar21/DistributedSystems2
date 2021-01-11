@@ -3,11 +3,11 @@ package server;
 import generated.Ride;
 
 public class ShardRide {
-    int shardId;
+    String shardName;
     Ride ride;
 
-    public ShardRide(int s, Ride r) {
-        shardId = s;
+    public ShardRide(String s, Ride r) {
+        shardName = s;
         ride = r;
     }
 }
