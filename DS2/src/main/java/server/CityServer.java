@@ -19,6 +19,7 @@ public class CityServer {
     private final Server server;
     private ZkServiceImpl zkService;
     private String city;
+    private Boolean service_up;
 
     public CityServer(int port) throws IOException {
         this(ServerBuilder.forPort(port), port);
@@ -32,6 +33,7 @@ public class CityServer {
         server = serverBuilder.addService(new CityService(port))
                 .build();
         this.city = "mock";
+        this.service_up = false;
 
         // ConnectToZk();
     }
