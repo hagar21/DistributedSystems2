@@ -41,28 +41,45 @@ public class CityClient {
         asyncStub = UberServiceGrpc.newStub(channel);
     }
 
-    public void postRide(Rest.entities.Ride restRide) {
-        Ride ride = Ride.newBuilder()
-                .setFirstName(restRide.getFirstName())
-                .setLastName(restRide.getLastName())
-                .setPhoneNum(restRide.getPhoneNumber())
-                .setSrcCity(restRide.getStartingPosition())
-                .setDstCity(restRide.getEndingPosition())
-                .setDate(restRide.getDepartureDate())
-                .setOfferedPlaces(restRide.getVacancies())
-                .setTakenPlaces(0)
-                .setPd(restRide.getPd()).build();
-
+    public boolean postRide(Ride ride) {
         try {
             Result result = blockingStub.postRide(ride);
-            if (!result.getIsSuccess())
-            {
-                throw new Rest.utils.RideAlreadyExistsException();
-            }
+
             System.out.println("city client send post ride request");
             System.out.println("-------------");
+            return result.getIsSuccess();
 
-        } catch (StatusRuntimeException | RideAlreadyExistsException e) {
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean postCustomerRequest(CustomerRequest request) {
+        try {
+            Result result = blockingStub.postCustomerRequest(request);
+
+            System.out.println("city client send post ride request");
+            System.out.println("-------------");
+            return result.getIsSuccess();
+
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public void postRide(Rest.entities.Ride ride) {
+        try {
+            boolean result = postRide(restToGrpcRide(ride));
+
+            if (!result) {
+                throw new Rest.utils.RideAlreadyExistsException();
+            }
+
+        } catch (RideAlreadyExistsException e) {
             e.printStackTrace();
         }
     }
@@ -156,5 +173,20 @@ public class CityClient {
         // Shai should be done with lock
         CityServer destService = CityConnections.get(revertRequest.getDestCityName()).getNextService();
         destService.cityRevertRequestRide(revertRequest);
+    }
+
+    public Ride restToGrpcRide(Rest.entities.Ride restRide) {
+        Ride ride = Ride.newBuilder()
+                .setFirstName(restRide.getFirstName())
+                .setLastName(restRide.getLastName())
+                .setPhoneNum(restRide.getPhoneNumber())
+                .setSrcCity(restRide.getStartingPosition())
+                .setDstCity(restRide.getEndingPosition())
+                .setDate(restRide.getDepartureDate())
+                .setOfferedPlaces(restRide.getVacancies())
+                .setTakenPlaces(0)
+                .setPd(restRide.getPd()).build();
+
+        return ride;
     }
 }

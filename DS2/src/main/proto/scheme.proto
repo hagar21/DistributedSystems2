@@ -11,6 +11,9 @@ service UberService {
   // Accept a user's ride and save it in the DB.
   rpc PostRide(Ride) returns (Result) {}
 
+  // Accept a handled customer request and save it in the DB.
+  rpc PostCustomerRequest(CustomerRequest) returns (Result) {}
+
   // Accept a user's request to join a ride and check if there are relevant rides.
   rpc PostPathPlanningRequest(CustomerRequest) returns (stream Ride) {}
 

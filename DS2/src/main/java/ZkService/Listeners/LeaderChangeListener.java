@@ -10,6 +10,7 @@ import org.I0Itec.zkclient.IZkChildListener;
 
 import ZkService.utils.ClusterInfo;
 import ZkService.ZkService;
+import server.CityServer;
 
 @Slf4j
 @Setter
@@ -40,6 +41,7 @@ public class LeaderChangeListener implements IZkChildListener {
 
             //update the cluster info with new leader
             ClusterInfo.getClusterInfo().setLeader(leaderNode);
+
         }
     }
 }
