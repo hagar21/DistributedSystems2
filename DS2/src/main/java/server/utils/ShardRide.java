@@ -1,6 +1,6 @@
 package server.utils;
 
-import generated.Ride;
+import generated.*;
 
 public class ShardRide {
     String shardName;

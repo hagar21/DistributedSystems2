@@ -13,15 +13,15 @@ public interface ZkService {
     // shai - added lock
     public static final String DISTRUBUTED_LOCK = "/lock";
 
-    void createAllParentNodes(String city);
+    void createAllParentNodes(String shard);
 
     // Leader election
-    public void createNodeInElectionZnode(String hostData, String city);
-    public String getLeaderNodeData(String city);
+    public void createNodeInElectionZnode(String hostData, String shard);
+    public String getLeaderNodeData(String shard);
 
     // membership
-    void addToLiveNodes(String nodeName, String data, String city);
-    public List<String> getLiveNodes(String city);
+    void addToLiveNodes(String nodeName, String data, String shard);
+    public List<String> getLiveNodes(String shard);
 
     public String getZNodeData(String path);
 

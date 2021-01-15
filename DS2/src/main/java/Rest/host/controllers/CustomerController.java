@@ -15,15 +15,17 @@ import Rest.utils.CustomerRequestAlreadyExistsException;
 
 import java.util.List;
 
+import static server.utils.global.lbHostName;
+
 @RestController
 public class CustomerController {
     private final CityClient redirectionService;
 
     public CustomerController() {
-        String target = "localhost:8990"; //port 8990 = lb. shai change when we'll have global
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(lbHostName).usePlaintext().build();
         this.redirectionService = new CityClient(channel);
     }
+
     /*
         @GetMapping("/rides")
         List<Ride> allRides() {
@@ -35,6 +37,7 @@ public class CustomerController {
             return repository.findAllCustomerRequests();
         }
     */
+
     @PostMapping("/rides")
     void newRide(@RequestBody Ride newRide) throws RideAlreadyExistsException {
         redirectionService.postRide(newRide);

@@ -23,38 +23,38 @@ public class ZkServiceImpl implements ZkService{
     }
 
     @Override
-    public void createAllParentNodes(String city) {
-        city = "/" + city;
-        if (!zkClient.exists(ALL_NODES + city)) {
-            zkClient.create(ALL_NODES + city, "all nodes are displayed here", CreateMode.PERSISTENT);
+    public void createAllParentNodes(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ALL_NODES + shard)) {
+            zkClient.create(ALL_NODES + shard, "all nodes are displayed here", CreateMode.PERSISTENT);
         }
-        if (!zkClient.exists(LIVE_NODES + city)) {
-            zkClient.create(LIVE_NODES + city, "all live nodes are displayed here", CreateMode.PERSISTENT);
+        if (!zkClient.exists(LIVE_NODES + shard)) {
+            zkClient.create(LIVE_NODES + shard, "all live nodes are displayed here", CreateMode.PERSISTENT);
         }
-        if (!zkClient.exists(ELECTION_NODE + city)) {
-            zkClient.create(ELECTION_NODE + city, "election node", CreateMode.PERSISTENT);
+        if (!zkClient.exists(ELECTION_NODE + shard)) {
+            zkClient.create(ELECTION_NODE + shard, "election node", CreateMode.PERSISTENT);
         }
     }
 
     @Override
-    public void createNodeInElectionZnode(String hostData, String city) {
-        city = "/" + city;
-        if (!zkClient.exists(ELECTION_NODE + city)) {
-            zkClient.create(ELECTION_NODE + city, "election node", CreateMode.PERSISTENT);
+    public void createNodeInElectionZnode(String hostData, String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ELECTION_NODE + shard)) {
+            zkClient.create(ELECTION_NODE + shard, "election node", CreateMode.PERSISTENT);
         }
-        zkClient.create(ELECTION_NODE + city.concat("/node"), hostData, CreateMode.EPHEMERAL_SEQUENTIAL);
+        zkClient.create(ELECTION_NODE + shard.concat("/node"), hostData, CreateMode.EPHEMERAL_SEQUENTIAL);
     }
 
     @Override
-    public String getLeaderNodeData(String city) {
-        city = "/" + city;
-        if (!zkClient.exists(ELECTION_NODE + city)) {
+    public String getLeaderNodeData(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ELECTION_NODE + shard)) {
             throw new RuntimeException("No node /election exists");
         }
-        List<String> nodesInElection = zkClient.getChildren(ELECTION_NODE + city);
+        List<String> nodesInElection = zkClient.getChildren(ELECTION_NODE + shard);
         Collections.sort(nodesInElection);
         String masterZNode = nodesInElection.get(0);
-        return getZNodeData(ELECTION_NODE + city.concat("/").concat(masterZNode));
+        return getZNodeData(ELECTION_NODE + shard.concat("/").concat(masterZNode));
     }
 
     @Override
@@ -63,12 +63,12 @@ public class ZkServiceImpl implements ZkService{
     }
 
     @Override
-    public void addToLiveNodes(String nodeName, String data, String city) {
-        city = "/" + city;
-        if (!zkClient.exists(LIVE_NODES + city)) {
-            zkClient.create(LIVE_NODES + city, "all live nodes are displayed here", CreateMode.PERSISTENT);
+    public void addToLiveNodes(String nodeName, String data, String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(LIVE_NODES + shard)) {
+            zkClient.create(LIVE_NODES + shard, "all live nodes are displayed here", CreateMode.PERSISTENT);
         }
-        String childNode = LIVE_NODES.concat(city).concat("/").concat(nodeName);
+        String childNode = LIVE_NODES.concat(shard).concat("/").concat(nodeName);
         if (zkClient.exists(childNode)) {
             return;
         }
@@ -77,12 +77,12 @@ public class ZkServiceImpl implements ZkService{
 
     // maybe need all nodes as well
     @Override
-    public List<String> getLiveNodes(String city) {
-        city = "/" + city;
-        if (!zkClient.exists(LIVE_NODES + city)) {
+    public List<String> getLiveNodes(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(LIVE_NODES + shard)) {
             throw new RuntimeException("No node /liveNodes exists");
         }
-        return zkClient.getChildren(LIVE_NODES + city);
+        return zkClient.getChildren(LIVE_NODES + shard);
     }
 
     @Override

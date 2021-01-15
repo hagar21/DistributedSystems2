@@ -1,27 +1,15 @@
 package client;
 
-import com.google.protobuf.Empty;
-import generated.CustomerRequest;
-import generated.Ride;
-import generated.Rout;
 import generated.UberServiceGrpc;
-import generated.CityRequest;
 
-import client.utils.*;
-
-import Rest.utils.RideAlreadyExistsException;
-import generated.*;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
-import server.CityServer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Logger;
 
-import static server.CityServer.*;
 import static server.utils.global.noRide;
+
+import generated.*;
 
 public class LbClient {
     private static final Logger logger = Logger.getLogger(CityClient.class.getName());

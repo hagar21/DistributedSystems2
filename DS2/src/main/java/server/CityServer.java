@@ -1,5 +1,6 @@
 package server;
 
+import ch.qos.logback.classic.Level;
 import client.CityClient;
 import client.LbClient;
 import generated.*;
@@ -17,6 +18,8 @@ import ZkService.utils.ClusterInfo;
 import io.grpc.stub.StreamObserver;
 import ZkService.Listeners.LeaderChangeListener;
 import ZkService.Listeners.LiveNodeChangeListener;
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.LoggerFactory;
 import server.utils.*;
 
 import static ZkService.ZkService.ELECTION_NODE;
@@ -43,6 +46,37 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private final ConcurrentMap<String, CustomerRequest> customerRequests =
             new ConcurrentHashMap<>();
 
+    public static void main(String[] args) {
+
+        try {
+            BasicConfigurator.configure();
+            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+            root.setLevel(Level.INFO);
+
+            if(args.length == 3) {
+                CityServer server = new CityServer(args[0], args[1], args[2]);
+                server.start();
+                System.out.println("Server started");
+                server.blockUntilShutdown();
+                /*
+                ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
+                mainServer.start();
+                log.info("Server started listening on port {} ", args[0]);
+                mainServer.blockUntilShutdown();
+
+                 */
+            }
+            else {
+                throw new RuntimeException("Not enough arguments");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            System.out.println("City Server service failed to start");
+        }
+    }
+
+
     /**
      * Create a Uber server using serverBuilder as a base and features as data.
      */
@@ -66,7 +100,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
             // create all parent nodes /election, /all_nodes, /live_nodes
             // Shai - not sure we need to create root
-            // zkService.createAllParentNodes();
+            // zkService.createAllParentNodes("");
 
             // create all parent nodes /election/city, /all_nodes/city, /live_nodes/city
             zkService.createAllParentNodes(shardName);

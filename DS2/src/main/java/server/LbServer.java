@@ -1,15 +1,10 @@
 package server;
 
-import ZkService.Listeners.LeaderChangeListener;
 import ZkService.Listeners.LiveNodeChangeListener;
 import ZkService.ZkServiceImpl;
 import ZkService.utils.ClusterInfo;
 import client.CityClient;
 import client.utils.LbShardConnections;
-import generated.CityRequest;
-import generated.CityRevertRequest;
-import generated.Ride;
-import generated.ShardClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -17,12 +12,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static ZkService.ZkService.ELECTION_NODE;
 import static ZkService.ZkService.LIVE_NODES;
-import static ZkService.utils.Host.getHostPostOfServer;
-import static server.CityServer.*;
 import static server.utils.global.noRide;
 import static server.utils.global.shardNames;
+
+import generated.*;
+
 
 public class LbServer {
 
