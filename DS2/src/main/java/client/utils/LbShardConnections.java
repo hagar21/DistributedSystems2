@@ -1,20 +1,26 @@
 package client.utils;
 
-import server.CityServer;
+import client.CityClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class LbShardConnections {
-    public static List<CityServer> shardServers;
+    public static List<CityClient> shardClients;
     public static int rrIdx;
 
-    LbShardConnections() {
-        shardServers = new ArrayList<>();
+    public LbShardConnections() {
+        shardClients = new ArrayList<>();
         rrIdx = 0;
     }
 
-    public CityServer getNextService() {
-        return shardServers.get(rrIdx++ % shardServers.size());
+    public void AddToShard(CityClient c) {
+        shardClients.add(c);
+    }
+
+    public CityClient getNextService() {
+        return shardClients.get(rrIdx++ % shardClients.size());
     }
 }
