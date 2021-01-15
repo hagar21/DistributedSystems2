@@ -1,4 +1,4 @@
-package server;
+package server.utils;
 
 import generated.Ride;
 
@@ -10,4 +10,7 @@ public class ShardRide {
         shardName = s;
         ride = r;
     }
+
+    public Ride getRide() { return ride; }
+    public String getShardName() { return shardName; }
 }
