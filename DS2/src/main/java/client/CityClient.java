@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 import static server.CityServer.*;
+import static server.utils.global.noRide;
 
 public class CityClient {
     private static final Logger logger = Logger.getLogger(CityClient.class.getName());

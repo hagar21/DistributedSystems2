@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static server.CityServer.*;
+import static server.utils.global.noRide;
 
 public class LbClient {
     private static final Logger logger = Logger.getLogger(CityClient.class.getName());
@@ -34,10 +35,13 @@ public class LbClient {
     }
 
     // Accept a user's request to join a ride and check if there is a relevant ride.
-    public Ride cityRequestRide(CityRequest cityRequest) {
+    public Ride cityRequestRide(String cityName, Rout rout) {
 
         Ride ride = noRide();
-
+        CityRequest cityRequest = CityRequest.newBuilder()
+                .setDestCityName(cityName)
+                .setRout(rout)
+                .build();
         try {
             ride = blockingStub.cityRequestRide(cityRequest);
 
@@ -48,8 +52,12 @@ public class LbClient {
         return ride;
     }
 
-    public void CityRevertRequestRide(CityRevertRequest revertRequest) {
+    public void CityRevertRequestRide(String destCityName, Ride ride) {
 
+        CityRevertRequest revertRequest = CityRevertRequest.newBuilder()
+                .setDestCityName(destCityName)
+                .setRide(ride)
+                .build();
         try {
             blockingStub.cityRevertRequestRide(revertRequest);
 

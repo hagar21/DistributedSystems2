@@ -9,8 +9,8 @@ import generated.Ride;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static server.CityServer.noRide;
 import static server.CityServer.*;
+import static server.utils.global.noRide;
 
 public class LbServer {
 

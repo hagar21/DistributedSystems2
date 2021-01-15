@@ -1,11 +1,11 @@
 package server;
 
 import client.CityClient;
+import client.LbClient;
 import generated.*;
 import io.grpc.*;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -17,10 +17,12 @@ import ZkService.utils.ClusterInfo;
 import io.grpc.stub.StreamObserver;
 import ZkService.Listeners.LeaderChangeListener;
 import ZkService.Listeners.LiveNodeChangeListener;
+import server.utils.*;
 
 import static ZkService.ZkService.ELECTION_NODE;
 import static ZkService.ZkService.LIVE_NODES;
 import static ZkService.utils.Host.getHostPostOfServer;
+import static server.utils.global.*;
 
 public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private static final Logger logger = Logger.getLogger(CityServer.class.getName());
@@ -31,7 +33,6 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     public Boolean service_up;
     private String shardName;
     private String HostName;
-    public static String[] shardNames = { "shardA", "shardB", "shardC" };
     private LbClient lb;
     private ConcurrentMap<Integer, CityClient> shardMembers;
     private CityClient leader;
@@ -52,7 +53,9 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         this.server = ServerBuilder.forPort(Integer.parseInt(port))
                 .addService(this)
                 .build();
-        // HostName = HostIP.getIp()+":" + port;
+
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(lbHostName).usePlaintext().build();
+        this.lb = new LbClient(channel);
         ConnectToZk(hostList);
     }
 
@@ -163,30 +166,37 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         System.out.println("-------------");
 
         Result.Builder res = Result.newBuilder();
-        if (ride.getLeaderSent()) {
-            rides.put(ride.getId(), ride);
 
+        if (ride.getCommit()){
+            rides.put(ride.getId(), ride);
+            responseObserver.onNext(res.setIsSuccess(true).build());
+            responseObserver.onCompleted();
+            return;
+        }
+
+        if (ride.getPrepare()) {
             // Send ack to leader
             responseObserver.onNext(res.setIsSuccess(true).build());
-
-        } else {
-            String rideId = ride.getFirstName() + ride.getLastName() + ride.getDate() + ride.getSrcCity() + ride.getDstCity();
-
-            if(rides.containsKey(rideId)) {
-                responseObserver.onNext(res.setIsSuccess(false).build());
-                responseObserver.onCompleted();
-                return;
-            }
-
-            Ride updatedRide = Ride.newBuilder(ride).setId(rideId).build();
-            if(ride2PhaseCommit(updatedRide)) {
-                responseObserver.onNext(res.setIsSuccess(true).build());
-            } else {
-                responseObserver.onNext(res.setIsSuccess(false).build());
-            }
+            responseObserver.onCompleted();
+            return;
         }
-        responseObserver.onCompleted();
 
+        String rideId = ride.getFirstName() + ride.getLastName() + ride.getDate() + ride.getSrcCity() + ride.getDstCity();
+
+        if(rides.containsKey(rideId)) {
+            responseObserver.onNext(res.setIsSuccess(false).build());
+            responseObserver.onCompleted();
+            return;
+        }
+
+        Ride updatedRide = Ride.newBuilder(ride).setId(rideId).build();
+        if(ride2PhaseCommit(updatedRide)) {
+            responseObserver.onNext(res.setIsSuccess(true).build());
+        } else {
+            responseObserver.onNext(res.setIsSuccess(false).build());
+        }
+
+        responseObserver.onCompleted();
 
     }
 
@@ -195,7 +205,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         System.out.println("City server got post customer request");
         System.out.println("-------------");
 
-        if(request.getLeaderSent()) {
+        if(request.getCommit()) {
             customerRequests.put(request.getId(), request);
         }
 
@@ -235,13 +245,13 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // check in other shards
             ShardRide remoteRide = getRemoteMatchingRide(rout);
 
-            if(remoteRide.ride.equals(noRide())) {
+            if(remoteRide.getRide().equals(noRide())) {
                 revertPath(reservedRides);
                 responseObserver.onNext(noRide());
                 responseObserver.onCompleted();
                 return;
             }
-            reservedRides.put(remoteRide.ride, remoteRide.shardName);
+            reservedRides.put(remoteRide.getRide(), remoteRide.getShardName());
         }
 
         // Entire path satisfied
@@ -328,8 +338,8 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             return false;
         }
 
-        int numerator = Math.abs((rideDst.x - rideSrc.x) * (rideSrc.y - p0.y) - (rideSrc.x-p0.x) * (rideDst.y - rideSrc.y));
-        double denominator = Math.sqrt(Math.pow(rideDst.x - rideSrc.x, 2)+ Math.pow(rideDst.y - rideSrc.y, 2));
+        int numerator = Math.abs((rideDst.getX() - rideSrc.getX()) * (rideSrc.getY() - p0.getY()) - (rideSrc.getX()-p0.getX()) * (rideDst.getY() - rideSrc.getY()));
+        double denominator = Math.sqrt(Math.pow(rideDst.getX() - rideSrc.getX(), 2)+ Math.pow(rideDst.getY() - rideSrc.getY(), 2));
         return (numerator / denominator) <= ride.getPd();
     }
 
@@ -338,10 +348,6 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             if(name.equals(ride.getCustomers(i))) return true;
         }
         return false;
-    }
-
-    public static Ride noRide() {
-        return Ride.newBuilder().setId("noRide").setFirstName("no").setLastName("ride").build();
     }
 
     private List<CityClient> initShards(int port) {
@@ -403,16 +409,12 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         if(isNodeLeader()) {
             // This node is the leader
 
-            Date date = new Date();
-            long time = date.getTime();
-            Timestamp ts = new Timestamp(time);
-
+            // phase 1
             Ride.Builder rideBuilder = Ride.newBuilder(ride)
-                    .setLeaderSent(true)
-                    .setTime(ts.toString());
+                    .setPrepare(true);
 
             Ride existingRide = rides.get(ride.getId());
-            if ( existingRide != null && existingRide.getTakenPlaces() == ride.getTakenPlaces() ) {
+            if (existingRide != null && existingRide.getTakenPlaces() == ride.getTakenPlaces() ) {
                 // Trying to update a ride to an old value
 
                 if (existingRide.getTakenPlaces() == existingRide.getOfferedPlaces()) {
@@ -428,18 +430,30 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
             int acceptedCounter = 0;
             shardMembers = updateShardMembers();
-            Ride updatedRide = rideBuilder.build();
+            Ride prepareRide = rideBuilder.build();
 
             for(CityClient shard : shardMembers.values()) {
-                boolean isSuccess = shard.postRide(updatedRide);
+                boolean isSuccess = shard.postRide(prepareRide);
                 if (isSuccess) {
                     acceptedCounter++;
                 }
             }
 
+            // phase 2
             if(acceptedCounter < shardMembers.size()) {
                 // rollback
+                return false;
             }
+
+            Ride commitRide = rideBuilder.setCommit(true).build();
+
+            for(CityClient shard : shardMembers.values()) {
+                boolean isSuccess = shard.postRide(commitRide);
+//                if (isSuccess) {
+//                    acceptedCounter++;
+//                }
+            }
+
         } else {
             // This node is not the leader
 
@@ -454,19 +468,16 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // This node is the leader
 
             int acceptedCounter = 0;
-            Date date = new Date();
-            long time = date.getTime();
-            Timestamp ts = new Timestamp(time);
 
-            CustomerRequest updatedRequest = CustomerRequest.newBuilder(request)
-                    .setLeaderSent(true)
-                    .setTime(ts.toString())
+            // phase 1
+            CustomerRequest prepareRequest = CustomerRequest.newBuilder(request)
+                    .setPrepare(true)
                     .build();
 
             shardMembers = updateShardMembers();
 
             for(CityClient shard : shardMembers.values()) {
-                boolean isSuccess = shard.postCustomerRequest(updatedRequest);
+                boolean isSuccess = shard.postCustomerRequest(prepareRequest);
                 if (isSuccess) {
                     acceptedCounter++;
                 }
@@ -474,7 +485,21 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
             if(acceptedCounter < shardMembers.size()) {
                 // rollback
+                return false;
             }
+
+            // phase 2
+            CustomerRequest commitRequest = CustomerRequest.newBuilder(request)
+                    .setCommit(true)
+                    .build();
+
+            for(CityClient shard : shardMembers.values()) {
+                boolean isSuccess = shard.postCustomerRequest(commitRequest);
+                if (isSuccess) {
+                    acceptedCounter++;
+                }
+            }
+
         } else {
             // This node is not the leader
 
@@ -482,6 +507,10 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             return leader.postCustomerRequest(request);
         }
         return false;
+    }
+
+    private void rollback() {
+
     }
 
     private ConcurrentHashMap<Integer, CityClient> updateShardMembers() {
@@ -520,7 +549,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
     private ShardRide getRemoteMatchingRide(Rout rout) {
         for(String shard : shardNames){
-            Ride ride = lb.reserveRide(shard, rout);
+            Ride ride = lb.cityRequestRide(shard, rout);
             if(!ride.equals(noRide())) {
                 return new ShardRide(shard, ride);
             }
@@ -532,7 +561,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private void revertLocalCommit(Ride ride) {
         List<String> customers = ride.getCustomersList();
         customers.remove(customers.size() - 1);
-        
+
         Ride updatedRide = Ride.newBuilder(ride)
                 .setTakenPlaces(ride.getTakenPlaces() - 1)
                 .addAllCustomers(customers)
@@ -547,7 +576,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             if (entry.getValue().equals(this.shardName)) {
                 revertLocalCommit(entry.getKey());
             } else {
-                lb.revertCommit(entry.getValue(), entry.getKey());
+                lb.CityRevertRequestRide(entry.getValue(), entry.getKey());
             }
         }
     }

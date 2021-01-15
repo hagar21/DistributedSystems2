@@ -1,4 +1,4 @@
-package server;
+package server.utils;
 
 public class Point {
     int x;
@@ -8,6 +8,9 @@ public class Point {
         this.x = x;
         this.y = y;
     }
+
+    public int getX() { return x; }
+    public int getY() { return y; }
 
     public boolean equals(Point p){
         return this.x == p.x && this.y == p.y;
