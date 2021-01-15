@@ -3,10 +3,7 @@ package server;
 import client.CityClient;
 import client.LbClient;
 import generated.*;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.Server;
-import io.grpc.ServerBuilder;
+import io.grpc.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -303,10 +300,6 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             printCustomerRequest(req);
         }
         responseObserver.onCompleted();
-    }
-
-    public Ride cityRequestRide(CityRequest cityRequest) {
-        return getLocalMatchingRide(cityRequest.getRout());
     }
 
     private Boolean isNodeLeader(){

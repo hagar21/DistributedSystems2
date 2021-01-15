@@ -144,30 +144,23 @@ public class CityClient {
 
     // Accept a user's request to join a ride and check if there is a relevant ride.
     public Ride cityRequestRide(CityRequest cityRequest) {
-        System.out.println("LB got cityRequest to dest city " + cityRequest.getDestCityName() + " sending city request");
-        System.out.println("------------");
 
-        if (!CityConnections.containsKey(cityRequest.getDestCityName())) {
-            System.out.println("error: LB got cityRequest to dest city " + cityRequest.getDestCityName() + " not in system");
-            return noRide(); // Shai Ilegal ride - so it won't keep looking
+        try {
+            return blockingStub.reserveRide(cityRequest.getRout());
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
         }
 
-        // Shai should be done with lock
-        CityServer destService = CityConnections.get(cityRequest.getDestCityName()).getNextService();
-        return destService.cityRequestRide(cityRequest);
+        return noRide();
     }
 
-    public void CityRevertRequestRide(CityRevertRequest revertRequest) {
-        System.out.println("LB got CityRevertRequest to dest city " + revertRequest.getDestCityName() + " sending city request");
-        System.out.println("------------");
+    public void cityRevertRequestRide(CityRevertRequest revertRequest) {
 
-        if (!CityConnections.containsKey(revertRequest.getDestCityName())) {
-            System.out.println("error: LB got cityRequest to dest city " + revertRequest.getDestCityName() + " not in system");
+        try {
+            blockingStub.revertCommit(revertRequest.getRide());
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
         }
-
-        // Shai should be done with lock
-        CityServer destService = CityConnections.get(revertRequest.getDestCityName()).getNextService();
-        destService.cityRevertRequestRide(revertRequest);
     }
 
     public Ride restToGrpcRide(Rest.entities.Ride restRide) {
