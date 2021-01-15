@@ -119,11 +119,13 @@ public class CityClient {
     }
 
 
-    public void revertCommit(Ride ride) {
+    public boolean revertCommit(Ride ride) {
         try {
             blockingStub.revertCommit(ride);
+            return true;
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -151,7 +153,6 @@ public class CityClient {
 
     // City2City request (gRPC)
     public void cityRevertRequestRide(CityRevertRequest revertRequest) {
-
         try {
             blockingStub.revertCommit(revertRequest.getRide());
         } catch (StatusRuntimeException e) {
@@ -172,5 +173,15 @@ public class CityClient {
                 .setPd(restRide.getPd()).build();
 
         return ride;
+    }
+
+    public boolean deleteCustomerRequest(CustomerRequest request) {
+        try {
+            blockingStub.deleteCustomerRequest(request);
+            return true;
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
