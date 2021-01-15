@@ -34,6 +34,21 @@ public class LbClient {
         asyncStub = UberServiceGrpc.newStub(channel);
     }
 
+    public void addCityClient(String shard, String targetHost) {
+
+        ShardClient request = ShardClient.newBuilder()
+                .setShard(shard)
+                .setTargetHost(targetHost)
+                .build();
+
+        try {
+            blockingStub.addCityClient(request);
+
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Accept a user's request to join a ride and check if there is a relevant ride.
     public Ride cityRequestRide(String cityName, Rout rout) {
 

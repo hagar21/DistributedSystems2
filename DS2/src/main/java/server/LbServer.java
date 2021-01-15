@@ -5,6 +5,9 @@ import client.utils.LbShardConnections;
 import generated.CityRequest;
 import generated.CityRevertRequest;
 import generated.Ride;
+import generated.ShardClient;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -19,22 +22,22 @@ public class LbServer {
 
     LbServer() {} //port 8990
 
+    public void addCityClient(ShardClient ShardClient) {
 
-    public void AddCityClient(String city, CityClient c) {
-
-        String shard = MapCityToShard(city);
-        if (shard.equals("")) {
-            System.out.println("error: LB AddCityClient to city" + city + " not in system");
+        if (ShardClient.getShard().equals("")) {
+            System.out.println("error: LB AddCityClient to city" + ShardClient.getShard() + " not in system");
             return;
         }
 
-        LbShardConnections lbsc = shardConnections.get(shard);
+        LbShardConnections lbsc = shardConnections.get(ShardClient.getShard());
         if (lbsc == null) {
-            System.out.println("LB AddCityClient creating new LbShardConnections to shard " + shard + " city " + city);
+            System.out.println("LB AddCityClient creating new LbShardConnections to shard " + ShardClient.getShard());
             lbsc = new LbShardConnections();
-            shardConnections.put(shard, lbsc);
+            shardConnections.put(ShardClient.getShard(), lbsc);
         }
 
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(ShardClient.getTargetHost()).usePlaintext().build();
+        CityClient c = new CityClient(channel);
         lbsc.AddToShard(c);
     }
 
