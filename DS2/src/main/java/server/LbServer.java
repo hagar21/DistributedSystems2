@@ -56,6 +56,8 @@ public class LbServer {
         LbShardConnections lbsc = new LbShardConnections();
 
         if (shardConnections.containsKey(shard)) {
+            int rrIdx = shardConnections.get(shard).rrIdx;
+            lbsc.rrIdx = rrIdx; // to keep the round robin alive ;)
             shardConnections.get(shard).shardClients.clear();
             shardConnections.remove(shard);
         }
@@ -96,9 +98,9 @@ public class LbServer {
         switch (City) {
             case "A":
             case "B":
-                return "Shard1";
+                return shardNames[0];
             case "C":
-                return "Shard2";
+                return shardNames[1];
             default:
                 System.out.println("No such city in system");
                 return "";
