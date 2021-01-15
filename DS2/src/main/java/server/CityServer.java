@@ -299,12 +299,6 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         return getLocalMatchingRide(cityRequest.getRout());
     }
 
-    public void CityRevertRequestRide(CityRevertRequest revertRequest) {
-        String rideId = revertRequest.getRideId();
-
-        // shai ++
-    }
-
     private Boolean isNodeLeader(){
         return zkService.getLeaderNodeData(shardName).equals(this.HostName);
     }
@@ -537,15 +531,18 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             if(!ride.equals(noRide())) {
                 return new ShardRide(shard, ride);
             }
+
         }
         return new ShardRide("", noRide());
     }
 
     private void revertLocalCommit(Ride ride) {
         List<String> customers = ride.getCustomersList();
+        customers.remove(customers.size() - 1);
+        
         Ride updatedRide = Ride.newBuilder(ride)
                 .setTakenPlaces(ride.getTakenPlaces() - 1)
-                .addAllCustomers(ride.getCustomersList().remove(ride.getCustomersCount() - 1))
+                .addAllCustomers(customers)
                 .build();
         if(ride2PhaseCommit(updatedRide)) {
             this.rides.put(updatedRide.getId(), updatedRide);

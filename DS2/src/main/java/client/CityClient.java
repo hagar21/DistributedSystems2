@@ -13,11 +13,7 @@ import Rest.utils.RideAlreadyExistsException;
 import generated.*;
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
-import io.grpc.stub.StreamObserver;
 import server.CityServer;
-
-import Rest.utils.RideAlreadyExistsException;
-import Rest.utils.CustomerRequestAlreadyExistsException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,8 +29,6 @@ public class CityClient {
 
     private final UberServiceGrpc.UberServiceBlockingStub blockingStub;
     private final UberServiceGrpc.UberServiceStub asyncStub;
-    private final ConcurrentMap<String, LBCityConnections> CityConnections =
-            new ConcurrentHashMap<>();
 
     public CityClient(Channel channel) {
         blockingStub = UberServiceGrpc.newBlockingStub(channel);
