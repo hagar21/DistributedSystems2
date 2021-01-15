@@ -35,6 +35,7 @@ public class CityClient {
         asyncStub = UberServiceGrpc.newStub(channel);
     }
 
+    // City func
     public boolean postRide(Ride ride) {
         try {
             Result result = blockingStub.postRide(ride);
@@ -50,6 +51,7 @@ public class CityClient {
         return false;
     }
 
+    // City func
     public boolean postCustomerRequest(CustomerRequest request) {
         try {
             Result result = blockingStub.postCustomerRequest(request);
@@ -65,6 +67,7 @@ public class CityClient {
         return false;
     }
 
+    // LB func (REST->gRPC)
     public void postRide(Rest.entities.Ride ride) {
         try {
             boolean result = postRide(restToGrpcRide(ride));
@@ -78,6 +81,7 @@ public class CityClient {
         }
     }
 
+    // LB func (REST->gRPC->REST)
     // Accept a user's request to join a ride and check if there is a relevant ride.
     public List<Rest.entities.Ride> postPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
         System.out.println("city client send PostPathPlanningRequest request");
@@ -141,6 +145,7 @@ public class CityClient {
         }
     }
 
+    // City2City request (gRPC)
     // Accept a user's request to join a ride and check if there is a relevant ride.
     public Ride cityRequestRide(CityRequest cityRequest) {
 
@@ -153,6 +158,7 @@ public class CityClient {
         return noRide();
     }
 
+    // City2City request (gRPC)
     public void cityRevertRequestRide(CityRevertRequest revertRequest) {
 
         try {

@@ -20,7 +20,7 @@ public class CustomerController {
     private final CityClient redirectionService;
 
     public CustomerController() {
-        String target = "localhost:8990";
+        String target = "localhost:8990"; //port 8990 = lb. shai change when we'll have global
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         this.redirectionService = new CityClient(channel);
     }
