@@ -27,9 +27,6 @@ service UberService {
   // Returns all Rides in the database
   rpc Snapshot(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 
-  // Add shard as a CityClient of LB
-  rpc AddCityClient(ShardClient) returns (google.protobuf.Empty) {}
-
   // City request Ride from different city
   rpc CityRequestRide(CityRequest) returns (Ride) {}
 
@@ -82,9 +79,4 @@ message CityRequest {
 message CityRevertRequest {
   string destCityName = 1;
   Ride ride = 2;
-}
-
-message ShardClient {
-  string shard = 1;
-  string targetHost = 2;
 }

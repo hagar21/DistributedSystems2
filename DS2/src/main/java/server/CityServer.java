@@ -526,7 +526,6 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
             CityClient client = new CityClient(channel);
             shards.put(i++, client);
-            this.lb.addCityClient(shardName, targetHost);
         }
         // delete all previous stubs
         shardMembers.clear();

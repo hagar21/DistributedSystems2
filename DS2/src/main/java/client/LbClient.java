@@ -34,6 +34,7 @@ public class LbClient {
         asyncStub = UberServiceGrpc.newStub(channel);
     }
 
+    /* Shai delete
     public void addCityClient(String shard, String targetHost) {
 
         ShardClient request = ShardClient.newBuilder()
@@ -48,6 +49,8 @@ public class LbClient {
             e.printStackTrace();
         }
     }
+
+     */
 
     // Accept a user's request to join a ride and check if there is a relevant ride.
     public Ride cityRequestRide(String cityName, Rout rout) {

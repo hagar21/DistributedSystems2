@@ -1,5 +1,9 @@
 package server;
 
+import ZkService.Listeners.LeaderChangeListener;
+import ZkService.Listeners.LiveNodeChangeListener;
+import ZkService.ZkServiceImpl;
+import ZkService.utils.ClusterInfo;
 import client.CityClient;
 import client.utils.LbShardConnections;
 import generated.CityRequest;
@@ -9,21 +13,66 @@ import generated.ShardClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static ZkService.ZkService.ELECTION_NODE;
+import static ZkService.ZkService.LIVE_NODES;
+import static ZkService.utils.Host.getHostPostOfServer;
 import static server.CityServer.*;
 import static server.utils.global.noRide;
+import static server.utils.global.shardNames;
 
 public class LbServer {
 
     private final ConcurrentMap<String, LbShardConnections> shardConnections =
             new ConcurrentHashMap<>();
+    private ZkServiceImpl zkService;
 
-    LbServer() {} //port 8990
+    LbServer(String hostList) { // port 8990
+        ConnectToZk(hostList);
+    }
 
+    private void ConnectToZk(String hostList) {
+        try {
+            this.zkService = new ZkServiceImpl(hostList);
+
+            // create all parent nodes /election/city, /all_nodes/city, /live_nodes/city
+            for (String shardName: shardNames)
+            {
+                zkService.createAllParentNodes(shardName);
+                zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Startup failed!", e);
+        }
+    }
+
+    private void updateShardMembers(String shard) {
+        List<String> liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
+
+        LbShardConnections lbsc = new LbShardConnections();
+
+        if (shardConnections.containsKey(shard)) {
+            shardConnections.get(shard).shardClients.clear();
+            shardConnections.remove(shard);
+        }
+
+        // get new members connections
+        for (String targetHost : liveNodes) {
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+            lbsc.AddToShard(client);
+        }
+
+        shardConnections.put(shard, lbsc);
+    }
+
+    /* Shai delete
     public void addCityClient(ShardClient ShardClient) {
-
+    // ask ZK for live nodes, and update everytime before sending a request
         if (ShardClient.getShard().equals("")) {
             System.out.println("error: LB AddCityClient to city" + ShardClient.getShard() + " not in system");
             return;
@@ -40,6 +89,8 @@ public class LbServer {
         CityClient c = new CityClient(channel);
         lbsc.AddToShard(c);
     }
+
+     */
 
     private String MapCityToShard(String City) {
         switch (City) {
@@ -60,11 +111,12 @@ public class LbServer {
         System.out.println("------------");
 
         String shard = MapCityToShard(cityRequest.getDestCityName());
-
-        if (!shardConnections.containsKey(shard)) {
+        if (shard.equals("")) {
             System.out.println("error: LB got cityRequest to dest city " + cityRequest.getDestCityName() + " not in system");
             return noRide(); // Shai Ilegal ride - so it won't keep looking
         }
+
+        updateShardMembers(shard);
 
         CityClient destService = shardConnections.get(shard).getNextService();
         return destService.cityRequestRide(cityRequest);
@@ -75,11 +127,12 @@ public class LbServer {
         System.out.println("------------");
 
         String shard = MapCityToShard(revertRequest.getDestCityName());
-
-        if (!shardConnections.containsKey(shard)) {
-            System.out.println("error: LB got CityRevertRequest to dest city " + revertRequest.getDestCityName() + " not in system");
+        if (shard.equals("")) {
+            System.out.println("error: LB got cityRequest to dest city " + revertRequest.getDestCityName() + " not in system");
             return;
         }
+
+        updateShardMembers(shard);
 
         CityClient destService = shardConnections.get(shard).getNextService();
         destService.cityRevertRequestRide(revertRequest);
