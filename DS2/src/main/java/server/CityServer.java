@@ -46,7 +46,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private final ConcurrentMap<String, CustomerRequest> customerRequests =
             new ConcurrentHashMap<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { // args example: 8200 localhost:2181 "A" (port, zookeeper host, cityName)
 
         try {
             BasicConfigurator.configure();
@@ -56,14 +56,10 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             if(args.length == 3) {
                 CityServer server = new CityServer(args[0], args[1], args[2]);
                 server.start();
-                System.out.println("Server started");
+                System.out.println("City Server started on port " + args[0]);
                 server.blockUntilShutdown();
-                /*
+                /* Shai remove
                 ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
-                mainServer.start();
-                log.info("Server started listening on port {} ", args[0]);
-                mainServer.blockUntilShutdown();
-
                  */
             }
             else {
@@ -90,6 +86,8 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
         ManagedChannel channel = ManagedChannelBuilder.forTarget(lbHostName).usePlaintext().build();
         this.lb = new LbClient(channel);
+        System.out.println("City Server name " + shardName + " connected to an LB client");
+
         ConnectToZk(hostList);
     }
 
@@ -102,7 +100,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // Shai - not sure we need to create root
             // zkService.createAllParentNodes("");
 
-            // create all parent nodes /election/city, /all_nodes/city, /live_nodes/city
+            // create all parent nodes /election/city, /live_nodes/city, /live_nodes/city
             zkService.createAllParentNodes(shardName);
 
             /*

@@ -3,31 +3,69 @@ package server;
 import ZkService.Listeners.LiveNodeChangeListener;
 import ZkService.ZkServiceImpl;
 import ZkService.utils.ClusterInfo;
+import ch.qos.logback.classic.Level;
 import client.CityClient;
 import client.utils.LbShardConnections;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import static ZkService.ZkService.LIVE_NODES;
 import static server.utils.global.noRide;
 import static server.utils.global.shardNames;
 
 import generated.*;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.LoggerFactory;
 
 
-public class LbServer {
+public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
+    private final Server server;
     private final ConcurrentMap<String, LbShardConnections> shardConnections =
             new ConcurrentHashMap<>();
     private ZkServiceImpl zkService;
 
+    public static void main(String[] args) { // args example: localhost:2181 (zookeeper host)
+
+        try {
+            BasicConfigurator.configure();
+            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+            root.setLevel(Level.INFO);
+
+            if(args.length == 1) {
+                LbServer server = new LbServer(args[0]);
+                server.start();
+                System.out.println("LB Server started on port 8990");
+                server.blockUntilShutdown();
+                /* Shai remove
+                ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
+                 */
+            }
+            else {
+                throw new RuntimeException("Not enough arguments");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            System.out.println("City Server service failed to start");
+        }
+    }
+
     LbServer(String hostList) { // port 8990
+        this.server = ServerBuilder.forPort(Integer.parseInt("8990"))
+                .addService(this)
+                .build();
         ConnectToZk(hostList);
     }
+
 
     private void ConnectToZk(String hostList) {
         try {
@@ -133,5 +171,46 @@ public class LbServer {
 
         CityClient destService = shardConnections.get(shard).getNextService();
         destService.cityRevertRequestRide(revertRequest);
+    }
+
+
+    public void start() throws IOException {
+        try {
+            server.start();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        // logger.info("Server started, listening on " + HostName); shai comment
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                // Use stderr here since the logger may have been reset by its JVM shutdown hook.
+                System.err.println("*** shutting down gRPC server since JVM is shutting down");
+                try {
+                    LbServer.this.stop();
+                } catch (InterruptedException e) {
+                    e.printStackTrace(System.err);
+                }
+                System.err.println("*** server shut down");
+            }
+        });
+    }
+
+    /**
+     * Stop serving requests and shutdown resources.
+     */
+    public void stop() throws InterruptedException {
+        if (server != null) {
+            server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Await termination on the main thread since the grpc library uses daemon threads.
+     */
+    public void blockUntilShutdown() throws InterruptedException {
+        if (server != null) {
+            server.awaitTermination();
+        }
     }
 }
