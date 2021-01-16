@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CityServer B" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="server.CityServer" />
+    <module name="DS2.main" />
+    <option name="PROGRAM_PARAMETERS" value="8201 localhost:2181 &quot;B&quot;" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
