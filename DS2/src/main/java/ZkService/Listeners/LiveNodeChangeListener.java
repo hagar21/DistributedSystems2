@@ -1,13 +1,21 @@
 package ZkService.Listeners;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import ZkService.utils.ClusterInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.I0Itec.zkclient.IZkChildListener;
+import server.CityServer;
 
 @Slf4j
 public class LiveNodeChangeListener implements IZkChildListener {
+
+    private final Runnable callbackFunction;
+
+    public LiveNodeChangeListener(Runnable callbackFunction) {
+        this.callbackFunction = callbackFunction;
+    }
 
     /**
      * - This method will be invoked for any change in /live_nodes children
@@ -23,5 +31,7 @@ public class LiveNodeChangeListener implements IZkChildListener {
         System.out.println("current live size: {}" + currentChildren.size());
         ClusterInfo.getClusterInfo().getLiveNodes().clear();
         ClusterInfo.getClusterInfo().getLiveNodes().addAll(currentChildren);
+
+        callbackFunction.run();
     }
 }

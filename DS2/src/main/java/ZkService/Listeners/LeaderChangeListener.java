@@ -11,12 +11,18 @@ import org.I0Itec.zkclient.IZkChildListener;
 import ZkService.utils.ClusterInfo;
 import ZkService.ZkService;
 import server.CityServer;
+import server.LbServer;
 
 @Slf4j
 @Setter
 public class LeaderChangeListener implements IZkChildListener {
 
     private ZkService zkService;
+    private final Runnable callbackFunction;
+
+    public LeaderChangeListener(Runnable callbackFunction) {
+        this.callbackFunction = callbackFunction;
+    }
 
     /**
      * listens for deletion of sequential znode under /election znode and updates the
@@ -41,6 +47,8 @@ public class LeaderChangeListener implements IZkChildListener {
 
             //update the cluster info with new leader
             ClusterInfo.getClusterInfo().setLeader(leaderNode);
+
+            callbackFunction.run();
 
         }
     }
