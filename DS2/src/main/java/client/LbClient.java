@@ -26,6 +26,7 @@ public class LbClient {
         asyncStub = UberServiceGrpc.newStub(channel);
     }
 
+    /*
     // LB func (REST->gRPC)
     public boolean postRide(Rest.entities.Ride ride) {
 
@@ -73,8 +74,9 @@ public class LbClient {
             e.printStackTrace();
         }
 
-        return rides; /* shai still missing return empty in case of error */
+        return rides; /* shai still missing return empty in case of error
     }
+    */
 
 
     public Ride reserveRide(Rout rout) {

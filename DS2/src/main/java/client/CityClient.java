@@ -74,24 +74,38 @@ public class CityClient {
 
     // LB func (REST->gRPC->REST)
     // Accept a user's request to join a ride and check if there is a relevant ride.
-    public List<Ride> postPathPlanningRequest(CustomerRequest customerRequest) {
+    public List<Rest.entities.Ride> postPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
         System.out.println("city client send PostPathPlanningRequest request");
         System.out.println("-------------");
 
+        CustomerRequest request = CustomerRequest.newBuilder()
+                .addAllPath(customerRequest.getPath())
+                .setDate(customerRequest.getDepartureDate())
+                .build();
+
+        List<Rest.entities.Ride> restRides = new ArrayList<>();
         Iterator<Ride> grpcRides;
-        List<Ride> rides = new ArrayList<>();
 
         try {
-            grpcRides = blockingStub.postPathPlanningRequest(customerRequest);
+            grpcRides = blockingStub.postPathPlanningRequest(request);
 
             while(grpcRides.hasNext()) {
-                rides.add(grpcRides.next());
+                Ride ride = grpcRides.next();
+                restRides.add(new Rest.entities.Ride(
+                        ride.getFirstName(),
+                        ride.getLastName(),
+                        ride.getPhoneNum(),
+                        ride.getSrcCity(),
+                        ride.getDstCity(),
+                        ride.getDate(),
+                        ride.getOfferedPlaces(),
+                        ride.getPd()));
             }
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
         }
 
-        return rides; /* shai still missing return empty in case of error */
+        return restRides; /* shai still missing return empty in case of error */
     }
 
     public Ride reserveRide(Rout rout) {

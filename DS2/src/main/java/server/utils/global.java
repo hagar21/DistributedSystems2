@@ -9,5 +9,7 @@ public class global {
 
     public static String lbHostName = "localHost:8990";
 
+    public static String zkHostName = "localhost:2181";
+
     public static String[] shardNames = { "shardA", "shardB", "shardC" };
 }

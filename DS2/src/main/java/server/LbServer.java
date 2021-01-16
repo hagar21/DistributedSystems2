@@ -33,10 +33,11 @@ import server.utils.ShardRide;
 public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
     private final Server server;
-    public final ConcurrentMap<String, LbShardConnections> shardConnections =
+    private final ConcurrentMap<String, LbShardConnections> shardConnections =
             new ConcurrentHashMap<>();
     private ZkServiceImpl zkService;
 
+    /*
     public static void main(String[] args) { // args example: localhost:2181 (zookeeper host)
 
         try {
@@ -49,9 +50,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
                 server.start();
                 System.out.println("LB Server started on port 8990");
                 server.blockUntilShutdown();
-                /* Shai remove
                 ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
-                 */
             }
             else {
                 throw new RuntimeException("Not enough arguments");
@@ -62,8 +61,9 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             System.out.println("City Server service failed to start");
         }
     }
+    */
 
-    LbServer(String hostList) { // port 8990
+    public LbServer(String hostList) { // port 8990
         this.server = ServerBuilder.forPort(Integer.parseInt("8990"))
                 .addService(this)
                 .build();
@@ -143,39 +143,30 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         }
     }
 
-    @Override
-    public void lbPostPathPlanningRequest(CustomerRequest customerRequest, StreamObserver<Ride> responseObserver) {
+    public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
         System.out.println("LB server got postPathPlanningRequest request");
         System.out.println("-------------");
 
-        String shard = MapCityToShard(customerRequest.getPath(0));
+        String shard = MapCityToShard(customerRequest.getPath().get(0));
         if (shard.equals("")) {
-            System.out.println("error: LB got CustomerRequest to src city " + customerRequest.getPath(0) + " not in system");
-            responseObserver.onCompleted();
+            System.out.println("error: LB got CustomerRequest to src city " + customerRequest.getPath().get(0) + " not in system");
+            return new ArrayList<>();
         }
 
         updateShardMembers(shard);
 
         CityClient destService = shardConnections.get(shard).getNextService();
 
-        List<Ride> grpcRides = destService.postPathPlanningRequest(customerRequest);
-        for (Ride ride : grpcRides) {
-            responseObserver.onNext(ride);
-        }
-        responseObserver.onCompleted();
+        return destService.postPathPlanningRequest(customerRequest);
     }
 
-    @Override
-    public void lbPostRide(Ride ride, StreamObserver<Result> responseObserver) {
+    public void PostRide(Rest.entities.Ride ride) {
         System.out.println("LB server got postRide request");
         System.out.println("-------------");
 
-        String shard = MapCityToShard(ride.getSrcCity());
+        String shard = MapCityToShard(ride.getStartingPosition());
         if (shard.equals("")) {
-            System.out.println("error: LB got postRide from src city " + ride.getSrcCity() + " not in system");
-            Result res = Result.newBuilder().setIsSuccess(false).build();
-            responseObserver.onNext(res);
-            responseObserver.onCompleted();
+            System.out.println("error: LB got postRide from src city " + ride.getStartingPosition() + " not in system");
             return;
         }
 
@@ -183,13 +174,8 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
         CityClient destService = shardConnections.get(shard).getNextService();
         destService.postRide(ride);
-
-        Result res = Result.newBuilder().setIsSuccess(true).build();
-        responseObserver.onNext(res);
-        responseObserver.onCompleted();
     }
 
-    @Override
     // Accept a user's request to join a ride and check if there is a relevant ride.
     public void cityRequestRide(CityRequest cityRequest, StreamObserver<Ride> responseObserver) {
         System.out.println("LB got cityRequest to dest city " + cityRequest.getDestCityName() + " sending city request");

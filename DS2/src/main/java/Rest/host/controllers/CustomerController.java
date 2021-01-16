@@ -2,13 +2,17 @@ package Rest.host.controllers;
 
 import Rest.entities.Ride;
 import Rest.entities.CustomerRequest;
+import ch.qos.logback.classic.Level;
 import client.LbClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 //import Rest.repositories.CustomerRepository;
 import Rest.utils.RideAlreadyExistsException;
 import Rest.utils.CustomerRequestAlreadyExistsException;
+import server.LbServer;
 //import Rest.utils.RideNotFoundException;
 //import Rest.utils.CustomerRequestNotFoundException;
 
@@ -16,14 +20,29 @@ import Rest.utils.CustomerRequestAlreadyExistsException;
 import java.util.List;
 
 import static server.utils.global.lbHostName;
+import static server.utils.global.zkHostName;
 
 @RestController
 public class CustomerController {
-    private final LbClient redirectionService;
+    private final LbServer redirectionService = new LbServer(zkHostName);
 
     public CustomerController() {
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(lbHostName).usePlaintext().build();
-        this.redirectionService = new LbClient(channel);
+        try {
+            BasicConfigurator.configure();
+            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+            root.setLevel(Level.INFO);
+
+            redirectionService.start();
+            System.out.println("LB Server started on port 8990");
+            redirectionService.blockUntilShutdown();
+            /* Shai remove
+            ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
+             */
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            System.out.println("City Server service failed to start");
+        }
     }
 
     /*
@@ -40,7 +59,7 @@ public class CustomerController {
 
     @PostMapping("/rides")
     void newRide(@RequestBody Ride newRide) throws RideAlreadyExistsException {
-        redirectionService.postRide(newRide);
+        redirectionService.PostRide(newRide);
     }
 
     /*
@@ -54,7 +73,7 @@ public class CustomerController {
     @PostMapping("/customerRequests")
     List<Ride> newCustomerRequest(@RequestBody CustomerRequest newCustomerRequest)
             throws CustomerRequestAlreadyExistsException {
-        return redirectionService.postPathPlanningRequest(newCustomerRequest);
+        return redirectionService.PostPathPlanningRequest(newCustomerRequest);
     }
 
     /*
