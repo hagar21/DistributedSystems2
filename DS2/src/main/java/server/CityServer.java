@@ -89,12 +89,12 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         this.lb = new LbClient(channel);
         System.out.println("City Server name " + shardName + " connected to an LB client");
 
-        ConnectToZk(hostList);
+        ConnectToZk(hostList, port);
         updateShardMembers();
         setLeader();
     }
 
-    public void ConnectToZk(String hostList) {
+    public void ConnectToZk(String hostList, String port) {
         try {
 
             this.zkService = new ZkServiceImpl(hostList);
@@ -119,7 +119,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // create ephemeral sequential znode in /election/city
             // then get children of  /election/city and fetch least sequenced znode, among children znodes
             System.out.println("ConnectToZk createNodeInElectionZnode");
-            zkService.createNodeInElectionZnode(getHostPostOfServer(), shardName);
+            zkService.createNodeInElectionZnode(getHostPostOfServer() + ":" + port, shardName);
             ClusterInfo.getClusterInfo().setLeader(zkService.getLeaderNodeData(shardName));
 
             // If will will support server coming back to life
@@ -128,7 +128,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // add child znode under /live_node, to tell other servers that this server is ready to serve
             // read request
             System.out.println("ConnectToZk addToLiveNodes");
-            zkService.addToLiveNodes(getHostPostOfServer(), "I am alive", shardName);
+            zkService.addToLiveNodes(getHostPostOfServer() + ":" + port, "I am alive", shardName);
             System.out.println("Shai check ip host wasn't null");
             ClusterInfo.getClusterInfo().getLiveNodes().clear();
             ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes(shardName));
@@ -138,7 +138,9 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener(this::setLeader));
             zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
 
-            System.out.println("Finished ConnectToZk for city " + shardName + " host " + getHostPostOfServer());
+            System.out.println("Finished ConnectToZk for city " + shardName + " host " + getHostPostOfServer() + ":" + port);
+
+            ClusterInfo.getClusterInfo().setZkHost(zkService);
 
         } catch (Exception e) {
             e.printStackTrace();

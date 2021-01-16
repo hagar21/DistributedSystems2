@@ -2,6 +2,9 @@ package Rest.host.controllers;
 
 import Rest.entities.Ride;
 import Rest.entities.CustomerRequest;
+import ZkService.ZkService;
+import ZkService.ZkServiceImpl;
+import ZkService.utils.ClusterInfo;
 import ch.qos.logback.classic.Level;
 import client.LbClient;
 import io.grpc.ManagedChannel;
@@ -19,30 +22,39 @@ import server.LbServer;
 
 import java.util.List;
 
-import static server.utils.global.lbHostName;
 import static server.utils.global.zkHostName;
+
+class LBServerRun implements Runnable{
+    private final LbServer server;
+
+    public void run(){
+
+        try {
+            server.start();
+            server.blockUntilShutdown();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("City Server service failed to start");
+        }
+
+
+    }
+
+    public LBServerRun(LbServer lbServer) {
+        server = lbServer;
+    }
+
+}
+
 
 @RestController
 public class CustomerController {
     private final LbServer redirectionService = new LbServer(zkHostName);
+    public static ZkServiceImpl zkService; /* shai private? */
 
     public CustomerController() {
-        try {
-            BasicConfigurator.configure();
-            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-            root.setLevel(Level.INFO);
-
-            redirectionService.start();
-            System.out.println("LB Server started on port 8990");
-            redirectionService.blockUntilShutdown();
-            /* Shai remove
-            ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
-             */
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("City Server service failed to start");
-        }
+        Runnable r = new LBServerRun(redirectionService);
+        new Thread(r).start();
     }
 
     /*

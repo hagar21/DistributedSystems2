@@ -2,6 +2,8 @@ package ZkService.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ZkService.ZkServiceImpl;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +20,10 @@ public final class ClusterInfo {
     /*
         Ephemeral znodes under LIVE_NODES
      */
+    private ZkServiceImpl zkHost;
+
+    public ZkServiceImpl getZkHost() {return zkHost;}
+
     private List<String> liveNodes = new ArrayList<>();
 
     private String leader;

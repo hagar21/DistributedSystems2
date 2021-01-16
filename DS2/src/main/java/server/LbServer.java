@@ -247,6 +247,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
     public void start() throws IOException {
         try {
             server.start();
+            System.out.println("LB Server started on port 8990");
         }catch (Exception e){
             e.printStackTrace();
         }

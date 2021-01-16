@@ -17,12 +17,12 @@ import server.LbServer;
 @Setter
 public class LeaderChangeListener implements IZkChildListener {
 
-    private ZkService zkService;
     private final Runnable callbackFunction;
 
     public LeaderChangeListener(Runnable callbackFunction) {
         this.callbackFunction = callbackFunction;
     }
+
 
     /**
      * listens for deletion of sequential znode under /election znode and updates the
@@ -36,12 +36,14 @@ public class LeaderChangeListener implements IZkChildListener {
         if (currentChildren.isEmpty()) {
             throw new RuntimeException("No node exists to select master!!");
         } else {
+
+            System.out.println("entered: handleChildChange" + currentChildren.size());
             //get least sequenced znode
             Collections.sort(currentChildren);
             String leaderZNode = currentChildren.get(0);
 
             // once znode is fetched, fetch the znode data to get the hostname of new leader
-            String leaderNode = zkService.getZNodeData("/election".concat("/").concat(leaderZNode));
+            String leaderNode = ClusterInfo.getClusterInfo().getZkHost().getZNodeData("/election".concat("/").concat(leaderZNode));
             //log.info("new leader is: {}", masterNode);
             System.out.println("new leader is: {}" + leaderNode);
 

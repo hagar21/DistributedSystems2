@@ -28,9 +28,10 @@ public class LiveNodeChangeListener implements IZkChildListener {
     @Override
     public void handleChildChange(String parentPath, List<String> currentChildren) {
         //log.info("current live size: {}", currentChildren.size());
-        System.out.println("current live size: {}" + currentChildren.size());
+        System.out.println("before current live size: " + currentChildren.size());
         ClusterInfo.getClusterInfo().getLiveNodes().clear();
         ClusterInfo.getClusterInfo().getLiveNodes().addAll(currentChildren);
+        System.out.println("after current live size: " + currentChildren.size());
 
         callbackFunction.run();
     }

@@ -21,6 +21,6 @@ public class LbShardConnections {
     }
 
     public CityClient getNextService() {
-        return shardClients.get(rrIdx++ % shardClients.size());
+        return shardClients.get(rrIdx++ % (shardClients.size() != 0 ? shardClients.size() : 1));
     }
 }
