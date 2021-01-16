@@ -78,7 +78,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             for (String shardName: shardNames)
             {
                 zkService.createAllParentNodes(shardName);
-                zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
+                zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(updateShardMembers(shardName)));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,50 +86,52 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         }
     }
 
-    private void updateShardMembers(/*String shard*/) {
-        String shard = "A";
-        List<String> liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
+    private Runnable updateShardMembers(String shard) {
+        return () -> {
+            List<String> liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
+            liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
 
-        LbShardConnections lbsc = new LbShardConnections();
+            LbShardConnections lbsc = new LbShardConnections();
 
-        if (shardConnections.containsKey(shard)) {
-            int rrIdx = shardConnections.get(shard).rrIdx;
-            lbsc.rrIdx = rrIdx; // to keep the round robin alive ;)
-            shardConnections.get(shard).shardClients.clear();
-            shardConnections.remove(shard);
-        }
+            if (shardConnections.containsKey(shard)) {
+                int rrIdx = shardConnections.get(shard).rrIdx;
+                lbsc.rrIdx = rrIdx; // to keep the round robin alive ;)
+                shardConnections.get(shard).shardClients.clear();
+                shardConnections.remove(shard);
+            }
 
-        // get new members connections
-        for (String targetHost : liveNodes) {
-            ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
-            ShardClient client = new ShardClient(channel);
-            lbsc.AddToShard(client);
-        }
+            // get new members connections
+            for (String targetHost : liveNodes) {
+                ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
+                ShardClient client = new ShardClient(channel);
+                lbsc.AddToShard(client);
+            }
 
-        shardConnections.put(shard, lbsc);
+            shardConnections.put(shard, lbsc);
+        };
     }
 
-    private void updateShardMembers(String shard) {
-        List<String> liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
-
-        LbShardConnections lbsc = new LbShardConnections();
-
-        if (shardConnections.containsKey(shard)) {
-            int rrIdx = shardConnections.get(shard).rrIdx;
-            lbsc.rrIdx = rrIdx; // to keep the round robin alive ;)
-            shardConnections.get(shard).shardClients.clear();
-            shardConnections.remove(shard);
-        }
-
-        // get new members connections
-        for (String targetHost : liveNodes) {
-            ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
-            ShardClient client = new ShardClient(channel);
-            lbsc.AddToShard(client);
-        }
-
-        shardConnections.put(shard, lbsc);
-    }
+//    private void updateShardMembers(String shard) {
+//        List<String> liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
+//
+//        LbShardConnections lbsc = new LbShardConnections();
+//
+//        if (shardConnections.containsKey(shard)) {
+//            int rrIdx = shardConnections.get(shard).rrIdx;
+//            lbsc.rrIdx = rrIdx; // to keep the round robin alive ;)
+//            shardConnections.get(shard).shardClients.clear();
+//            shardConnections.remove(shard);
+//        }
+//
+//        // get new members connections
+//        for (String targetHost : liveNodes) {
+//            ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
+//            ShardClient client = new ShardClient(channel);
+//            lbsc.AddToShard(client);
+//        }
+//
+//        shardConnections.put(shard, lbsc);
+//    }
 
     /* Shai delete
     public void addCityClient(ShardClient ShardClient) {
@@ -176,7 +178,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             return new ArrayList<>();
         }
 
-        updateShardMembers(shard);
+        // updateShardMembers(shard);
 
         ShardClient destService = shardConnections.get(shard).getNextService();
 
@@ -193,9 +195,9 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             return;
         }
 
-        updateShardMembers(shard);
+        // updateShardMembers(shard);
 
-        CityClient destService = shardConnections.get(shard).getNextService();
+        ShardClient destService = shardConnections.get(shard).getNextService();
         destService.postRide(ride);
     }
 
@@ -212,9 +214,9 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             return ; // Shai Illegal ride - so it won't keep looking
         }
 
-        updateShardMembers(shard);
+        // updateShardMembers(shard);
 
-        CityClient destService = shardConnections.get(shard).getNextService();
+        ShardClient destService = shardConnections.get(shard).getNextService();
         responseObserver.onNext(destService.cityRequestRide(cityRequest));
         responseObserver.onCompleted();
     }
@@ -233,7 +235,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             return;
         }
 
-        updateShardMembers(shard);
+        // updateShardMembers(shard);
 
         ShardClient destService = shardConnections.get(shard).getNextService();
         destService.cityRevertRequestRide(revertRequest);

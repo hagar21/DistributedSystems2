@@ -59,6 +59,37 @@ public final class UberServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<generated.CustomerRequest,
+      generated.Result> getPostCustomerRequestMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "PostCustomerRequest",
+      requestType = generated.CustomerRequest.class,
+      responseType = generated.Result.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.CustomerRequest,
+      generated.Result> getPostCustomerRequestMethod() {
+    io.grpc.MethodDescriptor<generated.CustomerRequest, generated.Result> getPostCustomerRequestMethod;
+    if ((getPostCustomerRequestMethod = UberServiceGrpc.getPostCustomerRequestMethod) == null) {
+      synchronized (UberServiceGrpc.class) {
+        if ((getPostCustomerRequestMethod = UberServiceGrpc.getPostCustomerRequestMethod) == null) {
+          UberServiceGrpc.getPostCustomerRequestMethod = getPostCustomerRequestMethod =
+              io.grpc.MethodDescriptor.<generated.CustomerRequest, generated.Result>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "PostCustomerRequest"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.CustomerRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.Result.getDefaultInstance()))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("PostCustomerRequest"))
+              .build();
+        }
+      }
+    }
+    return getPostCustomerRequestMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<generated.CustomerRequest,
       generated.Ride> getPostPathPlanningRequestMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
@@ -182,6 +213,99 @@ public final class UberServiceGrpc {
     return getSnapshotMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<generated.CityRequest,
+      generated.Ride> getCityRequestRideMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "CityRequestRide",
+      requestType = generated.CityRequest.class,
+      responseType = generated.Ride.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.CityRequest,
+      generated.Ride> getCityRequestRideMethod() {
+    io.grpc.MethodDescriptor<generated.CityRequest, generated.Ride> getCityRequestRideMethod;
+    if ((getCityRequestRideMethod = UberServiceGrpc.getCityRequestRideMethod) == null) {
+      synchronized (UberServiceGrpc.class) {
+        if ((getCityRequestRideMethod = UberServiceGrpc.getCityRequestRideMethod) == null) {
+          UberServiceGrpc.getCityRequestRideMethod = getCityRequestRideMethod =
+              io.grpc.MethodDescriptor.<generated.CityRequest, generated.Ride>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "CityRequestRide"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.CityRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.Ride.getDefaultInstance()))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("CityRequestRide"))
+              .build();
+        }
+      }
+    }
+    return getCityRequestRideMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<generated.CityRevertRequest,
+      com.google.protobuf.Empty> getCityRevertRequestRideMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "CityRevertRequestRide",
+      requestType = generated.CityRevertRequest.class,
+      responseType = com.google.protobuf.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.CityRevertRequest,
+      com.google.protobuf.Empty> getCityRevertRequestRideMethod() {
+    io.grpc.MethodDescriptor<generated.CityRevertRequest, com.google.protobuf.Empty> getCityRevertRequestRideMethod;
+    if ((getCityRevertRequestRideMethod = UberServiceGrpc.getCityRevertRequestRideMethod) == null) {
+      synchronized (UberServiceGrpc.class) {
+        if ((getCityRevertRequestRideMethod = UberServiceGrpc.getCityRevertRequestRideMethod) == null) {
+          UberServiceGrpc.getCityRevertRequestRideMethod = getCityRevertRequestRideMethod =
+              io.grpc.MethodDescriptor.<generated.CityRevertRequest, com.google.protobuf.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "CityRevertRequestRide"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.CityRevertRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("CityRevertRequestRide"))
+              .build();
+        }
+      }
+    }
+    return getCityRevertRequestRideMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<generated.CustomerRequest,
+      generated.Result> getDeleteCustomerRequestMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "DeleteCustomerRequest",
+      requestType = generated.CustomerRequest.class,
+      responseType = generated.Result.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.CustomerRequest,
+      generated.Result> getDeleteCustomerRequestMethod() {
+    io.grpc.MethodDescriptor<generated.CustomerRequest, generated.Result> getDeleteCustomerRequestMethod;
+    if ((getDeleteCustomerRequestMethod = UberServiceGrpc.getDeleteCustomerRequestMethod) == null) {
+      synchronized (UberServiceGrpc.class) {
+        if ((getDeleteCustomerRequestMethod = UberServiceGrpc.getDeleteCustomerRequestMethod) == null) {
+          UberServiceGrpc.getDeleteCustomerRequestMethod = getDeleteCustomerRequestMethod =
+              io.grpc.MethodDescriptor.<generated.CustomerRequest, generated.Result>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "DeleteCustomerRequest"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.CustomerRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.Result.getDefaultInstance()))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("DeleteCustomerRequest"))
+              .build();
+        }
+      }
+    }
+    return getDeleteCustomerRequestMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -242,6 +366,16 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
+     * Accept a handled customer request and save it in the DB.
+     * </pre>
+     */
+    public void postCustomerRequest(generated.CustomerRequest request,
+        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
+      asyncUnimplementedUnaryCall(getPostCustomerRequestMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
      * Accept a user's request to join a ride and check if there are relevant rides.
      * </pre>
      */
@@ -281,6 +415,33 @@ public final class UberServiceGrpc {
       asyncUnimplementedUnaryCall(getSnapshotMethod(), responseObserver);
     }
 
+    /**
+     * <pre>
+     * City request Ride from different city
+     * </pre>
+     */
+    public void cityRequestRide(generated.CityRequest request,
+        io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
+      asyncUnimplementedUnaryCall(getCityRequestRideMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * City revert request Ride from different city
+     * </pre>
+     */
+    public void cityRevertRequestRide(generated.CityRevertRequest request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getCityRevertRequestRideMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void deleteCustomerRequest(generated.CustomerRequest request,
+        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
+      asyncUnimplementedUnaryCall(getDeleteCustomerRequestMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -290,6 +451,13 @@ public final class UberServiceGrpc {
                 generated.Ride,
                 generated.Result>(
                   this, METHODID_POST_RIDE)))
+          .addMethod(
+            getPostCustomerRequestMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                generated.CustomerRequest,
+                generated.Result>(
+                  this, METHODID_POST_CUSTOMER_REQUEST)))
           .addMethod(
             getPostPathPlanningRequestMethod(),
             asyncServerStreamingCall(
@@ -318,6 +486,27 @@ public final class UberServiceGrpc {
                 com.google.protobuf.Empty,
                 com.google.protobuf.Empty>(
                   this, METHODID_SNAPSHOT)))
+          .addMethod(
+            getCityRequestRideMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                generated.CityRequest,
+                generated.Ride>(
+                  this, METHODID_CITY_REQUEST_RIDE)))
+          .addMethod(
+            getCityRevertRequestRideMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                generated.CityRevertRequest,
+                com.google.protobuf.Empty>(
+                  this, METHODID_CITY_REVERT_REQUEST_RIDE)))
+          .addMethod(
+            getDeleteCustomerRequestMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                generated.CustomerRequest,
+                generated.Result>(
+                  this, METHODID_DELETE_CUSTOMER_REQUEST)))
           .build();
     }
   }
@@ -345,6 +534,17 @@ public final class UberServiceGrpc {
         io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getPostRideMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Accept a handled customer request and save it in the DB.
+     * </pre>
+     */
+    public void postCustomerRequest(generated.CustomerRequest request,
+        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getPostCustomerRequestMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -391,6 +591,36 @@ public final class UberServiceGrpc {
       asyncUnaryCall(
           getChannel().newCall(getSnapshotMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     * <pre>
+     * City request Ride from different city
+     * </pre>
+     */
+    public void cityRequestRide(generated.CityRequest request,
+        io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getCityRequestRideMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * City revert request Ride from different city
+     * </pre>
+     */
+    public void cityRevertRequestRide(generated.CityRevertRequest request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getCityRevertRequestRideMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void deleteCustomerRequest(generated.CustomerRequest request,
+        io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getDeleteCustomerRequestMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -415,6 +645,16 @@ public final class UberServiceGrpc {
     public generated.Result postRide(generated.Ride request) {
       return blockingUnaryCall(
           getChannel(), getPostRideMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Accept a handled customer request and save it in the DB.
+     * </pre>
+     */
+    public generated.Result postCustomerRequest(generated.CustomerRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getPostCustomerRequestMethod(), getCallOptions(), request);
     }
 
     /**
@@ -458,6 +698,33 @@ public final class UberServiceGrpc {
       return blockingUnaryCall(
           getChannel(), getSnapshotMethod(), getCallOptions(), request);
     }
+
+    /**
+     * <pre>
+     * City request Ride from different city
+     * </pre>
+     */
+    public generated.Ride cityRequestRide(generated.CityRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getCityRequestRideMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * City revert request Ride from different city
+     * </pre>
+     */
+    public com.google.protobuf.Empty cityRevertRequestRide(generated.CityRevertRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getCityRevertRequestRideMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public generated.Result deleteCustomerRequest(generated.CustomerRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getDeleteCustomerRequestMethod(), getCallOptions(), request);
+    }
   }
 
   /**
@@ -483,6 +750,17 @@ public final class UberServiceGrpc {
         generated.Ride request) {
       return futureUnaryCall(
           getChannel().newCall(getPostRideMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     * Accept a handled customer request and save it in the DB.
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.Result> postCustomerRequest(
+        generated.CustomerRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getPostCustomerRequestMethod(), getCallOptions()), request);
     }
 
     /**
@@ -518,13 +796,47 @@ public final class UberServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(getSnapshotMethod(), getCallOptions()), request);
     }
+
+    /**
+     * <pre>
+     * City request Ride from different city
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.Ride> cityRequestRide(
+        generated.CityRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getCityRequestRideMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     * City revert request Ride from different city
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> cityRevertRequestRide(
+        generated.CityRevertRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getCityRevertRequestRideMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.Result> deleteCustomerRequest(
+        generated.CustomerRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getDeleteCustomerRequestMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_POST_RIDE = 0;
-  private static final int METHODID_POST_PATH_PLANNING_REQUEST = 1;
-  private static final int METHODID_RESERVE_RIDE = 2;
-  private static final int METHODID_REVERT_COMMIT = 3;
-  private static final int METHODID_SNAPSHOT = 4;
+  private static final int METHODID_POST_CUSTOMER_REQUEST = 1;
+  private static final int METHODID_POST_PATH_PLANNING_REQUEST = 2;
+  private static final int METHODID_RESERVE_RIDE = 3;
+  private static final int METHODID_REVERT_COMMIT = 4;
+  private static final int METHODID_SNAPSHOT = 5;
+  private static final int METHODID_CITY_REQUEST_RIDE = 6;
+  private static final int METHODID_CITY_REVERT_REQUEST_RIDE = 7;
+  private static final int METHODID_DELETE_CUSTOMER_REQUEST = 8;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -547,6 +859,10 @@ public final class UberServiceGrpc {
           serviceImpl.postRide((generated.Ride) request,
               (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
           break;
+        case METHODID_POST_CUSTOMER_REQUEST:
+          serviceImpl.postCustomerRequest((generated.CustomerRequest) request,
+              (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
+          break;
         case METHODID_POST_PATH_PLANNING_REQUEST:
           serviceImpl.postPathPlanningRequest((generated.CustomerRequest) request,
               (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
@@ -562,6 +878,18 @@ public final class UberServiceGrpc {
         case METHODID_SNAPSHOT:
           serviceImpl.snapshot((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+          break;
+        case METHODID_CITY_REQUEST_RIDE:
+          serviceImpl.cityRequestRide((generated.CityRequest) request,
+              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
+          break;
+        case METHODID_CITY_REVERT_REQUEST_RIDE:
+          serviceImpl.cityRevertRequestRide((generated.CityRevertRequest) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+          break;
+        case METHODID_DELETE_CUSTOMER_REQUEST:
+          serviceImpl.deleteCustomerRequest((generated.CustomerRequest) request,
+              (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -625,10 +953,14 @@ public final class UberServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new UberServiceFileDescriptorSupplier())
               .addMethod(getPostRideMethod())
+              .addMethod(getPostCustomerRequestMethod())
               .addMethod(getPostPathPlanningRequestMethod())
               .addMethod(getReserveRideMethod())
               .addMethod(getRevertCommitMethod())
               .addMethod(getSnapshotMethod())
+              .addMethod(getCityRequestRideMethod())
+              .addMethod(getCityRevertRequestRideMethod())
+              .addMethod(getDeleteCustomerRequestMethod())
               .build();
         }
       }

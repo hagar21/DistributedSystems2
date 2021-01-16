@@ -1,14 +1,10 @@
 package client;
 
-import Rest.utils.RideAlreadyExistsException;
 import generated.UberServiceGrpc;
 
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Logger;
 
 import static server.utils.global.noRide;
@@ -16,7 +12,7 @@ import static server.utils.global.noRide;
 import generated.*;
 
 public class LbClient {
-    private static final Logger logger = Logger.getLogger(CityClient.class.getName());
+    private static final Logger logger = Logger.getLogger(ShardClient.class.getName());
 
     private final UberServiceGrpc.UberServiceBlockingStub blockingStub;
     private final UberServiceGrpc.UberServiceStub asyncStub;
