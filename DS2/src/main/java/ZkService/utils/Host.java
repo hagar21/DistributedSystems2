@@ -7,11 +7,10 @@ public class Host {
 
     private static String ipAdd = null;
 
-    public static String getHostPostOfServer() {
+    public static String getIp() {
         if (ipAdd != null) {
             return ipAdd;
         }
-        System.out.println("ip is null");
         try {
             ipAdd = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {

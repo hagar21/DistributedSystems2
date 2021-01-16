@@ -1,7 +1,7 @@
 package server;
 
 import ch.qos.logback.classic.Level;
-import client.CityClient;
+import client.ShardClient;
 import client.LbClient;
 import generated.*;
 import io.grpc.*;
@@ -25,21 +25,21 @@ import server.utils.Point;
 
 import static ZkService.ZkService.ELECTION_NODE;
 import static ZkService.ZkService.LIVE_NODES;
-import static ZkService.utils.Host.getHostPostOfServer;
+import static ZkService.utils.Host.getIp;
 import static server.utils.global.*;
 
-public class CityServer extends UberServiceGrpc.UberServiceImplBase {
-    private static final Logger logger = Logger.getLogger(CityServer.class.getName());
+public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
+    private static final Logger logger = Logger.getLogger(ShardServer.class.getName());
 
     // connection info
     private final Server server;
     private ZkServiceImpl zkService;
     public Boolean service_up;
     private final String shardName;
-    private String HostName;
+    private final String HostName;
     private final LbClient lb;
-    private ConcurrentMap<Integer, CityClient> shardMembers;
-    private CityClient leader;
+    private ConcurrentMap<Integer, ShardClient> shardMembers;
+    private ShardClient leader;
 
     // db
     private final ConcurrentMap<String, Ride> rides =
@@ -55,9 +55,8 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             root.setLevel(Level.INFO);
 
             if(args.length == 3) {
-                CityServer server = new CityServer(args[0], args[1], args[2]);
+                ShardServer server = new ShardServer(args[0], args[1], args[2]);
                 server.start();
-                System.out.println("City Server started on port " + args[0]);
                 server.blockUntilShutdown();
                 /* Shai remove
                 ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
@@ -69,7 +68,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         }
         catch (Exception e){
             e.printStackTrace();
-            System.out.println("City Server service failed to start");
+            System.out.println("Shard Server service failed to start");
         }
     }
 
@@ -77,9 +76,10 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     /**
      * Create a Uber server using serverBuilder as a base and features as data.
      */
-    public CityServer(String port, String hostList, String shardName) {
+    public ShardServer(String port, String hostList, String shardName) {
         this.service_up = false;
         this.shardName = shardName;
+        this.HostName = getIp()+":" + port;
 
         this.server = ServerBuilder.forPort(Integer.parseInt(port))
                 .addService(this)
@@ -87,7 +87,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
         ManagedChannel channel = ManagedChannelBuilder.forTarget(lbHostName).usePlaintext().build();
         this.lb = new LbClient(channel);
-        System.out.println("City Server name " + shardName + " connected to an LB client");
+        logger.info("City Server name " + shardName + " connected to LB");
 
         ConnectToZk(hostList);
         updateShardMembers();
@@ -118,8 +118,9 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
             // create ephemeral sequential znode in /election/city
             // then get children of  /election/city and fetch least sequenced znode, among children znodes
-            System.out.println("ConnectToZk createNodeInElectionZnode");
-            zkService.createNodeInElectionZnode(getHostPostOfServer(), shardName);
+            logger.info("ConnectToZk createNodeInElectionZnode");
+
+            zkService.createNodeInElectionZnode(getIp(), shardName);
             ClusterInfo.getClusterInfo().setLeader(zkService.getLeaderNodeData(shardName));
 
             // If will will support server coming back to life
@@ -127,8 +128,9 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
             // add child znode under /live_node, to tell other servers that this server is ready to serve
             // read request
-            System.out.println("ConnectToZk addToLiveNodes");
-            zkService.addToLiveNodes(getHostPostOfServer(), "I am alive", shardName);
+            logger.info("ConnectToZk addToLiveNodes");
+            zkService.addToLiveNodes(getIp(), "I am alive", shardName);
+
             System.out.println("Shai check ip host wasn't null");
             ClusterInfo.getClusterInfo().getLiveNodes().clear();
             ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes(shardName));
@@ -138,7 +140,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener(this::setLeader));
             zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
 
-            System.out.println("Finished ConnectToZk for city " + shardName + " host " + getHostPostOfServer());
+            logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,7 +151,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     public void setLeader() {
         String target = ClusterInfo.getClusterInfo().getLeader();
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-        this.leader = new CityClient(channel);
+        this.leader = new ShardClient(channel);
     }
 
     /**
@@ -168,7 +170,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
                 // Use stderr here since the logger may have been reset by its JVM shutdown hook.
                 System.err.println("*** shutting down gRPC server since JVM is shutting down");
                 try {
-                    CityServer.this.stop();
+                    ShardServer.this.stop();
                 } catch (InterruptedException e) {
                     e.printStackTrace(System.err);
                 }
@@ -390,8 +392,8 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         return false;
     }
 
-    private List<CityClient> initShards(int port) {
-        List<CityClient> shards = new ArrayList<>();
+    private List<ShardClient> initShards(int port) {
+        List<ShardClient> shards = new ArrayList<>();
 //        for(int i = 0; i < shardsNumber; i++) {
 //            String target = "localhost:" + (8980 + i);
 //            ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
@@ -403,13 +405,13 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         if (port == 8990) {
             String target = "localhost:8991";
             ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-            CityClient client = new CityClient(channel);
+            ShardClient client = new ShardClient(channel);
 
             shards.add(client);
 
             String target1 = "localhost:8992";
             ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-            CityClient client1 = new CityClient(channel1);
+            ShardClient client1 = new ShardClient(channel1);
 
             shards.add(client1);
         }
@@ -417,13 +419,13 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         if (port == 8991) {
             String target = "localhost:8990";
             ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-            CityClient client = new CityClient(channel);
+            ShardClient client = new ShardClient(channel);
 
             shards.add(client);
 
             String target1 = "localhost:8992";
             ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-            CityClient client1 = new CityClient(channel1);
+            ShardClient client1 = new ShardClient(channel1);
 
             shards.add(client1);
         }
@@ -431,13 +433,13 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         if (port == 8992) {
             String target = "localhost:8990";
             ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-            CityClient client = new CityClient(channel);
+            ShardClient client = new ShardClient(channel);
 
             shards.add(client);
 
             String target1 = "localhost:8991";
             ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-            CityClient client1 = new CityClient(channel1);
+            ShardClient client1 = new ShardClient(channel1);
 
             shards.add(client1);
         }
@@ -472,7 +474,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             // shardMembers = updateShardMembers();
             Ride commitRide = rideBuilder.build();
 
-            for(CityClient shard : shardMembers.values()) {
+            for(ShardClient shard : shardMembers.values()) {
                 boolean isSuccess = shard.postRide(commitRide);
                 if (isSuccess) {
                     acceptedCounter++;
@@ -505,7 +507,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
             // shardMembers = updateShardMembers();
 
-            for(CityClient shard : shardMembers.values()) {
+            for(ShardClient shard : shardMembers.values()) {
                 boolean isSuccess = shard.postCustomerRequest(commitRequest);
                 if (isSuccess) {
                     acceptedCounter++;
@@ -529,7 +531,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private void rollbackCustomerRequest(CustomerRequest request) {
         // shardMembers = updateShardMembers();
 
-        for(CityClient shard : shardMembers.values()) {
+        for(ShardClient shard : shardMembers.values()) {
             boolean isSuccess = shard.deleteCustomerRequest(request);
             if (!isSuccess) {
                 logger.info("rollback failed");
@@ -540,7 +542,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
     private void rollbackRide(Ride ride) {
         // shardMembers = updateShardMembers();
 
-        for(CityClient shard : shardMembers.values()) {
+        for(ShardClient shard : shardMembers.values()) {
             boolean isSuccess = shard.revertCommit(ride);
             if (!isSuccess) {
                 logger.info("rollback failed");
@@ -553,13 +555,13 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
         List<String> liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
         liveNodes.remove(HostName);
 
-        ConcurrentHashMap<Integer, CityClient> shards = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Integer, ShardClient> shards = new ConcurrentHashMap<>();
 
         // get new members connections
         int i = 0;
         for (String targetHost : liveNodes) {
             ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
-            CityClient client = new CityClient(channel);
+            ShardClient client = new ShardClient(channel);
             shards.put(i++, client);
         }
         // delete all previous stubs

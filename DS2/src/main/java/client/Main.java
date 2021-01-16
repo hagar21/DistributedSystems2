@@ -11,15 +11,15 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         String target1 = "localhost:8990";
         ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-        CityClient client1 = new CityClient(channel1);
+        ShardClient client1 = new ShardClient(channel1);
 
         String target2 = "localhost:8991";
         ManagedChannel channel2 = ManagedChannelBuilder.forTarget(target2).usePlaintext().build();
-        CityClient client2 = new CityClient(channel2);
+        ShardClient client2 = new ShardClient(channel2);
 
         String target3 = "localhost:8992";
         ManagedChannel channel3 = ManagedChannelBuilder.forTarget(target3).usePlaintext().build();
-        CityClient client3 = new CityClient(channel3);
+        ShardClient client3 = new ShardClient(channel3);
 
         // Call server streaming call
         Rest.entities.Ride restRide1 = new Rest.entities.Ride(

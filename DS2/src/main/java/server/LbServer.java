@@ -5,7 +5,7 @@ import ZkService.Listeners.LiveNodeChangeListener;
 import ZkService.ZkServiceImpl;
 import ZkService.utils.ClusterInfo;
 import ch.qos.logback.classic.Level;
-import client.CityClient;
+import client.ShardClient;
 import client.utils.LbShardConnections;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -102,7 +102,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         // get new members connections
         for (String targetHost : liveNodes) {
             ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
-            CityClient client = new CityClient(channel);
+            ShardClient client = new ShardClient(channel);
             lbsc.AddToShard(client);
         }
 
@@ -124,7 +124,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         // get new members connections
         for (String targetHost : liveNodes) {
             ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
-            CityClient client = new CityClient(channel);
+            ShardClient client = new ShardClient(channel);
             lbsc.AddToShard(client);
         }
 
@@ -178,7 +178,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
         updateShardMembers(shard);
 
-        CityClient destService = shardConnections.get(shard).getNextService();
+        ShardClient destService = shardConnections.get(shard).getNextService();
 
         return destService.postPathPlanningRequest(customerRequest);
     }
@@ -235,7 +235,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
         updateShardMembers(shard);
 
-        CityClient destService = shardConnections.get(shard).getNextService();
+        ShardClient destService = shardConnections.get(shard).getNextService();
         destService.cityRevertRequestRide(revertRequest);
 
         Result res = Result.newBuilder().setIsSuccess(true).build();

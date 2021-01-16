@@ -10,8 +10,6 @@ import org.I0Itec.zkclient.IZkChildListener;
 
 import ZkService.utils.ClusterInfo;
 import ZkService.ZkService;
-import server.CityServer;
-import server.LbServer;
 
 @Slf4j
 @Setter
