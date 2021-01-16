@@ -32,6 +32,8 @@ service UberService {
 
   // City revert request Ride from different city
   rpc CityRevertRequestRide(CityRevertRequest) returns (google.protobuf.Empty) {}
+
+  rpc DeleteCustomerRequest(CustomerRequest) returns (Result) {}
 }
 
 message Ride {
@@ -46,8 +48,7 @@ message Ride {
   int32 takenPlaces = 9;
   int32 pd = 10;
   repeated string customers = 11;
-  bool prepare = 12; //default = false
-  bool commit = 13; //default = false
+  bool sentByLeader = 12; //default = false
 }
 
 message CustomerRequest {
@@ -56,8 +57,7 @@ message CustomerRequest {
   repeated string path = 3;
   string date = 4;
   repeated Ride rides = 5;
-  bool prepare = 6; //default = false
-  bool commit = 7; //default = false
+  bool sentByLeader = 6; //default = false
 }
 
 message Rout {

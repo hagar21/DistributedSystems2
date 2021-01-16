@@ -1,0 +1,616 @@
+
+Active Connections
+
+  Proto  Local Address          Foreign Address        State
+  TCP    0.0.0.0:80             0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING
+  RpcSs
+ [svchost.exe]
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    0.0.0.0:5040           0.0.0.0:0              LISTENING
+  CDPSvc
+ [svchost.exe]
+  TCP    0.0.0.0:5357           0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    0.0.0.0:5985           0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    0.0.0.0:8990           0.0.0.0:0              LISTENING
+ [java.exe]
+  TCP    0.0.0.0:47001          0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    0.0.0.0:49664          0.0.0.0:0              LISTENING
+ [lsass.exe]
+  TCP    0.0.0.0:49665          0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    0.0.0.0:49666          0.0.0.0:0              LISTENING
+  EventLog
+ [svchost.exe]
+  TCP    0.0.0.0:49667          0.0.0.0:0              LISTENING
+  Schedule
+ [svchost.exe]
+  TCP    0.0.0.0:49668          0.0.0.0:0              LISTENING
+ [spoolsv.exe]
+  TCP    0.0.0.0:49669          0.0.0.0:0              LISTENING
+ [lsass.exe]
+  TCP    0.0.0.0:49671          0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    100.64.24.152:139      0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    100.64.24.152:55840    10.222.230.3:443       TIME_WAIT
+  TCP    100.64.24.152:64153    10.60.255.4:10123      ESTABLISHED
+ [CcmExec.exe]
+  TCP    127.0.0.1:6283         0.0.0.0:0              LISTENING
+ [java.exe]
+  TCP    127.0.0.1:6405         0.0.0.0:0              LISTENING
+ [java.exe]
+  TCP    127.0.0.1:6942         0.0.0.0:0              LISTENING
+ [idea64.exe]
+  TCP    127.0.0.1:22097        0.0.0.0:0              LISTENING
+ [java.exe]
+  TCP    127.0.0.1:49829        127.0.0.1:49830        ESTABLISHED
+ [atmgr.exe]
+  TCP    127.0.0.1:49830        127.0.0.1:49829        ESTABLISHED
+ [atmgr.exe]
+  TCP    127.0.0.1:49831        127.0.0.1:49832        ESTABLISHED
+ [atmgr.exe]
+  TCP    127.0.0.1:49832        127.0.0.1:49831        ESTABLISHED
+ [atmgr.exe]
+  TCP    127.0.0.1:49833        127.0.0.1:49834        ESTABLISHED
+ [atmgr.exe]
+  TCP    127.0.0.1:49834        127.0.0.1:49833        ESTABLISHED
+ [atmgr.exe]
+  TCP    127.0.0.1:49835        127.0.0.1:49836        ESTABLISHED
+ [atmgr.exe]
+  TCP    127.0.0.1:49836        127.0.0.1:49835        ESTABLISHED
+ [atmgr.exe]
+  TCP    127.0.0.1:53610        0.0.0.0:0              LISTENING
+ [SCNotification.exe]
+  TCP    127.0.0.1:53704        127.0.0.1:53705        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53705        127.0.0.1:53704        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53706        127.0.0.1:53707        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53707        127.0.0.1:53706        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53708        127.0.0.1:53709        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53709        127.0.0.1:53708        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53716        127.0.0.1:53717        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53717        127.0.0.1:53716        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53718        127.0.0.1:53719        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53719        127.0.0.1:53718        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53720        127.0.0.1:53721        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53721        127.0.0.1:53720        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53722        127.0.0.1:53723        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53723        127.0.0.1:53722        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53724        127.0.0.1:53725        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53725        127.0.0.1:53724        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53726        127.0.0.1:53727        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53727        127.0.0.1:53726        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53728        127.0.0.1:53729        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53729        127.0.0.1:53728        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53730        127.0.0.1:53731        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53731        127.0.0.1:53730        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53732        127.0.0.1:53733        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53733        127.0.0.1:53732        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53734        127.0.0.1:53735        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53735        127.0.0.1:53734        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53736        127.0.0.1:53737        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53737        127.0.0.1:53736        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53738        127.0.0.1:53739        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53739        127.0.0.1:53738        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53740        127.0.0.1:53741        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53741        127.0.0.1:53740        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53742        127.0.0.1:53743        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53743        127.0.0.1:53742        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53744        127.0.0.1:53745        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53745        127.0.0.1:53744        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53746        127.0.0.1:53747        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53747        127.0.0.1:53746        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53752        0.0.0.0:0              LISTENING
+ [idea64.exe]
+  TCP    127.0.0.1:53752        127.0.0.1:54895        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53774        0.0.0.0:0              LISTENING
+ [idea64.exe]
+  TCP    127.0.0.1:53774        127.0.0.1:55890        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53774        127.0.0.1:55891        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:53802        0.0.0.0:0              LISTENING
+ [java.exe]
+  TCP    127.0.0.1:54483        0.0.0.0:0              LISTENING
+ [java.exe]
+  TCP    127.0.0.1:54483        127.0.0.1:55760        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:54826        0.0.0.0:0              LISTENING
+ [java.exe]
+  TCP    127.0.0.1:54893        127.0.0.1:54894        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:54894        127.0.0.1:54893        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:54895        127.0.0.1:53752        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55758        127.0.0.1:55759        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:55759        127.0.0.1:55758        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:55760        127.0.0.1:54483        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:55761        127.0.0.1:55762        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:55762        127.0.0.1:55761        ESTABLISHED
+ [idea64.exe]
+  TCP    127.0.0.1:55763        127.0.0.1:55764        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55764        127.0.0.1:55763        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55767        127.0.0.1:55768        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55768        127.0.0.1:55767        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55769        127.0.0.1:55770        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55770        127.0.0.1:55769        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55771        127.0.0.1:55772        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55772        127.0.0.1:55771        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55773        127.0.0.1:55774        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55774        127.0.0.1:55773        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55775        127.0.0.1:55776        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55776        127.0.0.1:55775        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55777        127.0.0.1:55778        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55778        127.0.0.1:55777        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55779        127.0.0.1:55780        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55780        127.0.0.1:55779        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55781        127.0.0.1:55782        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55782        127.0.0.1:55781        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55783        127.0.0.1:55784        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55784        127.0.0.1:55783        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55834        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55841        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55846        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55849        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55852        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55853        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55857        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55858        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55859        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55860        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55862        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55866        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55874        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55877        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55879        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55883        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55888        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55889        127.0.0.1:53774        TIME_WAIT
+  TCP    127.0.0.1:55890        127.0.0.1:53774        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:55891        127.0.0.1:53774        ESTABLISHED
+ [java.exe]
+  TCP    127.0.0.1:62515        0.0.0.0:0              LISTENING
+ [java.exe]
+  TCP    127.0.0.1:63342        0.0.0.0:0              LISTENING
+ [idea64.exe]
+  TCP    192.168.1.22:139       0.0.0.0:0              LISTENING
+ Can not obtain ownership information
+  TCP    192.168.1.22:49438     51.103.5.186:443       ESTABLISHED
+  WpnService
+ [svchost.exe]
+  TCP    192.168.1.22:49439     167.220.204.26:443     ESTABLISHED
+ [GpVpnApp.exe]
+  TCP    192.168.1.22:55441     157.240.1.53:443       ESTABLISHED
+ [msedge.exe]
+  TCP    192.168.1.22:55507     140.82.113.26:443      ESTABLISHED
+ [msedge.exe]
+  TCP    192.168.1.22:55508     140.82.113.26:443      ESTABLISHED
+ [msedge.exe]
+  TCP    192.168.1.22:55792     204.79.197.200:443     TIME_WAIT
+  TCP    192.168.1.22:55796     13.107.18.11:443       TIME_WAIT
+  TCP    192.168.1.22:55799     40.78.1.30:443         ESTABLISHED
+ Can not obtain ownership information
+  TCP    192.168.1.22:55802     204.79.197.222:443     TIME_WAIT
+  TCP    192.168.1.22:55804     152.199.19.161:443     ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55823     13.89.202.241:443      ESTABLISHED
+ [OneDrive.exe]
+  TCP    192.168.1.22:55826     52.114.75.79:443       TIME_WAIT
+  TCP    192.168.1.22:55831     52.113.196.254:443     TIME_WAIT
+  TCP    192.168.1.22:55839     64.39.104.113:443      TIME_WAIT
+  TCP    192.168.1.22:55845     20.190.137.7:443       TIME_WAIT
+  TCP    192.168.1.22:55848     52.114.128.75:443      TIME_WAIT
+  TCP    192.168.1.22:55850     168.62.58.130:443      TIME_WAIT
+  TCP    192.168.1.22:55861     64.39.104.113:443      TIME_WAIT
+  TCP    192.168.1.22:55863     204.79.197.200:443     ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55864     204.79.197.200:443     ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55865     13.107.18.11:443       ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55868     52.114.75.79:443       ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55869     152.199.19.161:443     ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55870     13.107.42.254:443      ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55872     52.113.196.254:443     ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55873     204.79.197.222:443     ESTABLISHED
+ [SearchApp.exe]
+  TCP    192.168.1.22:55880     157.240.221.60:443     ESTABLISHED
+ [msedge.exe]
+  TCP    192.168.1.22:55881     52.184.84.167:443      ESTABLISHED
+ [msedge.exe]
+  TCP    192.168.1.22:55882     52.184.84.167:443      ESTABLISHED
+ [msedge.exe]
+  TCP    192.168.1.22:55893     64.39.104.113:443      ESTABLISHED
+ [QualysAgent.exe]
+  TCP    192.168.1.22:64056     51.103.5.159:443       ESTABLISHED
+ [OneDrive.exe]
+  TCP    192.168.1.22:64081     51.103.5.159:443       ESTABLISHED
+ [msedge.exe]
+  TCP    [::]:80                [::]:0                 LISTENING
+ Can not obtain ownership information
+  TCP    [::]:135               [::]:0                 LISTENING
+  RpcSs
+ [svchost.exe]
+  TCP    [::]:445               [::]:0                 LISTENING
+ Can not obtain ownership information
+  TCP    [::]:5357              [::]:0                 LISTENING
+ Can not obtain ownership information
+  TCP    [::]:5985              [::]:0                 LISTENING
+ Can not obtain ownership information
+  TCP    [::]:8990              [::]:0                 LISTENING
+ [java.exe]
+  TCP    [::]:47001             [::]:0                 LISTENING
+ Can not obtain ownership information
+  TCP    [::]:49664             [::]:0                 LISTENING
+ [lsass.exe]
+  TCP    [::]:49665             [::]:0                 LISTENING
+ Can not obtain ownership information
+  TCP    [::]:49666             [::]:0                 LISTENING
+  EventLog
+ [svchost.exe]
+  TCP    [::]:49667             [::]:0                 LISTENING
+  Schedule
+ [svchost.exe]
+  TCP    [::]:49668             [::]:0                 LISTENING
+ [spoolsv.exe]
+  TCP    [::]:49669             [::]:0                 LISTENING
+ [lsass.exe]
+  TCP    [::]:49671             [::]:0                 LISTENING
+ Can not obtain ownership information
+  TCP    [::1]:49670            [::]:0                 LISTENING
+ [jhi_service.exe]
+  TCP    [2a01:110:68:41::2:7c26]:55347  [2a01:110:3100:c:fe::1d]:445  ESTABLISHED
+ Can not obtain ownership information
+  TCP    [2a01:110:68:41::2:7c26]:55835  [2a01:110:2001:d:fe::1e]:135  TIME_WAIT
+  TCP    [2a01:110:68:41::2:7c26]:55836  [2a01:110:2001:d:fe::1e]:49667  TIME_WAIT
+  TCP    [2a01:110:68:41::2:7c26]:55885  [2404:f801:6003:2:215:5dff:fee7:383a]:5985  ESTABLISHED
+  WinRM
+ [svchost.exe]
+  TCP    [2a01:110:68:41::2:7c26]:55887  [2404:f801:6003:2:215:5dff:fee7:383a]:5985  ESTABLISHED
+  WinRM
+ [svchost.exe]
+  TCP    [2a01:110:68:41::2:7c26]:55894  [2404:f801:6003:2:215:5dff:fee7:383a]:5985  ESTABLISHED
+  WinRM
+ [svchost.exe]
+  UDP    0.0.0.0:123            *:*                    
+  W32Time
+ [svchost.exe]
+  UDP    0.0.0.0:500            *:*                    
+  IKEEXT
+ [svchost.exe]
+  UDP    0.0.0.0:3702           *:*                    
+  PeerDistSvc
+ [svchost.exe]
+  UDP    0.0.0.0:3702           *:*                    
+  FDResPub
+ [svchost.exe]
+  UDP    0.0.0.0:3702           *:*                    
+  PeerDistSvc
+ [svchost.exe]
+  UDP    0.0.0.0:3702           *:*                    
+ [dashost.exe]
+  UDP    0.0.0.0:3702           *:*                    
+ [dashost.exe]
+  UDP    0.0.0.0:3702           *:*                    
+  PeerDistSvc
+ [svchost.exe]
+  UDP    0.0.0.0:3702           *:*                    
+  FDResPub
+ [svchost.exe]
+  UDP    0.0.0.0:3702           *:*                    
+  PeerDistSvc
+ [svchost.exe]
+  UDP    0.0.0.0:4500           *:*                    
+  IKEEXT
+ [svchost.exe]
+  UDP    0.0.0.0:5050           *:*                    
+  CDPSvc
+ [svchost.exe]
+  UDP    0.0.0.0:5353           *:*                    
+ [msedge.exe]
+  UDP    0.0.0.0:5353           *:*                    
+ [msedge.exe]
+  UDP    0.0.0.0:5353           *:*                    
+ [msedge.exe]
+  UDP    0.0.0.0:5353           *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:5353           *:*                    
+ [msedge.exe]
+  UDP    0.0.0.0:49190          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:50199          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:50408          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:51057          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:51616          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:55769          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:55939          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:56211          *:*                    
+ [idea64.exe]
+  UDP    0.0.0.0:56260          *:*                    
+ [java.exe]
+  UDP    0.0.0.0:59285          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:60077          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:60574          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:60818          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:61436          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:61760          *:*                    
+  FDResPub
+ [svchost.exe]
+  UDP    0.0.0.0:63520          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:63646          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:63653          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:63663          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:64094          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    0.0.0.0:65298          *:*                    
+ [idea64.exe]
+  UDP    0.0.0.0:65398          *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    100.64.24.152:137      *:*                    
+ Can not obtain ownership information
+  UDP    100.64.24.152:138      *:*                    
+ Can not obtain ownership information
+  UDP    100.64.24.152:1900     *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    100.64.24.152:56408    *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    127.0.0.1:1900         *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    127.0.0.1:53154        127.0.0.1:53154        
+  NlaSvc
+ [svchost.exe]
+  UDP    127.0.0.1:54241        127.0.0.1:54241        
+ [CcmExec.exe]
+  UDP    127.0.0.1:54717        127.0.0.1:54717        
+  PeerDistSvc
+ [svchost.exe]
+  UDP    127.0.0.1:55021        127.0.0.1:55021        
+ [lsass.exe]
+  UDP    127.0.0.1:55719        127.0.0.1:55719        
+ [wmiprvse.exe]
+  UDP    127.0.0.1:56409        *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    127.0.0.1:59167        127.0.0.1:59167        
+  gpsvc
+ [svchost.exe]
+  UDP    192.168.1.22:137       *:*                    
+ Can not obtain ownership information
+  UDP    192.168.1.22:138       *:*                    
+ Can not obtain ownership information
+  UDP    192.168.1.22:1900      *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    192.168.1.22:56407     *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    [::]:123               *:*                    
+  W32Time
+ [svchost.exe]
+  UDP    [::]:500               *:*                    
+  IKEEXT
+ [svchost.exe]
+  UDP    [::]:3702              *:*                    
+  PeerDistSvc
+ [svchost.exe]
+  UDP    [::]:3702              *:*                    
+  FDResPub
+ [svchost.exe]
+  UDP    [::]:3702              *:*                    
+ [dashost.exe]
+  UDP    [::]:3702              *:*                    
+  FDResPub
+ [svchost.exe]
+  UDP    [::]:3702              *:*                    
+  PeerDistSvc
+ [svchost.exe]
+  UDP    [::]:3702              *:*                    
+  PeerDistSvc
+ [svchost.exe]
+  UDP    [::]:3702              *:*                    
+  PeerDistSvc
+ [svchost.exe]
+  UDP    [::]:3702              *:*                    
+ [dashost.exe]
+  UDP    [::]:4500              *:*                    
+  IKEEXT
+ [svchost.exe]
+  UDP    [::]:5353              *:*                    
+ [msedge.exe]
+  UDP    [::]:5353              *:*                    
+ [msedge.exe]
+  UDP    [::]:5353              *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:49190             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:50199             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:50408             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:51057             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:51616             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:55769             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:55939             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:56211             *:*                    
+ [idea64.exe]
+  UDP    [::]:56260             *:*                    
+ [java.exe]
+  UDP    [::]:59285             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:60077             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:60574             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:60818             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:61436             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:61761             *:*                    
+  FDResPub
+ [svchost.exe]
+  UDP    [::]:63520             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:63646             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:63653             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:63663             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:64094             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::]:65298             *:*                    
+ [idea64.exe]
+  UDP    [::]:65398             *:*                    
+  Dnscache
+ [svchost.exe]
+  UDP    [::1]:1900             *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    [::1]:56406            *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    [fe80::2:7c26%48]:1900  *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    [fe80::2:7c26%48]:56405  *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    [fe80::e899:ecfc:4870:69b6%22]:1900  *:*                    
+  SSDPSRV
+ [svchost.exe]
+  UDP    [fe80::e899:ecfc:4870:69b6%22]:56404  *:*                    
+  SSDPSRV
+ [svchost.exe]
