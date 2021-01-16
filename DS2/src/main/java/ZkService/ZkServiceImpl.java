@@ -24,7 +24,10 @@ public class ZkServiceImpl implements ZkService{
 
     @Override
     public void createAllParentNodes(String shard) {
-        shard = "/" + shard;
+        if (!shard.equals("")) {
+            shard = "/" + shard;
+        }
+
         if (!zkClient.exists(ALL_NODES + shard)) {
             zkClient.create(ALL_NODES + shard, "all nodes are displayed here", CreateMode.PERSISTENT);
         }

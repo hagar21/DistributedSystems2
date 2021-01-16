@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CityServer A" type="Application" factoryName="Application">
+  <configuration default="false" name="shardServer A1" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="server.CityServer" />
-    <module name="DS2.main" />
+    <module name="hw2.DS2.main" />
     <option name="PROGRAM_PARAMETERS" value="8200 localhost:2181 &quot;A&quot;" />
     <extension name="coverage">
       <pattern>

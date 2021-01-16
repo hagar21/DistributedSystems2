@@ -75,12 +75,35 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             for (String shardName: shardNames)
             {
                 zkService.createAllParentNodes(shardName);
-                zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener());
+                zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Startup failed!", e);
         }
+    }
+
+    private void updateShardMembers(/*String shard*/) {
+        String shard = "A";
+        List<String> liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
+
+        LbShardConnections lbsc = new LbShardConnections();
+
+        if (shardConnections.containsKey(shard)) {
+            int rrIdx = shardConnections.get(shard).rrIdx;
+            lbsc.rrIdx = rrIdx; // to keep the round robin alive ;)
+            shardConnections.get(shard).shardClients.clear();
+            shardConnections.remove(shard);
+        }
+
+        // get new members connections
+        for (String targetHost : liveNodes) {
+            ManagedChannel channel = ManagedChannelBuilder.forTarget(targetHost).usePlaintext().build();
+            CityClient client = new CityClient(channel);
+            lbsc.AddToShard(client);
+        }
+
+        shardConnections.put(shard, lbsc);
     }
 
     private void updateShardMembers(String shard) {

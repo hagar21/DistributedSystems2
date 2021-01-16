@@ -21,6 +21,7 @@ import ZkService.Listeners.LiveNodeChangeListener;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.LoggerFactory;
 import server.utils.*;
+import server.utils.Point;
 
 import static ZkService.ZkService.ELECTION_NODE;
 import static ZkService.ZkService.LIVE_NODES;
@@ -100,7 +101,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
 
             // create all parent nodes /election, /all_nodes, /live_nodes
             // Shai - not sure we need to create root
-            // zkService.createAllParentNodes("");
+            zkService.createAllParentNodes("");
 
             // create all parent nodes /election/city, /live_nodes/city, /live_nodes/city
             zkService.createAllParentNodes(shardName);
@@ -562,7 +563,7 @@ public class CityServer extends UberServiceGrpc.UberServiceImplBase {
             shards.put(i++, client);
         }
         // delete all previous stubs
-        shardMembers.clear();
+        // shardMembers.clear();
         shardMembers = shards;
     }
 
