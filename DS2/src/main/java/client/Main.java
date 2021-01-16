@@ -9,17 +9,21 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        String target1 = "localhost:8990";
+        String target1 = "localhost:8200";
         ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-        CityClient client1 = new CityClient(channel1);
+        ShardClient clientA1 = new ShardClient(channel1);
 
-        String target2 = "localhost:8991";
+        String target2 = "localhost:8201";
         ManagedChannel channel2 = ManagedChannelBuilder.forTarget(target2).usePlaintext().build();
-        CityClient client2 = new CityClient(channel2);
+        ShardClient clientB1 = new ShardClient(channel2);
 
-        String target3 = "localhost:8992";
+        String target3 = "localhost:8202";
         ManagedChannel channel3 = ManagedChannelBuilder.forTarget(target3).usePlaintext().build();
-        CityClient client3 = new CityClient(channel3);
+        ShardClient clientA2 = new ShardClient(channel3);
+
+        String target4 = "localhost:8203";
+        ManagedChannel channel4 = ManagedChannelBuilder.forTarget(target3).usePlaintext().build();
+        ShardClient clientB2 = new ShardClient(channel3);
 
         // Call server streaming call
         Rest.entities.Ride restRide1 = new Rest.entities.Ride(
@@ -41,8 +45,10 @@ public class Main {
                 "1/1/21",
                 4,
                 5);
-        client1.postRide(restRide1);
-        client2.postRide(restRide2);
+        clientA1.postRide(restRide1);
+        clientB1.postRide(restRide2);
+
+        clientA2.snapshot();
 
         List<String> path = new ArrayList<String>();
         path.add("haifa");
@@ -73,11 +79,12 @@ public class Main {
                 "1/1/21",
                 4,
                 5);
-        client3.postRide(restRide3);
+        clientA2.postRide(restRide3);
 
-        client1.snapshot();
-        client2.snapshot();
-        client3.snapshot();
+        clientA1.snapshot();
+        clientA2.snapshot();
+        clientB1.snapshot();
+        clientB2.snapshot();
 
         System.out.println("Waiting");
         Scanner sc= new Scanner(System.in);

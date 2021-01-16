@@ -15,13 +15,13 @@ import java.util.logging.Logger;
 
 import static server.utils.global.noRide;
 
-public class CityClient {
-    private static final Logger logger = Logger.getLogger(CityClient.class.getName());
+public class ShardClient {
+    private static final Logger logger = Logger.getLogger(ShardClient.class.getName());
 
     private final UberServiceGrpc.UberServiceBlockingStub blockingStub;
     private final UberServiceGrpc.UberServiceStub asyncStub;
 
-    public CityClient(Channel channel) {
+    public ShardClient(Channel channel) {
         blockingStub = UberServiceGrpc.newBlockingStub(channel);
         asyncStub = UberServiceGrpc.newStub(channel);
     }

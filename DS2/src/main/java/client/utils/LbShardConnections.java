@@ -1,14 +1,12 @@
 package client.utils;
 
-import client.CityClient;
+import client.ShardClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class LbShardConnections {
-    public static List<CityClient> shardClients;
+    public static List<ShardClient> shardClients;
     public static int rrIdx;
 
     public LbShardConnections() {
@@ -16,11 +14,11 @@ public class LbShardConnections {
         rrIdx = 0;
     }
 
-    public void AddToShard(CityClient c) {
+    public void AddToShard(ShardClient c) {
         shardClients.add(c);
     }
 
-    public CityClient getNextService() {
+    public ShardClient getNextService() {
         return shardClients.get(rrIdx++ % (shardClients.size() != 0 ? shardClients.size() : 1));
     }
 }
