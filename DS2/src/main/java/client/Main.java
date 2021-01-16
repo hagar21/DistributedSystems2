@@ -53,6 +53,7 @@ public class Main {
         Rest.entities.CustomerRequest customerRequest = new Rest.entities.CustomerRequest(
                 "tal", path, "1/1/21");
 
+        /*
         List<Rest.entities.Ride> ridesList = client3.postPathPlanningRequest(customerRequest);
 
         System.out.println("Path planning returned:");
@@ -60,6 +61,8 @@ public class Main {
         for(Rest.entities.Ride ride : ridesList) {
             System.out.println(ride.getFirstName() + " " + ride.getLastName());
         }
+
+         */
 
         Rest.entities.Ride restRide3 = new Rest.entities.Ride(
                 "tal",

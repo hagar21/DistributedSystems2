@@ -2,7 +2,7 @@ package Rest.host.controllers;
 
 import Rest.entities.Ride;
 import Rest.entities.CustomerRequest;
-import client.CityClient;
+import client.LbClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +19,11 @@ import static server.utils.global.lbHostName;
 
 @RestController
 public class CustomerController {
-    private final CityClient redirectionService;
+    private final LbClient redirectionService;
 
     public CustomerController() {
         ManagedChannel channel = ManagedChannelBuilder.forTarget(lbHostName).usePlaintext().build();
-        this.redirectionService = new CityClient(channel);
+        this.redirectionService = new LbClient(channel);
     }
 
     /*

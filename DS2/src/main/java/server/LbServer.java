@@ -1,5 +1,6 @@
 package server;
 
+import Rest.utils.RideAlreadyExistsException;
 import ZkService.Listeners.LiveNodeChangeListener;
 import ZkService.ZkServiceImpl;
 import ZkService.utils.ClusterInfo;
@@ -10,7 +11,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -22,14 +23,17 @@ import static server.utils.global.shardNames;
 import generated.*;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.LoggerFactory;
+import server.utils.ShardRide;
+
 
 
 public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
     private final Server server;
-    private final ConcurrentMap<String, LbShardConnections> shardConnections =
+    public final ConcurrentMap<String, LbShardConnections> shardConnections =
             new ConcurrentHashMap<>();
     private ZkServiceImpl zkService;
 
@@ -65,7 +69,6 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
                 .build();
         ConnectToZk(hostList);
     }
-
 
     private void ConnectToZk(String hostList) {
         try {
@@ -127,7 +130,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
      */
 
-    private String MapCityToShard(String City) {
+    private static String MapCityToShard(String City) {
         switch (City) {
             case "A":
             case "B":
@@ -140,30 +143,84 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         }
     }
 
+    @Override
+    public void lbPostPathPlanningRequest(CustomerRequest customerRequest, StreamObserver<Ride> responseObserver) {
+        System.out.println("LB server got postPathPlanningRequest request");
+        System.out.println("-------------");
+
+        String shard = MapCityToShard(customerRequest.getPath(0));
+        if (shard.equals("")) {
+            System.out.println("error: LB got CustomerRequest to src city " + customerRequest.getPath(0) + " not in system");
+            responseObserver.onCompleted();
+        }
+
+        updateShardMembers(shard);
+
+        CityClient destService = shardConnections.get(shard).getNextService();
+
+        List<Ride> grpcRides = destService.postPathPlanningRequest(customerRequest);
+        for (Ride ride : grpcRides) {
+            responseObserver.onNext(ride);
+        }
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void lbPostRide(Ride ride, StreamObserver<Result> responseObserver) {
+        System.out.println("LB server got postRide request");
+        System.out.println("-------------");
+
+        String shard = MapCityToShard(ride.getSrcCity());
+        if (shard.equals("")) {
+            System.out.println("error: LB got postRide from src city " + ride.getSrcCity() + " not in system");
+            Result res = Result.newBuilder().setIsSuccess(false).build();
+            responseObserver.onNext(res);
+            responseObserver.onCompleted();
+            return;
+        }
+
+        updateShardMembers(shard);
+
+        CityClient destService = shardConnections.get(shard).getNextService();
+        destService.postRide(ride);
+
+        Result res = Result.newBuilder().setIsSuccess(true).build();
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
+    }
+
+    @Override
     // Accept a user's request to join a ride and check if there is a relevant ride.
-    public Ride cityRequestRide(CityRequest cityRequest) {
+    public void cityRequestRide(CityRequest cityRequest, StreamObserver<Ride> responseObserver) {
         System.out.println("LB got cityRequest to dest city " + cityRequest.getDestCityName() + " sending city request");
         System.out.println("------------");
 
         String shard = MapCityToShard(cityRequest.getDestCityName());
         if (shard.equals("")) {
             System.out.println("error: LB got cityRequest to dest city " + cityRequest.getDestCityName() + " not in system");
-            return noRide(); // Shai Ilegal ride - so it won't keep looking
+            responseObserver.onNext(noRide());
+            responseObserver.onCompleted();
+            return ; // Shai Illegal ride - so it won't keep looking
         }
 
         updateShardMembers(shard);
 
         CityClient destService = shardConnections.get(shard).getNextService();
-        return destService.cityRequestRide(cityRequest);
+        responseObserver.onNext(destService.cityRequestRide(cityRequest));
+        responseObserver.onCompleted();
     }
 
-    public void CityRevertRequestRide(CityRevertRequest revertRequest) {
+    @Override
+    public void cityRevertRequestRide(CityRevertRequest revertRequest, StreamObserver<Result> responseObserver) {
         System.out.println("LB got CityRevertRequest to dest city " + revertRequest.getDestCityName() + " sending city request");
         System.out.println("------------");
 
         String shard = MapCityToShard(revertRequest.getDestCityName());
         if (shard.equals("")) {
             System.out.println("error: LB got cityRequest to dest city " + revertRequest.getDestCityName() + " not in system");
+            Result res = Result.newBuilder().setIsSuccess(false).build();
+            responseObserver.onNext(res);
+            responseObserver.onCompleted();
             return;
         }
 
@@ -171,6 +228,10 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
         CityClient destService = shardConnections.get(shard).getNextService();
         destService.cityRevertRequestRide(revertRequest);
+
+        Result res = Result.newBuilder().setIsSuccess(true).build();
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
     }
 
 
