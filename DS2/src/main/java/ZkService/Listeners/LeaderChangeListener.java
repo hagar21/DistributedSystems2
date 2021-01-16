@@ -15,11 +15,13 @@ import ZkService.ZkService;
 @Setter
 public class LeaderChangeListener implements IZkChildListener {
 
+/*
     private final Runnable callbackFunction;
 
     public LeaderChangeListener(Runnable callbackFunction) {
         this.callbackFunction = callbackFunction;
     }
+*/
 
 
     /**
@@ -48,7 +50,7 @@ public class LeaderChangeListener implements IZkChildListener {
             //update the cluster info with new leader
             ClusterInfo.getClusterInfo().setLeader(leaderNode);
 
-            callbackFunction.run();
+//            callbackFunction.run();
 
         }
     }
