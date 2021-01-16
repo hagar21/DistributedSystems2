@@ -41,7 +41,7 @@ public class LeaderChangeListener implements IZkChildListener {
             String leaderZNode = currentChildren.get(0);
 
             // once znode is fetched, fetch the znode data to get the hostname of new leader
-            String leaderNode = ClusterInfo.getClusterInfo().getZkHost().getZNodeData("/election".concat("/").concat(leaderZNode));
+            String leaderNode = ClusterInfo.getClusterInfo().getZkHost().getZNodeData(parentPath.concat("/").concat(leaderZNode));
             //log.info("new leader is: {}", masterNode);
             System.out.println("new leader is: {}" + leaderNode);
 

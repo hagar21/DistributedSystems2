@@ -235,7 +235,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             return;
         }
 
-        // updateShardMembers(shard);
+        updateShardMembers(shard);
 
         ShardClient destService = shardConnections.get(shard).getNextService();
         destService.cityRevertRequestRide(revertRequest);
