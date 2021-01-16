@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="LbServer" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="server.LbServer" />
+    <module name="DS2.main" />
+    <option name="PROGRAM_PARAMETERS" value="localhost:2181" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
