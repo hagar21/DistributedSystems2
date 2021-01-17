@@ -136,8 +136,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             // register watchers for leader change, live nodes change, all nodes change and zk session
             // state change
-            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener());
-            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener());
+            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener(this::setLeader));
+            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
 
             logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp() + ":" +port);
 
