@@ -8,10 +8,8 @@ public interface ZkService {
 
     public static final String ELECTION_NODE = "/election";
     public static final String LIVE_NODES = "/liveNodes";
-    public static final String ALL_NODES = "/allNodes";
-
-    // shai - added lock
-    public static final String DISTRUBUTED_LOCK = "/lock";
+    public static final String ATOMIC_BROADCAST = "/atomicBroadcast";
+    public static final String APPROVE = "/approve";
 
     void createAllParentNodes(String shard);
 
@@ -22,6 +20,10 @@ public interface ZkService {
     // membership
     void addToLiveNodes(String nodeName, String data, String shard);
     public List<String> getLiveNodes(String shard);
+
+    // atomic broadcast
+    public void leaderBroadcast(String data, String shard);
+    public void leaderClearBroadcast(String shard);
 
     public String getZNodeData(String path);
 
