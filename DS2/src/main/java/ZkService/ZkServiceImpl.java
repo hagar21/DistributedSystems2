@@ -102,12 +102,54 @@ public class ZkServiceImpl implements ZkService{
     }
 
     @Override
-    public void leaderDeleteRIdeBroadcast(String shard, String nodeName) {
+    public void leaderDeleteRideBroadcast(String shard, String nodeName) {
         shard = "/" + shard;
         if (!zkClient.exists(ATOMIC_BROADCAST + shard + RIDES)) {
             throw new RuntimeException("Leader clears but no broadcast happened");
         }
         zkClient.delete(ATOMIC_BROADCAST.concat(shard).concat(RIDES).concat(nodeName));
+    }
+
+    @Override
+    public List<String> getRideBroadcastNodes(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + RIDES)) {
+            throw new RuntimeException("No node /atomicBroadcast/ride exists");
+        }
+
+        return zkClient.getChildren(ATOMIC_BROADCAST + shard + RIDES);
+    }
+
+    @Override
+    public String leaderCreateCrBroadcast(String data, String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("No node /atomicBroadcast/ride exists");
+        }
+        zkClient.create(ATOMIC_BROADCAST.concat(shard).concat(CUSTOMER_REQUESTS), data, CreateMode.PERSISTENT_SEQUENTIAL);
+
+        List<String> children = zkClient.getChildren(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS);
+        Collections.sort(children);
+        return children.get(children.size() - 1);
+    }
+
+    @Override
+    public void leaderDeleteCrBroadcast(String shard, String nodeName) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("Leader clears but no broadcast happened");
+        }
+        zkClient.delete(ATOMIC_BROADCAST.concat(shard).concat(CUSTOMER_REQUESTS).concat(nodeName));
+    }
+
+    @Override
+    public List<String> getCrBroadcastNodes(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("No node /atomicBroadcast/ride exists");
+        }
+
+        return zkClient.getChildren(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS);
     }
 
     @Override

@@ -25,7 +25,12 @@ public interface ZkService {
 
     // Leader backup
     public String leaderCreateRideBroadcast(String data, String shard);
-    public void leaderDeleteRIdeBroadcast(String shard, String seq);
+    public void leaderDeleteRideBroadcast(String shard, String seq);
+    public List<String> getRideBroadcastNodes(String shard);
+
+    public String leaderCreateCrBroadcast(String data, String shard);
+    public void leaderDeleteCrBroadcast(String shard, String seq);
+    public List<String> getCrBroadcastNodes(String shard);
 
     public String getZNodeData(String path);
 

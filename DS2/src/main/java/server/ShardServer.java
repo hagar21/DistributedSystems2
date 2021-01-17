@@ -3,6 +3,8 @@ package server;
 import ch.qos.logback.classic.Level;
 import client.ShardClient;
 import client.LbClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import generated.*;
 import io.grpc.*;
 
@@ -153,7 +155,22 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         this.leader = new ShardClient(channel);
 
-        // Shai here check if we tried to commit and leader faild?
+        // check if leader crashed in the middle of a commit
+        List<String> RideBroadcastNodes = zkService.getRideBroadcastNodes(shardName);
+        Collections.sort(RideBroadcastNodes);
+
+        for (String broadcast: RideBroadcastNodes) {
+            String rideString = zkService.getZNodeData(broadcast);
+            rideCommit(String2Ride(rideString));
+        }
+
+        List<String> CrBroadcastNodes = zkService.getCrBroadcastNodes(shardName);
+        Collections.sort(CrBroadcastNodes);
+
+        for (String broadcast: CrBroadcastNodes) {
+            String CrString = zkService.getZNodeData(broadcast);
+            customerRequestCommit(String2Cr(CrString));
+        }
     }
 
     /**
@@ -476,7 +493,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             // shardMembers = updateShardMembers();
             Ride commitRide = rideBuilder.build();
 
-            String broadcastNode = zkService.leaderCreateRideBroadcast(ride, shardName);
+            String broadcastNode = zkService.leaderCreateRideBroadcast(Ride2String(ride), shardName);
 
             for(ShardClient shard : shardMembers.values()) {
                 boolean isSuccess = shard.postRide(commitRide);
@@ -487,11 +504,11 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             if(acceptedCounter < shardMembers.size()) {
                 rollbackRide(commitRide);
-                zkService.leaderDeleteRIdeBroadcast(shardName, broadcastNode);
+                zkService.leaderDeleteRideBroadcast(shardName, broadcastNode);
                 return false;
             }
 
-            zkService.leaderDeleteRIdeBroadcast(shardName, broadcastNode);
+            zkService.leaderDeleteRideBroadcast(shardName, broadcastNode);
 
         } else {
             // This node is not the leader
@@ -500,6 +517,52 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             return leader.postRide(ride);
         }
         return false;
+    }
+
+    private String Ride2String(Ride ride) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String rideJson = mapper.writeValueAsString(ride);
+            System.out.println("ResultingJSONstring = " + rideJson);
+            //System.out.println(json);
+            return rideJson;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private Ride String2Ride (String rideJson) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(rideJson, Ride.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return noRide();
+    }
+
+    private String Cr2String(CustomerRequest request) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String requestJson = mapper.writeValueAsString(request);
+            System.out.println("ResultingJSONstring = " + requestJson);
+            //System.out.println(json);
+            return requestJson;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private CustomerRequest String2Cr (String requestJson) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(requestJson, CustomerRequest.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return CustomerRequest.newBuilder().setId("dummy").build();
     }
 
     public boolean customerRequestCommit(CustomerRequest request) {
@@ -514,6 +577,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             // shardMembers = updateShardMembers();
 
+            String broadcastNode = zkService.leaderCreateCrBroadcast(Cr2String(request), shardName);
+
             for(ShardClient shard : shardMembers.values()) {
                 boolean isSuccess = shard.postCustomerRequest(commitRequest);
                 if (isSuccess) {
@@ -523,8 +588,11 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             if(acceptedCounter < shardMembers.size()) {
                 rollbackCustomerRequest(commitRequest);
+                zkService.leaderDeleteCrBroadcast(shardName, broadcastNode);
                 return false;
             }
+
+            zkService.leaderDeleteCrBroadcast(shardName, broadcastNode);
 
         } else {
             // This node is not the leader
