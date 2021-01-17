@@ -89,21 +89,22 @@ public class ZkServiceImpl implements ZkService{
     }
 
     @Override
-    public void leaderBroadcast(String data, String shard) {
+    public String leaderCreateRideBroadcast(String data, String shard) {
         shard = "/" + shard;
-        if (!zkClient.exists(ATOMIC_BROADCAST + shard)) {
-            throw new RuntimeException("No node /atomicBroadcast exists");
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + RIDES)) {
+            throw new RuntimeException("No node /atomicBroadcast/ride exists");
         }
-        zkClient.create(ATOMIC_BROADCAST.concat(shard).concat("/").concat("broadcast"), data, CreateMode.PERSISTENT);
+        zkClient.create(ATOMIC_BROADCAST.concat(shard).concat(RIDES), data, CreateMode.PERSISTENT_SEQUENTIAL);
+        return ""; // Shai how to return seq value?
     }
 
     @Override
-    public void leaderClearBroadcast(String shard) {
+    public void leaderDeleteRIdeBroadcast(String shard, String seq) {
         shard = "/" + shard;
-        if (!zkClient.exists(ATOMIC_BROADCAST + shard + "/broadcast")) {
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + RIDES)) {
             throw new RuntimeException("Leader clears but no broadcast happened");
         }
-        zkClient.delete(ATOMIC_BROADCAST.concat(shard).concat("/").concat("broadcast"));
+        zkClient.delete(ATOMIC_BROADCAST.concat(shard).concat(RIDES).concat(seq));
     }
 
     @Override

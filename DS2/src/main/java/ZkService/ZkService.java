@@ -9,6 +9,8 @@ public interface ZkService {
     public static final String ELECTION_NODE = "/election";
     public static final String LIVE_NODES = "/liveNodes";
     public static final String ATOMIC_BROADCAST = "/atomicBroadcast";
+    public static final String RIDES = "/rides";
+    public static final String CUSTOMER_REQUESTS = "/customerRequests";
     public static final String APPROVE = "/approve";
 
     void createAllParentNodes(String shard);
@@ -22,8 +24,8 @@ public interface ZkService {
     public List<String> getLiveNodes(String shard);
 
     // atomic broadcast
-    public void leaderBroadcast(String data, String shard);
-    public void leaderClearBroadcast(String shard);
+    public String leaderCreateRideBroadcast(String data, String shard);
+    public void leaderDeleteRIdeBroadcast(String shard, String seq);
 
     public String getZNodeData(String path);
 

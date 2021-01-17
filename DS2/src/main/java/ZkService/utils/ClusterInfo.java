@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ZkService.ZkServiceImpl;
+import generated.CustomerRequest;
+import generated.Ride;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +29,9 @@ public final class ClusterInfo {
     private List<String> liveNodes = new ArrayList<>();
 
     private String leader;
+
+    private Ride rideBroadcast;
+    private CustomerRequest customerRequestBroadcast;
 
     public List<String> getLiveNodes() { return this.liveNodes; }
     public void setLiveNodes(List<String> ln) { this.liveNodes = ln; }
