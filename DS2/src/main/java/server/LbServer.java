@@ -17,8 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import static ZkService.ZkService.LIVE_NODES;
-import static server.utils.global.noRide;
-import static server.utils.global.shardNames;
+import static server.utils.global.*;
 
 import generated.*;
 import io.grpc.Server;
@@ -68,6 +67,9 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
                 .addService(this)
                 .build();
         ConnectToZk(hostList);
+        for(String shard : shardNames){
+            updateShardMembers(shard).run();
+        }
     }
 
     private void ConnectToZk(String hostList) {
@@ -88,8 +90,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
     private Runnable updateShardMembers(String shard) {
         return () -> {
-            List<String> liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
-            liveNodes = ClusterInfo.getClusterInfo().getLiveNodes();
+            List<String> liveNodes = zkService.getLiveNodes(shard);
 
             LbShardConnections lbsc = new LbShardConnections();
 
@@ -154,19 +155,6 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
     }
 
      */
-
-    private static String MapCityToShard(String City) {
-        switch (City) {
-            case "A":
-            case "B":
-                return shardNames[0];
-            case "C":
-                return shardNames[1];
-            default:
-                System.out.println("No such city in system");
-                return "";
-        }
-    }
 
     public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
         System.out.println("LB server got postPathPlanningRequest request");

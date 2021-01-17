@@ -68,18 +68,18 @@ public final class CityProto {
       "\"8\n\013CityRequest\022\024\n\014destCityName\030\001 \001(\t\022\023\n" +
       "\004rout\030\002 \001(\0132\005.Rout\">\n\021CityRevertRequest\022" +
       "\024\n\014destCityName\030\001 \001(\t\022\023\n\004ride\030\002 \001(\0132\005.Ri" +
-      "de2\254\003\n\013UberService\022\034\n\010PostRide\022\005.Ride\032\007." +
+      "de2\235\003\n\013UberService\022\034\n\010PostRide\022\005.Ride\032\007." +
       "Result\"\000\0222\n\023PostCustomerRequest\022\020.Custom" +
       "erRequest\032\007.Result\"\000\0226\n\027PostPathPlanning" +
       "Request\022\020.CustomerRequest\032\005.Ride\"\0000\001\022\035\n\013" +
       "ReserveRide\022\005.Rout\032\005.Ride\"\000\022\036\n\014RevertCom" +
-      "mit\022\005.Ride\032\007.Result\022<\n\010Snapshot\022\026.google" +
-      ".protobuf.Empty\032\026.google.protobuf.Empty\"" +
-      "\000\022(\n\017CityRequestRide\022\014.CityRequest\032\005.Rid" +
-      "e\"\000\0226\n\025CityRevertRequestRide\022\022.CityRever" +
-      "tRequest\032\007.Result\"\000\0224\n\025DeleteCustomerReq" +
-      "uest\022\020.CustomerRequest\032\007.Result\"\000B\036\n\tgen" +
-      "eratedB\tCityProtoP\001\242\002\003RTGb\006proto3"
+      "mit\022\005.Ride\032\007.Result\022-\n\010Snapshot\022\026.google" +
+      ".protobuf.Empty\032\007.Result\"\000\022(\n\017CityReques" +
+      "tRide\022\014.CityRequest\032\005.Ride\"\000\0226\n\025CityReve" +
+      "rtRequestRide\022\022.CityRevertRequest\032\007.Resu" +
+      "lt\"\000\0224\n\025DeleteCustomerRequest\022\020.Customer" +
+      "Request\032\007.Result\"\000B\036\n\tgeneratedB\tCityPro" +
+      "toP\001\242\002\003RTGb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
