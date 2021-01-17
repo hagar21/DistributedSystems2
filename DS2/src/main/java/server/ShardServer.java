@@ -138,9 +138,6 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener(this::setLeader));
             zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
 
-            zkService.registerChildrenChangeListener(ATOMIC_BROADCAST + "/" + shardName + RIDES, new LiveNodeChangeListener(this::writeRideToDb));
-            zkService.registerChildrenChangeListener(ATOMIC_BROADCAST + "/" + shardName + CUSTOMER_REQUESTS, new LiveNodeChangeListener(this::writeCustomerRequestToDb));
-
             logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp() + ":" +port);
 
             ClusterInfo.getClusterInfo().setZkHost(zkService);
@@ -155,16 +152,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         String target = ClusterInfo.getClusterInfo().getLeader();
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         this.leader = new ShardClient(channel);
-    }
 
-    public void writeRideToDb() {
-        Ride ride = ClusterInfo.getClusterInfo().getRideBroadcast();
-        rides.put(ride.getId(), ride);
-    }
-
-    public void writeCustomerRequestToDb() {
-        CustomerRequest request = ClusterInfo.getClusterInfo().getCustomerRequestBroadcast();
-        customerRequests.put(request.getId(), request);
+        // Shai here check if we tried to commit and leader faild?
     }
 
     /**
@@ -487,6 +476,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             // shardMembers = updateShardMembers();
             Ride commitRide = rideBuilder.build();
 
+            String broadcastNode = zkService.leaderCreateRideBroadcast(ride, shardName);
+
             for(ShardClient shard : shardMembers.values()) {
                 boolean isSuccess = shard.postRide(commitRide);
                 if (isSuccess) {
@@ -496,8 +487,11 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             if(acceptedCounter < shardMembers.size()) {
                 rollbackRide(commitRide);
+                zkService.leaderDeleteRIdeBroadcast(shardName, broadcastNode);
                 return false;
             }
+
+            zkService.leaderDeleteRIdeBroadcast(shardName, broadcastNode);
 
         } else {
             // This node is not the leader

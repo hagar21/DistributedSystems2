@@ -23,7 +23,7 @@ public interface ZkService {
     void addToLiveNodes(String nodeName, String data, String shard);
     public List<String> getLiveNodes(String shard);
 
-    // atomic broadcast
+    // Leader backup
     public String leaderCreateRideBroadcast(String data, String shard);
     public void leaderDeleteRIdeBroadcast(String shard, String seq);
 
