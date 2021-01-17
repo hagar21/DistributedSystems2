@@ -62,24 +62,24 @@ public class Main {
         Rest.entities.CustomerRequest customerRequest2 = new Rest.entities.CustomerRequest(
                 "yarin", path2, "1/1/21");
 
-        clientA1.postRide(restRide1);
-        clientB1.postRide(restRide2);
+//        clientA1.postRide(restRide1);
+//        clientB1.postRide(restRide2);
 
-        List<Rest.entities.Ride> ridesList = clientB2.postPathPlanningRequest(customerRequest1);
+//        List<Rest.entities.Ride> ridesList = clientB2.postPathPlanningRequest(customerRequest1);
 
-        System.out.println("Path planning returned:");
-
-        for(Rest.entities.Ride ride : ridesList) {
-            System.out.println(ride.getFirstName() + " " + ride.getLastName());
-        }
-
-        ridesList = clientA1.postPathPlanningRequest(customerRequest2);
-
-        System.out.println("Path planning returned:");
-
-        for(Rest.entities.Ride ride : ridesList) {
-            System.out.println(ride.getFirstName() + " " + ride.getLastName());
-        }
+//        System.out.println("Path planning returned:");
+//
+//        for(Rest.entities.Ride ride : ridesList) {
+//            System.out.println(ride.getFirstName() + " " + ride.getLastName());
+//        }
+//
+//        ridesList = clientA1.postPathPlanningRequest(customerRequest2);
+//
+//        System.out.println("Path planning returned:");
+//
+//        for(Rest.entities.Ride ride : ridesList) {
+//            System.out.println(ride.getFirstName() + " " + ride.getLastName());
+//        }
 
         clientB1.snapshot();
         clientB2.snapshot();

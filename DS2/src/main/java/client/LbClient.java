@@ -105,11 +105,11 @@ public class LbClient {
      */
 
     // Accept a user's request to join a ride and check if there is a relevant ride.
-    public Ride cityRequestRide(String cityName, Rout rout) {
+    public Ride cityRequestRide(String shardName, Rout rout) {
 
         Ride ride = noRide();
         CityRequest cityRequest = CityRequest.newBuilder()
-                .setDestCityName(cityName)
+                .setDestCityName(shardName)
                 .setRout(rout)
                 .build();
         try {

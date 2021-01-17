@@ -166,7 +166,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             return new ArrayList<>();
         }
 
-        // updateShardMembers(shard);
+        // updateShardMembers(shard).run();
 
         ShardClient destService = shardConnections.get(shard).getNextService();
 
@@ -194,9 +194,9 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         System.out.println("LB got cityRequest to dest city " + cityRequest.getDestCityName() + " sending city request");
         System.out.println("------------");
 
-        String shard = MapCityToShard(cityRequest.getDestCityName());
+        String shard = cityRequest.getDestCityName();
         if (shard.equals("")) {
-            System.out.println("error: LB got cityRequest to dest city " + cityRequest.getDestCityName() + " not in system");
+            System.out.println("error: LB got cityRequest to shard " + cityRequest.getDestCityName() + " not in system");
             responseObserver.onNext(noRide());
             responseObserver.onCompleted();
             return ; // Shai Illegal ride - so it won't keep looking
@@ -214,9 +214,9 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         System.out.println("LB got CityRevertRequest to dest city " + revertRequest.getDestCityName() + " sending city request");
         System.out.println("------------");
 
-        String shard = MapCityToShard(revertRequest.getDestCityName());
+        String shard = revertRequest.getDestCityName();
         if (shard.equals("")) {
-            System.out.println("error: LB got cityRequest to dest city " + revertRequest.getDestCityName() + " not in system");
+            System.out.println("error: LB got cityRequest to dest shard " + revertRequest.getDestCityName() + " not in system");
             Result res = Result.newBuilder().setIsSuccess(false).build();
             responseObserver.onNext(res);
             responseObserver.onCompleted();

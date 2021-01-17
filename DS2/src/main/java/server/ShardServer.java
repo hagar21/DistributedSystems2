@@ -593,7 +593,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             System.out.print(" " + path);
         }
 
-        System.out.println("Date: " + req.getDate());
+        System.out.println("\nDate: " + req.getDate());
 
         if(req.getRidesCount() > 0) {
             System.out.println("The request is satisfied by:");
