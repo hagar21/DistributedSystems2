@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ShardServer A2" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="server.CityServer" />
-    <module name="DS2.main" />
-    <option name="PROGRAM_PARAMETERS" value="8201 localhost:2181 &quot;A&quot;" />
+    <option name="MAIN_CLASS_NAME" value="server.ShardServer" />
+    <module name="hw2.DS2.main" />
+    <option name="PROGRAM_PARAMETERS" value="8201 localhost:2181 &quot;shardA&quot;" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
