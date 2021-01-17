@@ -25,7 +25,7 @@ service UberService {
   rpc RevertCommit(Ride) returns (Result);
 
   // Returns all Rides in the database
-  rpc Snapshot(google.protobuf.Empty) returns (Result) {}
+  rpc Snapshot(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 
   // City request Ride from different city
   rpc CityRequestRide(CityRequest) returns (Ride) {}

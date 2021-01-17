@@ -11,7 +11,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicMarkableReference;
 import java.util.logging.Logger;
 
 import ZkService.ZkServiceImpl;
@@ -58,7 +57,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
                 ShardServer server = new ShardServer(args[0], args[1], args[2]);
                 server.start();
                 server.blockUntilShutdown();
-                /* Shai remove ?
+                /* Shai remove
                 ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
                  */
             }
@@ -136,8 +135,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             // register watchers for leader change, live nodes change, all nodes change and zk session
             // state change
-            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener());
-            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener());
+            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener(this::setLeader));
+            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
             zkService.registerChildrenChangeListener(ATOMIC_BROADCAST + "/" + shardName, new LiveNodeChangeListener());
 
             logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp() + ":" +port);
