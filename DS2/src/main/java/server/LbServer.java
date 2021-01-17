@@ -90,6 +90,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
     private Runnable updateShardMembers(String shard) {
         return () -> {
+            // hagar
             List<String> liveNodes = zkService.getLiveNodes(shard);
 
             LbShardConnections lbsc = new LbShardConnections();
