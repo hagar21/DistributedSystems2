@@ -9,11 +9,11 @@ import org.I0Itec.zkclient.IZkChildListener;
 @Slf4j
 public class LiveNodeChangeListener implements IZkChildListener {
 
-    private final Runnable callbackFunction;
+/*    private final Runnable callbackFunction;
 
     public LiveNodeChangeListener(Runnable callbackFunction) {
         this.callbackFunction = callbackFunction;
-    }
+    }*/
 
     /**
      * - This method will be invoked for any change in /live_nodes children
@@ -31,6 +31,6 @@ public class LiveNodeChangeListener implements IZkChildListener {
         ClusterInfo.getClusterInfo().getLiveNodes().addAll(currentChildren);
         System.out.println("after current live size: " + currentChildren.size());
 
-        callbackFunction.run();
+//        callbackFunction.run();
     }
 }
