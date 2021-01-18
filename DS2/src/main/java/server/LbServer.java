@@ -88,6 +88,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             // create all parent nodes /election/city, /all_nodes/city, /live_nodes/city
             for (String shardName: shardNames)
             {
+                zkService.createAllParentNodes("");
                 zkService.createAllParentNodes(shardName);
                 zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(updateShardMembers(shardName)));
             }
