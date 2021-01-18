@@ -28,14 +28,14 @@ public class ZkServiceImpl implements ZkService{
             shard = "/" + shard;
         }
 
-        if (!zkClient.exists(ALL_NODES + shard)) {
-            zkClient.create(ALL_NODES + shard, "all nodes are displayed here", CreateMode.PERSISTENT);
-        }
         if (!zkClient.exists(LIVE_NODES + shard)) {
             zkClient.create(LIVE_NODES + shard, "all live nodes are displayed here", CreateMode.PERSISTENT);
         }
         if (!zkClient.exists(ELECTION_NODE + shard)) {
             zkClient.create(ELECTION_NODE + shard, "election node", CreateMode.PERSISTENT);
+        }
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard)) {
+            zkClient.create(ATOMIC_BROADCAST + shard, "leader broadcast data through here", CreateMode.PERSISTENT);
         }
     }
 
@@ -86,6 +86,70 @@ public class ZkServiceImpl implements ZkService{
             throw new RuntimeException("No node /liveNodes exists");
         }
         return zkClient.getChildren(LIVE_NODES + shard);
+    }
+
+    @Override
+    public String leaderCreateRideBroadcast(String data, String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + RIDES)) {
+            throw new RuntimeException("No node /atomicBroadcast/ride exists");
+        }
+        zkClient.create(ATOMIC_BROADCAST.concat(shard).concat(RIDES), data, CreateMode.PERSISTENT_SEQUENTIAL);
+
+        List<String> children = zkClient.getChildren(ATOMIC_BROADCAST + shard + RIDES);
+        Collections.sort(children);
+        return children.get(children.size() - 1);
+    }
+
+    @Override
+    public void leaderDeleteRideBroadcast(String shard, String nodeName) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + RIDES)) {
+            throw new RuntimeException("Leader clears but no broadcast happened");
+        }
+        zkClient.delete(ATOMIC_BROADCAST.concat(shard).concat(RIDES).concat(nodeName));
+    }
+
+    @Override
+    public List<String> getRideBroadcastNodes(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + RIDES)) {
+            throw new RuntimeException("No node /atomicBroadcast/ride exists");
+        }
+
+        return zkClient.getChildren(ATOMIC_BROADCAST + shard + RIDES);
+    }
+
+    @Override
+    public String leaderCreateCrBroadcast(String data, String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("No node /atomicBroadcast/ride exists");
+        }
+        zkClient.create(ATOMIC_BROADCAST.concat(shard).concat(CUSTOMER_REQUESTS), data, CreateMode.PERSISTENT_SEQUENTIAL);
+
+        List<String> children = zkClient.getChildren(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS);
+        Collections.sort(children);
+        return children.get(children.size() - 1);
+    }
+
+    @Override
+    public void leaderDeleteCrBroadcast(String shard, String nodeName) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("Leader clears but no broadcast happened");
+        }
+        zkClient.delete(ATOMIC_BROADCAST.concat(shard).concat(CUSTOMER_REQUESTS).concat(nodeName));
+    }
+
+    @Override
+    public List<String> getCrBroadcastNodes(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("No node /atomicBroadcast/ride exists");
+        }
+
+        return zkClient.getChildren(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS);
     }
 
     @Override
