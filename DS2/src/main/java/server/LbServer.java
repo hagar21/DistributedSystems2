@@ -1,6 +1,5 @@
 package server;
 
-import Rest.host.main;
 import Rest.utils.RideAlreadyExistsException;
 import ZkService.Listeners.LiveNodeChangeListener;
 import ZkService.ZkServiceImpl;
@@ -18,7 +17,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import static ZkService.ZkService.LIVE_NODES;
-import static ZkService.utils.Host.getIp;
 import static server.utils.global.*;
 
 import generated.*;
@@ -27,14 +25,8 @@ import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import server.utils.ShardRide;
 
-@SpringBootApplication(
-        exclude = {DataSourceAutoConfiguration.class}
-)
 
 
 public class LbServer extends UberServiceGrpc.UberServiceImplBase {
@@ -43,21 +35,22 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
     private final ConcurrentMap<String, LbShardConnections> shardConnections =
             new ConcurrentHashMap<>();
     private ZkServiceImpl zkService;
-    private final String HostName;
+    private String lbName;
 
-    public static void main(String[] args) { // args example: 8990 localhost:2181 (lb port, zookeeper host)
+/*
+    public static void main(String[] args) { // args example: localhost:2181 (zookeeper host)
 
         try {
             BasicConfigurator.configure();
             ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
             root.setLevel(Level.INFO);
 
-            if(args.length == 2) {
-                LbServer server = new LbServer(args[0], args[1]);
+            if(args.length == 1) {
+                LbServer server = new LbServer(args[0]);
                 server.start();
                 System.out.println("LB Server started on port 8990");
                 server.blockUntilShutdown();
-                // ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
+                ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
             }
             else {
                 throw new RuntimeException("Not enough arguments");
@@ -69,16 +62,15 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         }
     }
 
-    public LbServer(String port, String hostList) {
-        this.HostName = getIp()+":" + port;
-        this.server = ServerBuilder.forPort(Integer.parseInt(port))
+*/
+    public LbServer(String hostList) { // port 8990
+        this.server = ServerBuilder.forPort(Integer.parseInt("8990"))
                 .addService(this)
                 .build();
         ConnectToZk(hostList);
         for(String shard : shardNames){
             updateShardMembers(shard).run();
         }
-        setLeader();
     }
 
     private void ConnectToZk(String hostList) {
@@ -91,8 +83,6 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
                 zkService.createAllParentNodes(shardName);
                 zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(updateShardMembers(shardName)));
             }
-
-            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + "lb", new LiveNodeChangeListener(this::setLeader));
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Startup failed!", e);
@@ -169,13 +159,12 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
     public void setLeader() {
         if(isNodeLeader()){
-            // String[] args = new String[0];
-            SpringApplication.run(main.class);
+
         }
     }
 
     private Boolean isNodeLeader(){
-        return zkService.getLeaderNodeData("lb").equals(this.host);
+        return zkService.getLeaderNodeData("lb").equals(this.lbName);
     }
 
     public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
