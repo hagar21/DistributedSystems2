@@ -2,6 +2,8 @@ package Rest.host.controllers;
 
 import Rest.entities.Ride;
 import Rest.entities.CustomerRequest;
+import ZkService.Listeners.LeaderChangeListener;
+import ZkService.Listeners.LiveNodeChangeListener;
 import ZkService.ZkService;
 import ZkService.ZkServiceImpl;
 import ZkService.utils.ClusterInfo;
@@ -22,39 +24,62 @@ import server.LbServer;
 
 import java.util.List;
 
+import static ZkService.ZkService.ELECTION_NODE;
+import static ZkService.ZkService.LIVE_NODES;
+import static ZkService.utils.Host.getIp;
 import static server.utils.global.zkHostName;
 
-class LBServerRun implements Runnable{
-    private final LbServer server;
-
-    public void run(){
-
-        try {
-            server.start();
-            server.blockUntilShutdown();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("City Server service failed to start");
-        }
-
-
-    }
-
-    public LBServerRun(LbServer lbServer) {
-        server = lbServer;
-    }
-
-}
+//class LBServerRun implements Runnable{
+//    private final LbServer server;
+//
+//    public void run(){
+//
+//        try {
+//            server.start();
+//            server.blockUntilShutdown();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println("City Server service failed to start");
+//        }
+//
+//
+//    }
+//
+//    public LBServerRun(LbServer lbServer) {
+//        server = lbServer;
+//    }
+//
+//}
 
 
 @RestController
 public class CustomerController {
-    private final LbServer redirectionService = new LbServer(zkHostName);
-    public static ZkServiceImpl zkService; /* shai private? */
+    private LbServer redirectionService;
+    public ZkServiceImpl zkService; /* shai private? */
 
     public CustomerController() {
         Runnable r = new LBServerRun(redirectionService);
         new Thread(r).start();
+    }
+
+    public void ConnectToZk(String hostList, String port) {
+        try {
+
+            this.zkService = new ZkServiceImpl(hostList);
+
+            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + "lb", new LeaderChangeListener(this::setLb));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Startup failed!", e);
+        }
+    }
+
+    private void setLb(){
+        String target = zkService.getLeaderNodeData("lb");
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+        this.redirectionService = new LbClient(channel);
     }
 
     /*
