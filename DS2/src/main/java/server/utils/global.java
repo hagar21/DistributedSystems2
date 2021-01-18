@@ -11,7 +11,8 @@ public class global {
 
     public static String zkHostName = "localhost:2181";
 
-    public static String[] shardNames = { "shardA", "shardB", "shardC" };
+//    public static String[] shardNames = { "shardA", "shardB", "shardC" };
+    public static String[] shardNames = { "shardA", "shardB" };
 
     public static Point mapCityToLocation(String city) {
         switch(city) {
@@ -35,8 +36,8 @@ public class global {
                 return shardNames[0];
             case "b":
                 return shardNames[1];
-            case "c":
-                return shardNames[2];
+//            case "c":
+//                return shardNames[2];
             default:
                 System.out.println("No such city in system");
                 return "";

@@ -177,8 +177,10 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
         for (String shard: shardNames) {
             if (!shardConnections.get(shard).hasClients()) {
+                System.out.println("Shard " + shard + " has 0 servers");
                 continue;
             }
+            System.out.println("Shard " + shard + " has clients");
             ShardClient destService = shardConnections.get(shard).getNextService();
             rides.addAll(destService.getAllRides());
         }

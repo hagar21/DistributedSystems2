@@ -137,7 +137,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             ClusterInfo.getClusterInfo().setLiveNodes(zkService.getLiveNodes(shardName));
             ClusterInfo.getClusterInfo().setZkHost(zkService);
-
+            
             logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp() + ":" +port);
 
         } catch (Exception e) {
@@ -196,6 +196,25 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
     }
 
     @Override
+    public void getAllRides(com.google.protobuf.Empty request,
+                            StreamObserver<Ride> responseObserver) {
+        for (Ride ride: rides.values()) {
+            responseObserver.onNext(ride);
+        }
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getAllCr(com.google.protobuf.Empty request,
+                         StreamObserver<CustomerRequest> responseObserver) {
+        for (CustomerRequest cr: customerRequests.values()) {
+            responseObserver.onNext(cr);
+        }
+        responseObserver.onCompleted();
+    }
+
+
+    @Override
     public void postRide(Ride ride, StreamObserver<Result> responseObserver) {
         System.out.println("City server got post ride request");
         System.out.println("-------------");
@@ -205,42 +224,28 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         if (ride.getSentByLeader()){
             Ride updatedRide = Ride.newBuilder(ride).setSentByLeader(false).build();
             rides.put(updatedRide.getId(), updatedRide);
-            try {
-                responseObserver.onNext(res.setIsSuccess(true).build());
-                responseObserver.onCompleted();
-            } catch (StatusRuntimeException e) {
-                e.printStackTrace();
-            }
+            responseObserver.onNext(res.setIsSuccess(true).build());
+            responseObserver.onCompleted();
             return;
         }
 
         String rideId = ride.getFirstName() + ride.getLastName() + ride.getDate() + ride.getSrcCity() + ride.getDstCity();
 
         if(rides.containsKey(rideId)) {
-            try {
-                responseObserver.onNext(res.setIsSuccess(false).build());
-                responseObserver.onCompleted();
-
-            } catch (StatusRuntimeException e) {
-                e.printStackTrace();
-            }
+            responseObserver.onNext(res.setIsSuccess(false).build());
+            responseObserver.onCompleted();
             return;
         }
 
         // this is a new ride, if it gets rollback we should delete it
         Ride updatedRide = Ride.newBuilder(ride).setId(rideId).setDelete(true).build();
-        try {
-
-            if(rideCommit(updatedRide)) {
-                responseObserver.onNext(res.setIsSuccess(true).build());
-            } else {
-                responseObserver.onNext(res.setIsSuccess(false).build());
-            }
-
-            responseObserver.onCompleted();
-        } catch (StatusRuntimeException e) {
-            e.printStackTrace();
+        if(rideCommit(updatedRide)) {
+            responseObserver.onNext(res.setIsSuccess(true).build());
+        } else {
+            responseObserver.onNext(res.setIsSuccess(false).build());
         }
+
+        responseObserver.onCompleted();
 
     }
 
@@ -254,137 +259,113 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         }
 
         Result res = Result.newBuilder().setIsSuccess(true).build();
-        try {
-            responseObserver.onNext(res);
-            responseObserver.onCompleted();
-
-        } catch (StatusRuntimeException e) {
-            e.printStackTrace();
-        }
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void postPathPlanningRequest(
             CustomerRequest request, StreamObserver<Ride> responseObserver) {
-        try {
-            System.out.println("City server got postPathPlanningRequest request");
-            System.out.println("-------------");
-            // map of (ride: shardName)
-            Map<Ride, String> reservedRides = new HashMap<>();
-            String src, dst;
-            Rout.Builder routBuilder = Rout.newBuilder()
-                    .setName(request.getName())
-                    .setDate(request.getDate());
-            Rout rout;
+        System.out.println("City server got postPathPlanningRequest request");
+        System.out.println("-------------");
+        // map of (ride: shardName)
+        Map<Ride, String> reservedRides = new HashMap<>();
+        String src, dst;
+        Rout.Builder routBuilder = Rout.newBuilder()
+                .setName(request.getName())
+                .setDate(request.getDate());
+        Rout rout;
 
-            String id = request.getName() + request.getPathList().toString() + request.getDate();
-            CustomerRequest.Builder requestBuilder = CustomerRequest.newBuilder(request).setId(id);
+        String id = request.getName() + request.getPathList().toString() + request.getDate();
+        CustomerRequest.Builder requestBuilder = CustomerRequest.newBuilder(request).setId(id);
 
 
-            for(int i = 0; i < request.getPathCount() - 1; i++) {
-                src = request.getPath(i);
-                dst = request.getPath(i + 1);
+        for(int i = 0; i < request.getPathCount() - 1; i++) {
+            src = request.getPath(i);
+            dst = request.getPath(i + 1);
 
-                rout = routBuilder
-                        .setSrcCity(src)
-                        .setDstCity(dst).build();
+            rout = routBuilder
+                    .setSrcCity(src)
+                    .setDstCity(dst).build();
 
-                // check for relevant rides in local db
-                Ride foundRide = getLocalMatchingRide(rout);
-                if (!foundRide.equals(noRide())) {
-                    reservedRides.put(foundRide, this.shardName);
-                    continue;
-                }
-
-                // check in other shards
-                ShardRide remoteRide = getRemoteMatchingRide(rout);
-
-                if(remoteRide.getRide().equals(noRide())) {
-                    CustomerRequest updatedRequest = requestBuilder.build();
-                    customerRequestCommit(updatedRequest);
-
-                    revertPath(reservedRides);
-                    responseObserver.onNext(noRide());
-                    responseObserver.onCompleted();
-                    return;
-                }
-                reservedRides.put(remoteRide.getRide(), remoteRide.getShardName());
+            // check for relevant rides in local db
+            Ride foundRide = getLocalMatchingRide(rout);
+            if (!foundRide.equals(noRide())) {
+                reservedRides.put(foundRide, this.shardName);
+                continue;
             }
 
-            // Entire path satisfied
-            CustomerRequest updatedRequest = requestBuilder.addAllRides(reservedRides.keySet()).build();
-            if(customerRequestCommit(updatedRequest)) {
-                for (Ride ride : reservedRides.keySet()) {
-                    responseObserver.onNext(ride);
-                }
-            }
+            // check in other shards
+            ShardRide remoteRide = getRemoteMatchingRide(rout);
 
-            responseObserver.onCompleted();
-        } catch (StatusRuntimeException e) {
-            e.printStackTrace();
+            if(remoteRide.getRide().equals(noRide())) {
+                CustomerRequest updatedRequest = requestBuilder.build();
+                customerRequestCommit(updatedRequest);
+
+                revertPath(reservedRides);
+                responseObserver.onNext(noRide());
+                responseObserver.onCompleted();
+                return;
+            }
+            reservedRides.put(remoteRide.getRide(), remoteRide.getShardName());
         }
+
+        // Entire path satisfied
+        CustomerRequest updatedRequest = requestBuilder.addAllRides(reservedRides.keySet()).build();
+        if(customerRequestCommit(updatedRequest)) {
+            for (Ride ride : reservedRides.keySet()) {
+                responseObserver.onNext(ride);
+            }
+        }
+
+        responseObserver.onCompleted();
     }
 
     @Override
     public void reserveRide(Rout request, StreamObserver<Ride> responseObserver){
-        try {
-            Ride ride = getLocalMatchingRide(request);
-            responseObserver.onNext(ride);
-            responseObserver.onCompleted();
-        } catch (StatusRuntimeException e) {
-            e.printStackTrace();
-        }
+        Ride ride = getLocalMatchingRide(request);
+        responseObserver.onNext(ride);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void revertCommit(Ride request, StreamObserver<Result> responseObserver) {
-        try {
-            revertLocalCommit(request);
-            Result res = Result.newBuilder().setIsSuccess(true).build();
-            responseObserver.onNext(res);
-            responseObserver.onCompleted();
-        } catch (StatusRuntimeException e) {
-            e.printStackTrace();
-        }
+        revertLocalCommit(request);
+        Result res = Result.newBuilder().setIsSuccess(true).build();
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void deleteCustomerRequest(CustomerRequest request, StreamObserver<Result> responseObserver) {
-        try {
-            if (request.getSentByLeader()) {
-                customerRequests.remove(request.getId());
-            }
-
-            Result res = Result.newBuilder().setIsSuccess(true).build();
-            responseObserver.onNext(res);
-            responseObserver.onCompleted();
-        } catch (StatusRuntimeException e) {
-            e.printStackTrace();
+        if (request.getSentByLeader()) {
+            customerRequests.remove(request.getId());
         }
+
+        Result res = Result.newBuilder().setIsSuccess(true).build();
+        responseObserver.onNext(res);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void snapshot(com.google.protobuf.Empty request,
                          StreamObserver<Result> responseObserver) {
-        try {
-            System.out.println("Snapshot of published services:");
-            System.out.println("--------------------------------");
 
-            for (Ride ride : rides.values()) {
-                printRide(ride);
-            }
+        System.out.println("Snapshot of published services:");
+        System.out.println("--------------------------------");
 
-            System.out.println("Snapshot of requested services:");
-            System.out.println("--------------------------------");
-
-            for (CustomerRequest req : customerRequests.values()) {
-                printCustomerRequest(req);
-            }
-            responseObserver.onNext(Result.newBuilder().setIsSuccess(true).build());
-            responseObserver.onCompleted();
-        } catch (StatusRuntimeException e) {
-            e.printStackTrace();
+        for (Ride ride : rides.values()) {
+            printRide(ride);
         }
+
+        System.out.println("Snapshot of requested services:");
+        System.out.println("--------------------------------");
+
+        for (CustomerRequest req : customerRequests.values()) {
+            printCustomerRequest(req);
+        }
+        responseObserver.onNext(Result.newBuilder().setIsSuccess(true).build());
+        responseObserver.onCompleted();
     }
 
     private Boolean isNodeLeader(){
