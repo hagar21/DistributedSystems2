@@ -35,8 +35,9 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
     private final ConcurrentMap<String, LbShardConnections> shardConnections =
             new ConcurrentHashMap<>();
     private ZkServiceImpl zkService;
+    private String lbName;
 
-    /*
+/*
     public static void main(String[] args) { // args example: localhost:2181 (zookeeper host)
 
         try {
@@ -60,8 +61,8 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             System.out.println("City Server service failed to start");
         }
     }
-    */
 
+*/
     public LbServer(String hostList) { // port 8990
         this.server = ServerBuilder.forPort(Integer.parseInt("8990"))
                 .addService(this)
@@ -155,6 +156,16 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
     }
 
      */
+
+    public void setLeader() {
+        if(isNodeLeader()){
+
+        }
+    }
+
+    private Boolean isNodeLeader(){
+        return zkService.getLeaderNodeData("lb").equals(this.lbName);
+    }
 
     public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
         System.out.println("LB server got postPathPlanningRequest request");

@@ -345,7 +345,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
     @Override
     public void snapshot(com.google.protobuf.Empty request,
-                         StreamObserver<com.google.protobuf.Empty> responseObserver) {
+                         StreamObserver<Result> responseObserver) {
 
         System.out.println("Snapshot of published services:");
         System.out.println("--------------------------------");
@@ -360,6 +360,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         for (CustomerRequest req : customerRequests.values()) {
             printCustomerRequest(req);
         }
+
+        responseObserver.onNext(Result.newBuilder().setIsSuccess(true).build());
         responseObserver.onCompleted();
     }
 
