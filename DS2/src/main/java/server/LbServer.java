@@ -156,6 +156,36 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
      */
 
+    public List<Rest.entities.CustomerRequest> FindAllCustomerRequests() {
+        System.out.println("LB server got FindsAllCustomerRequests");
+        System.out.println("-------------");
+
+        List<Rest.entities.CustomerRequest> requests = new ArrayList<>();
+
+        for (String shard: shardNames) {
+            ShardClient destService = shardConnections.get(shard).getNextService();
+            requests.addAll(destService.getAllCr());
+        }
+        return requests;
+    }
+
+    public List<Rest.entities.Ride> FindAllRides()  {
+        System.out.println("LB server got FindAllRides request");
+        System.out.println("-------------");
+
+        List<Rest.entities.Ride> rides = new ArrayList<>();
+
+        for (String shard: shardNames) {
+            if (!shardConnections.get(shard).hasClients()) {
+                continue;
+            }
+            ShardClient destService = shardConnections.get(shard).getNextService();
+            rides.addAll(destService.getAllRides());
+        }
+        return rides;
+    }
+
+
     public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
         System.out.println("LB server got postPathPlanningRequest request");
         System.out.println("-------------");

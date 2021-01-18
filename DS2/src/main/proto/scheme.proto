@@ -24,8 +24,14 @@ service UberService {
   // if part of the path couldn't be satisfied revert intermediate commits
   rpc RevertCommit(Ride) returns (Result);
 
-  // Returns all Rides in the database
+  // prints all Rides in the database
   rpc Snapshot(google.protobuf.Empty) returns (Result) {}
+
+  // Returns all Rides in the database
+  rpc GetAllRides(google.protobuf.Empty) returns (stream Ride) {}
+
+  // Returns all CustomerRequest in the database
+  rpc GetAllCr(google.protobuf.Empty) returns (stream CustomerRequest) {}
 
   // City request Ride from different city
   rpc CityRequestRide(CityRequest) returns (Ride) {}

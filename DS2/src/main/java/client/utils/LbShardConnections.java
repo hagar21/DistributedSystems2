@@ -18,6 +18,10 @@ public class LbShardConnections {
         shardClients.add(c);
     }
 
+    public boolean hasClients() {
+        return shardClients.size() != 0;
+    }
+
     public ShardClient getNextService() {
         return shardClients.get(rrIdx++ % (shardClients.size() != 0 ? shardClients.size() : 1));
     }

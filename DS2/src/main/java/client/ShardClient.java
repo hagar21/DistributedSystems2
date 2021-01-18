@@ -58,6 +58,55 @@ public class ShardClient {
         return false;
     }
 
+    public List<Rest.entities.Ride> getAllRides() {
+        List<Rest.entities.Ride> restRides = new ArrayList<>();
+        Iterator<Ride> grpcRides;
+
+        com.google.protobuf.Empty req = Empty.newBuilder().build();
+        try {
+            grpcRides = blockingStub.getAllRides(req);
+
+            while(grpcRides.hasNext()) {
+                Ride ride = grpcRides.next();
+                restRides.add(new Rest.entities.Ride(
+                        ride.getFirstName(),
+                        ride.getLastName(),
+                        ride.getPhoneNum(),
+                        ride.getSrcCity(),
+                        ride.getDstCity(),
+                        ride.getDate(),
+                        ride.getOfferedPlaces(),
+                        ride.getPd()));
+            }
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+        return restRides;
+    }
+
+    public List<Rest.entities.CustomerRequest> getAllCr () {
+        List<Rest.entities.CustomerRequest> restCr = new ArrayList<>();
+        Iterator<CustomerRequest> grpcCr;
+
+        com.google.protobuf.Empty req = Empty.newBuilder().build();
+        try {
+            grpcCr = blockingStub.getAllCr(req);
+
+            while(grpcCr.hasNext()) {
+                CustomerRequest cr = grpcCr.next();
+                restCr.add(new Rest.entities.CustomerRequest(
+                        cr.getName(),
+                        cr.getPathList(),
+                        cr.getDate()));
+            }
+        } catch (StatusRuntimeException e) {
+            e.printStackTrace();
+        }
+
+        return restCr;
+    }
+
     // LB func (REST->gRPC)
     public void postRide(Rest.entities.Ride ride) {
         try {

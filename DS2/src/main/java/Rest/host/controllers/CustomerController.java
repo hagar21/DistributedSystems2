@@ -57,17 +57,15 @@ public class CustomerController {
         new Thread(r).start();
     }
 
-    /*
-        @GetMapping("/rides")
-        List<Ride> allRides() {
-            return repository.findAllRides();
-        }
+    @GetMapping("/rides")
+    List<Ride> allRides() {
+        return redirectionService.FindAllRides();
+    }
 
-        @GetMapping("/customerRequests")
-        List<CustomerRequest> allCustomerRequests() {
-            return repository.findAllCustomerRequests();
-        }
-    */
+    @GetMapping("/customerRequests")
+    List<CustomerRequest> allCustomerRequests() {
+        return redirectionService.FindAllCustomerRequests();
+    }
 
     @PostMapping("/rides")
     void newRide(@RequestBody Ride newRide) throws RideAlreadyExistsException {

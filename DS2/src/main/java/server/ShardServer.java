@@ -130,18 +130,15 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             logger.info("ConnectToZk addToLiveNodes");
             zkService.addToLiveNodes(getIp() + ":" + port, "I am alive", shardName);
 
-            System.out.println("Shai check ip host wasn't null");
-            ClusterInfo.getClusterInfo().getLiveNodes().clear();
-            ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes(shardName));
-
             // register watchers for leader change, live nodes change, all nodes change and zk session
             // state change
             zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener(this::setLeader));
             zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
 
-            logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp() + ":" +port);
-
+            ClusterInfo.getClusterInfo().setLiveNodes(zkService.getLiveNodes(shardName));
             ClusterInfo.getClusterInfo().setZkHost(zkService);
+            
+            logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp() + ":" +port);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -197,6 +194,25 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             server.awaitTermination();
         }
     }
+
+    @Override
+    public void getAllRides(com.google.protobuf.Empty request,
+                            StreamObserver<Ride> responseObserver) {
+        for (Ride ride: rides.values()) {
+            responseObserver.onNext(ride);
+        }
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getAllCr(com.google.protobuf.Empty request,
+                         StreamObserver<CustomerRequest> responseObserver) {
+        for (CustomerRequest cr: customerRequests.values()) {
+            responseObserver.onNext(cr);
+        }
+        responseObserver.onCompleted();
+    }
+
 
     @Override
     public void postRide(Ride ride, StreamObserver<Result> responseObserver) {
