@@ -30,16 +30,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 import server.utils.ShardRide;
-import Rest.host.controllers.CustomerController;
-import Rest.host.main;
 
-
-@ComponentScan(basePackages = {"Rest.host"})
 @SpringBootApplication(
         exclude = {DataSourceAutoConfiguration.class}
 )
+
+
 public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
     private final Server server;
@@ -97,8 +94,6 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             }
 
             zkService.createAllParentNodes("lb");
-            zkService.registerChildrenChangeListener(LIVE_NODES + LB, new LiveNodeChangeListener(this::setLeader));
-
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Startup failed!", e);
@@ -173,29 +168,6 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
      */
 
-    public void setLeader() {
-        if(isNodeLeader()){
-            // String[] args = new String[0];
-            SpringApplication.run(main.class);
-        }
-    }
-
-    private Boolean isNodeLeader(){
-        return zkService.getLeaderNodeData("lb").equals(this.host);
-    }
-
-    List<Rest.entities.CustomerRequest> FindAllCustomerRequests() {
-        System.out.println("LB server got FindsAllCustomerRequests");
-        System.out.println("-------------");
-
-        List<Rest.entities.CustomerRequest> requests = new ArrayList<>();
-
-        for (String shard: shardNames) {
-            ShardClient destService = shardConnections.get(shard).getNextService();
-            requests.addAll(destService.getAllCr());
-        }
-        return requests;
-    }
 
     public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
         System.out.println("LB server got postPathPlanningRequest request");
@@ -212,19 +184,6 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         ShardClient destService = shardConnections.get(shard).getNextService();
 
         return destService.postPathPlanningRequest(customerRequest);
-    }
-
-    public List<Rest.entities.Ride> FindAllRides()  {
-        System.out.println("LB server got FindAllRides request");
-        System.out.println("-------------");
-
-        List<Rest.entities.Ride> rides = new ArrayList<>();
-
-        for (String shard: shardNames) {
-            ShardClient destService = shardConnections.get(shard).getNextService();
-            rides.addAll(destService.getAllRides());
-        }
-        return rides;
     }
 
     public void PostRide(Rest.entities.Ride ride) {

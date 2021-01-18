@@ -38,7 +38,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
     public Boolean service_up;
     private final String shardName;
     private final String HostName;
-    private LbClient lb;
+    private final LbClient lb;
     private ConcurrentMap<Integer, ShardClient> shardMembers;
     private ShardClient leader;
 
@@ -86,11 +86,13 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
                 .addService(this)
                 .build();
 
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(lbHostName).usePlaintext().build();
+        this.lb = new LbClient(channel);
+        logger.info("City Server name " + shardName + " connected to LB");
+
         ConnectToZk(hostList, port);
         updateShardMembers();
         setLeader();
-        setLb();
-        logger.info("City Server name " + shardName + " connected to LB");
     }
 
     public void ConnectToZk(String hostList, String port) {
@@ -133,11 +135,10 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             ClusterInfo.getClusterInfo().getLiveNodes().clear();
             ClusterInfo.getClusterInfo().getLiveNodes().addAll(zkService.getLiveNodes(shardName));
 
-            // register watchers for leader change, live nodes change, all nodes change, zk session
-            // state change and lb change
+            // register watchers for leader change, live nodes change, all nodes change and zk session
+            // state change
             zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + shardName, new LeaderChangeListener(this::setLeader));
             zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(this::updateShardMembers));
-            zkService.registerChildrenChangeListener(ELECTION_NODE + "/" + "lb", new LeaderChangeListener(this::setLb));
 
             logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp() + ":" +port);
 
@@ -170,12 +171,6 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             String CrString = zkService.getZNodeData(broadcast);
             customerRequestCommit(String2Cr(CrString));
         }
-    }
-
-    public void setLb() {
-        String target = zkService.getLeaderNodeData("lb");
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
-        this.lb = new LbClient(channel);
     }
 
     /**
