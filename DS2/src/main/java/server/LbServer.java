@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import static ZkService.ZkService.LIVE_NODES;
+import static ZkService.ZkService.*;
 import static ZkService.utils.Host.getIp;
 import static server.utils.global.*;
 
@@ -30,13 +30,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import server.utils.ShardRide;
+import Rest.host.controllers.CustomerController;
+import Rest.host.main;
 
+
+@ComponentScan(basePackages = {"Rest.host"})
 @SpringBootApplication(
         exclude = {DataSourceAutoConfiguration.class}
 )
-
-
 public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
     private final Server server;
@@ -57,7 +60,7 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
                 server.start();
                 System.out.println("LB Server started on port 8990");
                 server.blockUntilShutdown();
-                // ClusterInfo.getClusterInfo().setZKhost(zkServiceAPI);
+                // ClusterInfo.getClusterInfo().setZkHost(server.zkService);
             }
             else {
                 throw new RuntimeException("Not enough arguments");
@@ -93,7 +96,9 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
                 zkService.registerChildrenChangeListener(LIVE_NODES + "/" + shardName, new LiveNodeChangeListener(updateShardMembers(shardName)));
             }
 
-            zkService.registerChildrenChangeListener(LIVE_NODES + "/" + "lb", new LiveNodeChangeListener(this::setLeader));
+            zkService.createAllParentNodes("lb");
+            zkService.registerChildrenChangeListener(LIVE_NODES + LB, new LiveNodeChangeListener(this::setLeader));
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Startup failed!", e);
@@ -179,6 +184,19 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         return zkService.getLeaderNodeData("lb").equals(this.host);
     }
 
+    List<Rest.entities.CustomerRequest> FindAllCustomerRequests() {
+        System.out.println("LB server got FindsAllCustomerRequests");
+        System.out.println("-------------");
+
+        List<Rest.entities.CustomerRequest> requests = new ArrayList<>();
+
+        for (String shard: shardNames) {
+            ShardClient destService = shardConnections.get(shard).getNextService();
+            requests.addAll(destService.getAllCr());
+        }
+        return requests;
+    }
+
     public List<Rest.entities.Ride> PostPathPlanningRequest(Rest.entities.CustomerRequest customerRequest) {
         System.out.println("LB server got postPathPlanningRequest request");
         System.out.println("-------------");
@@ -194,6 +212,19 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         ShardClient destService = shardConnections.get(shard).getNextService();
 
         return destService.postPathPlanningRequest(customerRequest);
+    }
+
+    public List<Rest.entities.Ride> FindAllRides()  {
+        System.out.println("LB server got FindAllRides request");
+        System.out.println("-------------");
+
+        List<Rest.entities.Ride> rides = new ArrayList<>();
+
+        for (String shard: shardNames) {
+            ShardClient destService = shardConnections.get(shard).getNextService();
+            rides.addAll(destService.getAllRides());
+        }
+        return rides;
     }
 
     public void PostRide(Rest.entities.Ride ride) {

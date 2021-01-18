@@ -37,6 +37,14 @@ public class ZkServiceImpl implements ZkService{
         if (!zkClient.exists(ATOMIC_BROADCAST + shard)) {
             zkClient.create(ATOMIC_BROADCAST + shard, "leader broadcast data through here", CreateMode.PERSISTENT);
         }
+
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + RIDES)) {
+            zkClient.create(ATOMIC_BROADCAST + shard + RIDES, "leader broadcast data through here", CreateMode.PERSISTENT);
+        }
+
+        if (!zkClient.exists(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS)) {
+            zkClient.create(ATOMIC_BROADCAST + shard + CUSTOMER_REQUESTS, "leader broadcast data through here", CreateMode.PERSISTENT);
+        }
     }
 
     @Override

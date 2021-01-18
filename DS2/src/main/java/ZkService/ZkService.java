@@ -11,7 +11,7 @@ public interface ZkService {
     public static final String ATOMIC_BROADCAST = "/atomicBroadcast";
     public static final String RIDES = "/rides";
     public static final String CUSTOMER_REQUESTS = "/customerRequests";
-    public static final String APPROVE = "/approve";
+    public static final String LB = "/lb";
 
     void createAllParentNodes(String shard);
 

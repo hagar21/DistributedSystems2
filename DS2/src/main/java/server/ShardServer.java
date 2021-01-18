@@ -370,6 +370,24 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void getAllRides(com.google.protobuf.Empty request,
+                         StreamObserver<Ride> responseObserver) {
+        for (Ride ride: rides.values()) {
+            responseObserver.onNext(ride);
+        }
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getAllCr(com.google.protobuf.Empty request,
+                            StreamObserver<CustomerRequest> responseObserver) {
+        for (CustomerRequest cr: customerRequests.values()) {
+            responseObserver.onNext(cr);
+        }
+        responseObserver.onCompleted();
+    }
+
     private Boolean isNodeLeader(){
         return zkService.getLeaderNodeData(shardName).equals(this.HostName);
     }
