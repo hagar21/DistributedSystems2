@@ -32,11 +32,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import server.utils.ShardRide;
 
-@SpringBootApplication(
-        exclude = {DataSourceAutoConfiguration.class}
-)
-
-
 public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
     private final Server server;
@@ -78,7 +73,6 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         for(String shard : shardNames){
             updateShardMembers(shard).run();
         }
-        setLeader();
     }
 
     private void ConnectToZk(String hostList) {
@@ -200,6 +194,32 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
 
         ShardClient destService = shardConnections.get(shard).getNextService();
         destService.postRide(ride);
+    }
+
+    public List<Rest.entities.CustomerRequest> FindAllCustomerRequests() {
+        System.out.println("LB server got FindsAllCustomerRequests");
+        System.out.println("-------------");
+
+        List<Rest.entities.CustomerRequest> requests = new ArrayList<>();
+
+        for (String shard: shardNames) {
+            ShardClient destService = shardConnections.get(shard).getNextService();
+            requests.addAll(destService.getAllCr());
+        }
+        return requests;
+    }
+
+    public List<Rest.entities.Ride> FindAllRides()  {
+        System.out.println("LB server got FindAllRides request");
+        System.out.println("-------------");
+
+        List<Rest.entities.Ride> rides = new ArrayList<>();
+
+        for (String shard: shardNames) {
+            ShardClient destService = shardConnections.get(shard).getNextService();
+            rides.addAll(destService.getAllRides());
+        }
+        return rides;
     }
 
     // Accept a user's request to join a ride and check if there is a relevant ride.

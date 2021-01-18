@@ -49,7 +49,7 @@ class LBServerRun implements Runnable{
 
 @RestController
 public class CustomerController {
-    private final LbServer redirectionService = new LbServer(zkHostName);
+    private final LbServer redirectionService = new LbServer("8990", zkHostName);
     public static ZkServiceImpl zkService; /* shai private? */
 
     public CustomerController() {
