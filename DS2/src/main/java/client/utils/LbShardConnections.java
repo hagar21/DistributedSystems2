@@ -1,13 +1,17 @@
 package client.utils;
 
 import client.ShardClient;
+import lombok.Setter;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class LbShardConnections {
-    public static List<ShardClient> shardClients;
-    public static int rrIdx;
+    public List<ShardClient> shardClients;
+    public int rrIdx;
 
     public LbShardConnections() {
         shardClients = new ArrayList<>();

@@ -213,6 +213,68 @@ public final class UberServiceGrpc {
     return getSnapshotMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      generated.Ride> getGetAllRidesMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "GetAllRides",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = generated.Ride.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      generated.Ride> getGetAllRidesMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, generated.Ride> getGetAllRidesMethod;
+    if ((getGetAllRidesMethod = UberServiceGrpc.getGetAllRidesMethod) == null) {
+      synchronized (UberServiceGrpc.class) {
+        if ((getGetAllRidesMethod = UberServiceGrpc.getGetAllRidesMethod) == null) {
+          UberServiceGrpc.getGetAllRidesMethod = getGetAllRidesMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, generated.Ride>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "GetAllRides"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.Ride.getDefaultInstance()))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("GetAllRides"))
+              .build();
+        }
+      }
+    }
+    return getGetAllRidesMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      generated.CustomerRequest> getGetAllCrMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "GetAllCr",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = generated.CustomerRequest.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      generated.CustomerRequest> getGetAllCrMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, generated.CustomerRequest> getGetAllCrMethod;
+    if ((getGetAllCrMethod = UberServiceGrpc.getGetAllCrMethod) == null) {
+      synchronized (UberServiceGrpc.class) {
+        if ((getGetAllCrMethod = UberServiceGrpc.getGetAllCrMethod) == null) {
+          UberServiceGrpc.getGetAllCrMethod = getGetAllCrMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, generated.CustomerRequest>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "GetAllCr"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.CustomerRequest.getDefaultInstance()))
+              .setSchemaDescriptor(new UberServiceMethodDescriptorSupplier("GetAllCr"))
+              .build();
+        }
+      }
+    }
+    return getGetAllCrMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<generated.CityRequest,
       generated.Ride> getCityRequestRideMethod;
 
@@ -407,12 +469,32 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Returns all Rides in the database
+     * prints all Rides in the database
      * </pre>
      */
     public void snapshot(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
       asyncUnimplementedUnaryCall(getSnapshotMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Returns all Rides in the database
+     * </pre>
+     */
+    public void getAllRides(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetAllRidesMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Returns all CustomerRequest in the database
+     * </pre>
+     */
+    public void getAllCr(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<generated.CustomerRequest> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetAllCrMethod(), responseObserver);
     }
 
     /**
@@ -486,6 +568,20 @@ public final class UberServiceGrpc {
                 com.google.protobuf.Empty,
                 generated.Result>(
                   this, METHODID_SNAPSHOT)))
+          .addMethod(
+            getGetAllRidesMethod(),
+            asyncServerStreamingCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                generated.Ride>(
+                  this, METHODID_GET_ALL_RIDES)))
+          .addMethod(
+            getGetAllCrMethod(),
+            asyncServerStreamingCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                generated.CustomerRequest>(
+                  this, METHODID_GET_ALL_CR)))
           .addMethod(
             getCityRequestRideMethod(),
             asyncUnaryCall(
@@ -583,13 +679,35 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Returns all Rides in the database
+     * prints all Rides in the database
      * </pre>
      */
     public void snapshot(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<generated.Result> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getSnapshotMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Returns all Rides in the database
+     * </pre>
+     */
+    public void getAllRides(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<generated.Ride> responseObserver) {
+      asyncServerStreamingCall(
+          getChannel().newCall(getGetAllRidesMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Returns all CustomerRequest in the database
+     * </pre>
+     */
+    public void getAllCr(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<generated.CustomerRequest> responseObserver) {
+      asyncServerStreamingCall(
+          getChannel().newCall(getGetAllCrMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -691,12 +809,34 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Returns all Rides in the database
+     * prints all Rides in the database
      * </pre>
      */
     public generated.Result snapshot(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getSnapshotMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Returns all Rides in the database
+     * </pre>
+     */
+    public java.util.Iterator<generated.Ride> getAllRides(
+        com.google.protobuf.Empty request) {
+      return blockingServerStreamingCall(
+          getChannel(), getGetAllRidesMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Returns all CustomerRequest in the database
+     * </pre>
+     */
+    public java.util.Iterator<generated.CustomerRequest> getAllCr(
+        com.google.protobuf.Empty request) {
+      return blockingServerStreamingCall(
+          getChannel(), getGetAllCrMethod(), getCallOptions(), request);
     }
 
     /**
@@ -788,7 +928,7 @@ public final class UberServiceGrpc {
 
     /**
      * <pre>
-     * Returns all Rides in the database
+     * prints all Rides in the database
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<generated.Result> snapshot(
@@ -834,9 +974,11 @@ public final class UberServiceGrpc {
   private static final int METHODID_RESERVE_RIDE = 3;
   private static final int METHODID_REVERT_COMMIT = 4;
   private static final int METHODID_SNAPSHOT = 5;
-  private static final int METHODID_CITY_REQUEST_RIDE = 6;
-  private static final int METHODID_CITY_REVERT_REQUEST_RIDE = 7;
-  private static final int METHODID_DELETE_CUSTOMER_REQUEST = 8;
+  private static final int METHODID_GET_ALL_RIDES = 6;
+  private static final int METHODID_GET_ALL_CR = 7;
+  private static final int METHODID_CITY_REQUEST_RIDE = 8;
+  private static final int METHODID_CITY_REVERT_REQUEST_RIDE = 9;
+  private static final int METHODID_DELETE_CUSTOMER_REQUEST = 10;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -878,6 +1020,14 @@ public final class UberServiceGrpc {
         case METHODID_SNAPSHOT:
           serviceImpl.snapshot((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<generated.Result>) responseObserver);
+          break;
+        case METHODID_GET_ALL_RIDES:
+          serviceImpl.getAllRides((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<generated.Ride>) responseObserver);
+          break;
+        case METHODID_GET_ALL_CR:
+          serviceImpl.getAllCr((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<generated.CustomerRequest>) responseObserver);
           break;
         case METHODID_CITY_REQUEST_RIDE:
           serviceImpl.cityRequestRide((generated.CityRequest) request,
@@ -958,6 +1108,8 @@ public final class UberServiceGrpc {
               .addMethod(getReserveRideMethod())
               .addMethod(getRevertCommitMethod())
               .addMethod(getSnapshotMethod())
+              .addMethod(getGetAllRidesMethod())
+              .addMethod(getGetAllCrMethod())
               .addMethod(getCityRequestRideMethod())
               .addMethod(getCityRevertRequestRideMethod())
               .addMethod(getDeleteCustomerRequestMethod())

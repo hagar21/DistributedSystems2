@@ -95,9 +95,8 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
             LbShardConnections lbsc = new LbShardConnections();
 
             if (shardConnections.containsKey(shard)) {
-                int rrIdx = shardConnections.get(shard).rrIdx;
-                lbsc.rrIdx = rrIdx; // to keep the round robin alive ;)
-                shardConnections.get(shard).shardClients.clear();
+                lbsc.rrIdx = shardConnections.get(shard).getRrIdx();
+                shardConnections.get(shard).getShardClients().clear();
                 shardConnections.remove(shard);
             }
 

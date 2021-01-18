@@ -137,7 +137,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             ClusterInfo.getClusterInfo().setLiveNodes(zkService.getLiveNodes(shardName));
             ClusterInfo.getClusterInfo().setZkHost(zkService);
-            
+            ClusterInfo.getClusterInfo().setLeader(zkService.getLeaderNodeData(shardName));
+
             logger.info("Finished ConnectToZk for city " + shardName + " host " + getIp() + ":" +port);
 
         } catch (Exception e) {
