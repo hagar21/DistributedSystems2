@@ -128,6 +128,11 @@ private static final long serialVersionUID = 0L;
             sentByLeader_ = input.readBool();
             break;
           }
+          case 104: {
+
+            delete_ = input.readBool();
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -501,7 +506,7 @@ private static final long serialVersionUID = 0L;
   private boolean sentByLeader_;
   /**
    * <pre>
-   *default = false
+   * default = false
    * </pre>
    *
    * <code>bool sentByLeader = 12;</code>
@@ -510,6 +515,21 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public boolean getSentByLeader() {
     return sentByLeader_;
+  }
+
+  public static final int DELETE_FIELD_NUMBER = 13;
+  private boolean delete_;
+  /**
+   * <pre>
+   * 0: delete, 1: update
+   * </pre>
+   *
+   * <code>bool delete = 13;</code>
+   * @return The delete.
+   */
+  @java.lang.Override
+  public boolean getDelete() {
+    return delete_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -561,6 +581,9 @@ private static final long serialVersionUID = 0L;
     }
     if (sentByLeader_ != false) {
       output.writeBool(12, sentByLeader_);
+    }
+    if (delete_ != false) {
+      output.writeBool(13, delete_);
     }
     unknownFields.writeTo(output);
   }
@@ -616,6 +639,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeBoolSize(12, sentByLeader_);
     }
+    if (delete_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(13, delete_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -655,6 +682,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getCustomersList())) return false;
     if (getSentByLeader()
         != other.getSentByLeader()) return false;
+    if (getDelete()
+        != other.getDelete()) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -693,6 +722,9 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + SENTBYLEADER_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getSentByLeader());
+    hash = (37 * hash) + DELETE_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getDelete());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -850,6 +882,8 @@ private static final long serialVersionUID = 0L;
       bitField0_ = (bitField0_ & ~0x00000001);
       sentByLeader_ = false;
 
+      delete_ = false;
+
       return this;
     }
 
@@ -893,6 +927,7 @@ private static final long serialVersionUID = 0L;
       }
       result.customers_ = customers_;
       result.sentByLeader_ = sentByLeader_;
+      result.delete_ = delete_;
       onBuilt();
       return result;
     }
@@ -990,6 +1025,9 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getSentByLeader() != false) {
         setSentByLeader(other.getSentByLeader());
+      }
+      if (other.getDelete() != false) {
+        setDelete(other.getDelete());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -1759,7 +1797,7 @@ private static final long serialVersionUID = 0L;
     private boolean sentByLeader_ ;
     /**
      * <pre>
-     *default = false
+     * default = false
      * </pre>
      *
      * <code>bool sentByLeader = 12;</code>
@@ -1771,7 +1809,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <pre>
-     *default = false
+     * default = false
      * </pre>
      *
      * <code>bool sentByLeader = 12;</code>
@@ -1786,7 +1824,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <pre>
-     *default = false
+     * default = false
      * </pre>
      *
      * <code>bool sentByLeader = 12;</code>
@@ -1795,6 +1833,49 @@ private static final long serialVersionUID = 0L;
     public Builder clearSentByLeader() {
       
       sentByLeader_ = false;
+      onChanged();
+      return this;
+    }
+
+    private boolean delete_ ;
+    /**
+     * <pre>
+     * 0: delete, 1: update
+     * </pre>
+     *
+     * <code>bool delete = 13;</code>
+     * @return The delete.
+     */
+    @java.lang.Override
+    public boolean getDelete() {
+      return delete_;
+    }
+    /**
+     * <pre>
+     * 0: delete, 1: update
+     * </pre>
+     *
+     * <code>bool delete = 13;</code>
+     * @param value The delete to set.
+     * @return This builder for chaining.
+     */
+    public Builder setDelete(boolean value) {
+      
+      delete_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 0: delete, 1: update
+     * </pre>
+     *
+     * <code>bool delete = 13;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearDelete() {
+      
+      delete_ = false;
       onChanged();
       return this;
     }

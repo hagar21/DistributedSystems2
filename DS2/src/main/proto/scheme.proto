@@ -48,7 +48,8 @@ message Ride {
   int32 takenPlaces = 9;
   int32 pd = 10;
   repeated string customers = 11;
-  bool sentByLeader = 12; //default = false
+  bool sentByLeader = 12; // default = false
+  bool delete = 13; // 0: delete, 1: update
 }
 
 message CustomerRequest {

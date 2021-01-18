@@ -221,7 +221,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             return;
         }
 
-        Ride updatedRide = Ride.newBuilder(ride).setId(rideId).build();
+        // this is a new ride, if it gets rollback we should delete it
+        Ride updatedRide = Ride.newBuilder(ride).setId(rideId).setDelete(true).build();
         if(rideCommit(updatedRide)) {
             responseObserver.onNext(res.setIsSuccess(true).build());
         } else {
@@ -520,7 +521,8 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
                 Ride updatedRide = Ride.newBuilder(ride)
                         .setTakenPlaces(ride.getTakenPlaces() + 1)
-                        .addCustomers(rout.getName()).build();
+                        .addCustomers(rout.getName())
+                        .setDelete(false).build();
                 if (rideCommit(updatedRide)) {
                     return updatedRide;
                 }
@@ -542,36 +544,37 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
     private void revertLocalCommit(Ride ride) {
 
-        if (ride.getSentByLeader() && ride.getTakenPlaces() == 0 ) {
+        if (ride.getSentByLeader()) {
             // This is a rollback of a post ride request
+            if(ride.getDelete()) {
+                rides.remove(ride.getId());
+            } else {
+                Ride updatedRide = Ride.newBuilder(ride).setSentByLeader(false).build();
+                rides.put(updatedRide.getId(), updatedRide);
+            }
 
-            rides.remove(ride.getId());
             return;
         }
 
-        List<String> customers = ride.getCustomersList();
-        customers.remove(customers.size() - 1);
-
-        Ride updatedRide = Ride.newBuilder(ride)
-                .setTakenPlaces(ride.getTakenPlaces() - 1)
-                .addAllCustomers(customers)
-                .build();
-
-        if (ride.getSentByLeader()){
-            // This is a rollback
-            rides.put(updatedRide.getId(), updatedRide);
-        } else {
-            // This is revert commit sent by other shard
-            rideCommit(updatedRide);
-        }
+        rideCommit(ride);
     }
 
     private void revertPath(Map<Ride, String> reservedRides){
         for (Map.Entry<Ride, String> entry : reservedRides.entrySet()) {
+
+            List<String> customers = entry.getKey().getCustomersList();
+            customers.remove(customers.size() - 1);
+
+            Ride updatedRide = Ride.newBuilder(entry.getKey())
+                    .setTakenPlaces(entry.getKey().getTakenPlaces() - 1)
+                    .addAllCustomers(customers)
+                    .setDelete(false)
+                    .build();
+
             if (entry.getValue().equals(this.shardName)) {
-                revertLocalCommit(entry.getKey());
+                revertLocalCommit(updatedRide);
             } else {
-                lb.CityRevertRequestRide(entry.getValue(), entry.getKey());
+                lb.CityRevertRequestRide(entry.getValue(), updatedRide);
             }
         }
     }

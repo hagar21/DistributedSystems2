@@ -136,11 +136,21 @@ public interface RideOrBuilder extends
 
   /**
    * <pre>
-   *default = false
+   * default = false
    * </pre>
    *
    * <code>bool sentByLeader = 12;</code>
    * @return The sentByLeader.
    */
   boolean getSentByLeader();
+
+  /**
+   * <pre>
+   * 0: delete, 1: update
+   * </pre>
+   *
+   * <code>bool delete = 13;</code>
+   * @return The delete.
+   */
+  boolean getDelete();
 }
