@@ -2,6 +2,7 @@ package server;
 
 import Rest.utils.RideAlreadyExistsException;
 import ZkService.Listeners.LiveNodeChangeListener;
+import ZkService.ZkService;
 import ZkService.ZkServiceImpl;
 import ZkService.utils.ClusterInfo;
 import ch.qos.logback.classic.Level;
@@ -76,7 +77,8 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         try {
             this.zkService = new ZkServiceImpl(hostList);
 
-            // create all parent nodes /election/city, /all_nodes/city, /live_nodes/city
+            // create all parent nodes /election/city, /live_nodes/city
+            zkService.createAllParentNodes("");
             for (String shardName: shardNames)
             {
                 zkService.createAllParentNodes(shardName);

@@ -3,6 +3,13 @@ package server;
 import ch.qos.logback.classic.Level;
 import client.ShardClient;
 import client.LbClient;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.protobuf.util.JsonFormat;
 import generated.*;
 import io.grpc.*;
 
@@ -11,6 +18,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import ZkService.ZkServiceImpl;
@@ -23,10 +32,66 @@ import org.slf4j.LoggerFactory;
 import server.utils.*;
 import server.utils.Point;
 
-import static ZkService.ZkService.ELECTION_NODE;
-import static ZkService.ZkService.LIVE_NODES;
+import static ZkService.ZkService.*;
 import static ZkService.utils.Host.getIp;
 import static server.utils.global.*;
+
+
+import com.google.gson.JsonParser;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.google.protobuf.util.JsonFormat;
+
+class RideAdapter extends TypeAdapter<Ride> {
+    /**
+     * Override the read method to return a {@Ride} object from it's json representation.
+     */
+    @Override
+    public Ride read(JsonReader jsonReader) throws IOException {
+        // Create a builder for the Person message
+        Ride.Builder rideBuilder = Ride.newBuilder();
+        // Use the JsonFormat class to parse the json string into the builder object
+        // The Json string will be parsed fromm the JsonReader object
+        JsonParser jsonParser = new JsonParser();
+        JsonFormat.parser().merge(jsonParser.parse(jsonReader).toString(), rideBuilder);
+        // Return the built Person message
+        return rideBuilder.build();
+    }
+    /**
+     * Override the write method and set the json value of the Person message.
+     */
+    @Override
+    public void write(JsonWriter jsonWriter, Ride ride) throws IOException {
+        // Call the printer of the JsonFormat class to convert the Person proto message to Json
+        jsonWriter.jsonValue(JsonFormat.printer().print(ride));
+    }
+}
+
+class CustomerRequestAdapter extends TypeAdapter<CustomerRequest> {
+    /**
+     * Override the read method to return a {@Ride} object from it's json representation.
+     */
+    @Override
+    public CustomerRequest read(JsonReader jsonReader) throws IOException {
+        // Create a builder for the Person message
+        CustomerRequest.Builder crBuilder = CustomerRequest.newBuilder();
+        // Use the JsonFormat class to parse the json string into the builder object
+        // The Json string will be parsed fromm the JsonReader object
+        JsonParser jsonParser = new JsonParser();
+        JsonFormat.parser().merge(jsonParser.parse(jsonReader).toString(), crBuilder);
+        // Return the built Person message
+        return crBuilder.build();
+    }
+    /**
+     * Override the write method and set the json value of the Person message.
+     */
+    @Override
+    public void write(JsonWriter jsonWriter, CustomerRequest cr) throws IOException {
+        // Call the printer of the JsonFormat class to convert the Person proto message to Json
+        jsonWriter.jsonValue(JsonFormat.printer().print(cr));
+    }
+}
 
 public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
     private static final Logger logger = Logger.getLogger(ShardServer.class.getName());
@@ -40,6 +105,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
     private final LbClient lb;
     private ConcurrentMap<Integer, ShardClient> shardMembers;
     private ShardClient leader;
+    private Lock backupLock;
 
     // db
     private final ConcurrentMap<String, Ride> rides =
@@ -80,6 +146,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         this.service_up = false;
         this.shardName = shardName;
         this.HostName = getIp()+":" + port;
+        this.backupLock = new ReentrantLock(true);
 
         this.server = ServerBuilder.forPort(Integer.parseInt(port))
                 .addService(this)
@@ -151,6 +218,20 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         String target = ClusterInfo.getClusterInfo().getLeader();
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         this.leader = new ShardClient(channel);
+
+        if (isNodeLeader()) {
+            // check if last leader crashed in the middle of commit and if so continue it
+
+            if (zkService.hasRideCommitBackupChild(shardName)) {
+                String rideJson = zkService.getZNodeData(COMMIT_BACKUP + "/" + shardName + RIDES);
+                rideCommit(String2Ride(rideJson));
+            }
+
+            if (zkService.hasCrCommitBackupChild(shardName)) {
+                String crJson = zkService.getZNodeData(COMMIT_BACKUP + "/" + shardName + CUSTOMER_REQUESTS);
+                customerRequestCommit(String2Cr(crJson));
+            }
+        }
     }
 
     /**
@@ -410,6 +491,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             // This node is the leader
 
             // phase 1
+            backupLock.lock();
             Ride.Builder rideBuilder = Ride.newBuilder(ride)
                     .setSentByLeader(true);
 
@@ -419,6 +501,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
                 if (existingRide.getTakenPlaces() == existingRide.getOfferedPlaces()) {
                     // Last spot in the ride was already taken
+                    backupLock.unlock();
                     return false;
                 }
 
@@ -431,6 +514,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
             int acceptedCounter = 0;
             // shardMembers = updateShardMembers();
             Ride commitRide = rideBuilder.build();
+            zkService.leaderCreateRideCommitBackup(Ride2String(commitRide), shardName);
 
             for(ShardClient shard : shardMembers.values()) {
                 boolean isSuccess = shard.postRide(commitRide);
@@ -441,11 +525,15 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             if(acceptedCounter < shardMembers.size()) {
                 rollbackRide(commitRide);
+                zkService.leaderDeleteRideCommitBackup(shardName);
+                backupLock.unlock();
                 return false;
             }
 
             Ride save = rideBuilder.setSentByLeader(false).build();
             rides.put(save.getId(), save);
+            zkService.leaderDeleteRideCommitBackup(shardName);
+            backupLock.unlock();
             return true;
 
         } else {
@@ -456,10 +544,54 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
         }
     }
 
+    private String Ride2String(Ride ride) {
+        Gson gson = new Gson();
+        try {
+            String rideJson = gson.toJson(ride);
+            System.out.println("ResultingJSONstring = " + rideJson);
+            return rideJson;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private Ride String2Ride (String rideJson) {
+        Gson gson = new Gson();
+        try {
+            return gson.fromJson(rideJson, Ride.class);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return noRide();
+    }
+
+    private String Cr2String(CustomerRequest request) {
+        Gson gson = new Gson();
+        try {
+            String crJson = gson.toJson(request);
+            System.out.println("ResultingJSONstring = " + crJson);
+            return crJson;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private CustomerRequest String2Cr (String requestJson) {
+        Gson gson = new Gson();
+        try {
+            return gson.fromJson(requestJson, CustomerRequest.class);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return CustomerRequest.newBuilder().setId("dummy").build();
+    }
+
     public boolean customerRequestCommit(CustomerRequest request) {
         if(isNodeLeader()) {
             // This node is the leader
-
+            backupLock.lock();
             int acceptedCounter = 0;
 
             CustomerRequest commitRequest = CustomerRequest.newBuilder(request)
@@ -467,6 +599,7 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
                     .build();
 
             // shardMembers = updateShardMembers();
+            zkService.leaderCreateCrCommitBackup(Cr2String(commitRequest), shardName);
 
             for(ShardClient shard : shardMembers.values()) {
                 boolean isSuccess = shard.postCustomerRequest(commitRequest);
@@ -477,10 +610,15 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
             if(acceptedCounter < shardMembers.size()) {
                 rollbackCustomerRequest(commitRequest);
+                zkService.leaderDeleteCrCommitBackup(shardName);
+                backupLock.unlock();
                 return false;
             }
 
+
             customerRequests.put(commitRequest.getId(), commitRequest);
+            zkService.leaderDeleteCrCommitBackup(shardName);
+            backupLock.unlock();
             return true;
 
         } else {

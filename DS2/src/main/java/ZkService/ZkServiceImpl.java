@@ -28,14 +28,23 @@ public class ZkServiceImpl implements ZkService{
             shard = "/" + shard;
         }
 
-        if (!zkClient.exists(ALL_NODES + shard)) {
-            zkClient.create(ALL_NODES + shard, "all nodes are displayed here", CreateMode.PERSISTENT);
-        }
         if (!zkClient.exists(LIVE_NODES + shard)) {
             zkClient.create(LIVE_NODES + shard, "all live nodes are displayed here", CreateMode.PERSISTENT);
         }
         if (!zkClient.exists(ELECTION_NODE + shard)) {
             zkClient.create(ELECTION_NODE + shard, "election node", CreateMode.PERSISTENT);
+        }
+
+        if (!zkClient.exists(COMMIT_BACKUP + shard)) {
+            zkClient.create(COMMIT_BACKUP + shard, "leader broadcast data through here", CreateMode.PERSISTENT);
+        }
+
+        if (!zkClient.exists(COMMIT_BACKUP + shard + RIDES)) {
+            zkClient.create(COMMIT_BACKUP + shard + RIDES, "leader broadcast data through here", CreateMode.PERSISTENT);
+        }
+
+        if (!zkClient.exists(COMMIT_BACKUP + shard + CUSTOMER_REQUESTS)) {
+            zkClient.create(COMMIT_BACKUP + shard + CUSTOMER_REQUESTS, "leader broadcast data through here", CreateMode.PERSISTENT);
         }
     }
 
@@ -86,6 +95,63 @@ public class ZkServiceImpl implements ZkService{
             throw new RuntimeException("No node /liveNodes exists");
         }
         return zkClient.getChildren(LIVE_NODES + shard);
+    }
+
+
+    @Override
+    public void leaderCreateRideCommitBackup(String data, String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(COMMIT_BACKUP + shard + RIDES)) {
+            throw new RuntimeException("No node /commitBackup/shardName/ride exists");
+        }
+        zkClient.create(COMMIT_BACKUP.concat(shard).concat(RIDES), data, CreateMode.PERSISTENT_SEQUENTIAL);
+    }
+
+    @Override
+    public void leaderDeleteRideCommitBackup(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(COMMIT_BACKUP + shard + RIDES)) {
+            throw new RuntimeException("Leader clears but no broadcast happened");
+        }
+        zkClient.delete(COMMIT_BACKUP.concat(shard).concat(RIDES));
+    }
+
+    @Override
+    public boolean hasRideCommitBackupChild(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(COMMIT_BACKUP + shard + RIDES)) {
+            throw new RuntimeException("hasRideCommitBackupChild No node /commitBackup/shard/ride exists");
+        }
+
+        return zkClient.getChildren(COMMIT_BACKUP + shard + RIDES).size() != 0;
+    }
+
+    @Override
+    public void leaderCreateCrCommitBackup(String data, String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(COMMIT_BACKUP + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("No node /commitBackup/shardName/customeRequests exists");
+        }
+        zkClient.create(COMMIT_BACKUP.concat(shard).concat(CUSTOMER_REQUESTS), data, CreateMode.PERSISTENT_SEQUENTIAL);
+    }
+
+    @Override
+    public void leaderDeleteCrCommitBackup(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(COMMIT_BACKUP + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("Leader clears but no broadcast happened");
+        }
+        zkClient.delete(COMMIT_BACKUP.concat(shard).concat(CUSTOMER_REQUESTS));
+    }
+
+    @Override
+    public boolean hasCrCommitBackupChild(String shard) {
+        shard = "/" + shard;
+        if (!zkClient.exists(COMMIT_BACKUP + shard + CUSTOMER_REQUESTS)) {
+            throw new RuntimeException("hasRideCommitBackupChild No node /commitBackup/shard/customeRequests exists");
+        }
+
+        return zkClient.getChildren(COMMIT_BACKUP + shard + CUSTOMER_REQUESTS).size() != 0;
     }
 
     @Override
