@@ -6,8 +6,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import lombok.Setter;
+import lombok.Getter;
 
 @Entity
+@Setter
+@Getter
 public class Ride {
     private Long id;
     private String firstName;
@@ -17,6 +21,7 @@ public class Ride {
     private String endingPosition;
     private String departureDate;
     private int vacancies;
+    private int takenPlaces;
     private int pd; // permitted deviation
 
     public Ride() {}
@@ -35,7 +40,28 @@ public class Ride {
         this.startingPosition = startingPosition;
         this.endingPosition = endingPosition;
         this.departureDate = departureDate;
+        this.takenPlaces = 0;
         this.vacancies = vacancies;
+        this.pd = pd;
+    }
+
+    public Ride(String firstName,
+                String lastName,
+                String phoneNumber,
+                String startingPosition,
+                String endingPosition,
+                String departureDate,
+                int vacancies,
+                int takenPlaces,
+                int pd) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.startingPosition = startingPosition;
+        this.endingPosition = endingPosition;
+        this.departureDate = departureDate;
+        this.vacancies = vacancies;
+        this.takenPlaces = takenPlaces;
         this.pd = pd;
     }
 
