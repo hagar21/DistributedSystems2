@@ -104,7 +104,13 @@ public class ZkServiceImpl implements ZkService{
         if (!zkClient.exists(COMMIT_BACKUP + shard + RIDES)) {
             throw new RuntimeException("No node /commitBackup/shardName/ride exists");
         }
-        zkClient.create(COMMIT_BACKUP.concat(shard).concat(RIDES), data, CreateMode.PERSISTENT_SEQUENTIAL);
+
+        if (zkClient.exists(COMMIT_BACKUP + shard + RIDES + "/backup")) {
+            System.out.println("leaderCreateRideCommitBackup recovering from leader fell in a commit");
+            return;
+        }
+
+        zkClient.create(COMMIT_BACKUP.concat(shard).concat(RIDES).concat("/backup"), data, CreateMode.PERSISTENT);
     }
 
     @Override
@@ -113,7 +119,7 @@ public class ZkServiceImpl implements ZkService{
         if (!zkClient.exists(COMMIT_BACKUP + shard + RIDES)) {
             throw new RuntimeException("Leader clears but no broadcast happened");
         }
-        zkClient.delete(COMMIT_BACKUP.concat(shard).concat(RIDES));
+        zkClient.delete(COMMIT_BACKUP.concat(shard).concat(RIDES).concat("/backup"));
     }
 
     @Override
@@ -132,7 +138,7 @@ public class ZkServiceImpl implements ZkService{
         if (!zkClient.exists(COMMIT_BACKUP + shard + CUSTOMER_REQUESTS)) {
             throw new RuntimeException("No node /commitBackup/shardName/customeRequests exists");
         }
-        zkClient.create(COMMIT_BACKUP.concat(shard).concat(CUSTOMER_REQUESTS), data, CreateMode.PERSISTENT_SEQUENTIAL);
+        zkClient.create(COMMIT_BACKUP.concat(shard).concat(CUSTOMER_REQUESTS).concat("/backup"), data, CreateMode.PERSISTENT);
     }
 
     @Override
@@ -141,7 +147,7 @@ public class ZkServiceImpl implements ZkService{
         if (!zkClient.exists(COMMIT_BACKUP + shard + CUSTOMER_REQUESTS)) {
             throw new RuntimeException("Leader clears but no broadcast happened");
         }
-        zkClient.delete(COMMIT_BACKUP.concat(shard).concat(CUSTOMER_REQUESTS));
+        zkClient.delete(COMMIT_BACKUP.concat(shard).concat(CUSTOMER_REQUESTS).concat("/backup"));
     }
 
     @Override

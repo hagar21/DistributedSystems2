@@ -8,7 +8,10 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import com.google.protobuf.LazyStringArrayList;
+import com.google.protobuf.LazyStringList;
 import com.google.protobuf.util.JsonFormat;
 import generated.*;
 import io.grpc.*;
@@ -221,14 +224,14 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
 
         if (isNodeLeader()) {
             // check if last leader crashed in the middle of commit and if so continue it
-
+            updateShardMembers();
             if (zkService.hasRideCommitBackupChild(shardName)) {
-                String rideJson = zkService.getZNodeData(COMMIT_BACKUP + "/" + shardName + RIDES);
+                String rideJson = zkService.getZNodeData(COMMIT_BACKUP + "/" + shardName + RIDES + "/backup");
                 rideCommit(String2Ride(rideJson));
             }
 
             if (zkService.hasCrCommitBackupChild(shardName)) {
-                String crJson = zkService.getZNodeData(COMMIT_BACKUP + "/" + shardName + CUSTOMER_REQUESTS);
+                String crJson = zkService.getZNodeData(COMMIT_BACKUP + "/" + shardName + CUSTOMER_REQUESTS + "/backup");
                 customerRequestCommit(String2Cr(crJson));
             }
         }
@@ -557,10 +560,34 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
     }
 
     private Ride String2Ride (String rideJson) {
-        Gson gson = new Gson();
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(LazyStringList.class, new TypeAdapter<LazyStringList>() {
+
+            @Override
+            public void write(JsonWriter jsonWriter, LazyStringList strings) throws IOException {
+
+            }
+
+            @Override
+            public LazyStringList read(JsonReader in) throws IOException {
+                LazyStringList lazyStringList = new LazyStringArrayList();
+
+                in.beginArray();
+
+                while (in.hasNext()) {
+                    lazyStringList.add(in.nextString());
+                }
+
+                in.endArray();
+
+                return lazyStringList;
+            }
+        });
+
+        Gson gson = builder.create();
         try {
             return gson.fromJson(rideJson, Ride.class);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             e.printStackTrace();
         }
         return noRide();
