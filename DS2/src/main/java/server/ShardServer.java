@@ -744,8 +744,12 @@ public class ShardServer extends UberServiceGrpc.UberServiceImplBase {
     private void revertPath(Map<Ride, String> reservedRides){
         for (Map.Entry<Ride, String> entry : reservedRides.entrySet()) {
 
-            List<String> customers = entry.getKey().getCustomersList();
-            customers.remove(customers.size() - 1);
+            List<String> customers = new ArrayList<String>();
+
+            // remove last customer
+            for (int i = 0; i < entry.getKey().getCustomersCount() - 1; i++) {
+                customers.add(entry.getKey().getCustomers(i));
+            }
 
             Ride updatedRide = Ride.newBuilder(entry.getKey())
                     .setTakenPlaces(entry.getKey().getTakenPlaces() - 1)

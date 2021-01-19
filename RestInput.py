@@ -1,44 +1,65 @@
-# import requests as req
-#
-# print("Printing start mode for customer requests:")
-# r =req.get('http://localhost:8080/customerRequests')
-# print(r.text)
-#
-# print("Posting a customer requests")
-# print()
-# headers = { 'Content-Type': 'application/json' }
-# requestData = "{ \"firstName\": \"shai\" , \"lastName\": \"porath\", \"path\": [\"A\", \"B\"], \"departureDate\": \"1.1.11\", \"passengers\": 1}"
-# r = req.post('http://localhost:8080/customerRequests', headers=headers, data = requestData)
-# print(r.json())
-#
-# vote_str = "{\r\n        \"national_security_number\": " + str(nsn) + ",\r\n        \"candidate\": " + str(candidate) + ",\r\n        \"state\": " + "\"" + state + "\"" + "\r\n    }"
 
 import requests
 import numpy
 
 # make sure its the same as the cities we have in the system (its currently not)
-list_of_cities = ["a1", "a2", "a3", "b1", "b2", "c1", "c2"]
+list_of_cities = ["\"a1\"", "\"a2\"", "\"a3\"", "\"b1\"", "\"b2\"", "\"c1\"", "\"c2\""]
 
+# ride = "{ \"firstName\": \"shai\", \"lastName\": \"porath\", \"phoneNumber\": \"0123\", \"startingPosition\": \"a1\", \"endingPosition\": \"a2\", \"departureDate\": \"1.19.21\", \"vacancies\": 4, \"pd\": 3}"
+# url = "http://localhost:9090/votes/"
+# headers = {'Content-Type': 'application/json'}
+#
+# print("Posting a post ride requests for ride:")
+# print(ride)
+# r1 = requests.post('http://localhost:8080/rides', headers=headers, data=ride)
+#
+# print("reply:")
+#
+# print(r1.text.encode('utf8'))
+# exit()
 
 for i in range(20):
+  vac = numpy.random.choice(range(5))
+  pd = numpy.random.choice(range(3))
+  pathLen = numpy.random.choice(range(2, 4))
   srcCity = numpy.random.choice(list_of_cities)
-  dstCity = numpy.random.choice(list_of_candidates)
+  dstCity = numpy.random.choice(list_of_cities)
 
   while srcCity == dstCity:
-    dstCity = numpy.random.choice(list_of_candidates)
+    dstCity = numpy.random.choice(list_of_cities)
 
-  # vote_str = "{\r\n        \"national_security_number\": " + str(nsn) + ",\r\n        \"candidate\": " + str(
-  #   candidate) + ",\r\n        \"state\": " + "\"" + state + "\"" + "\r\n    }"
+  path = ""
 
-  ride = "{ \"firstName\": \"shai\" , \"lastName\": \"porath\", \"path\": [\"A\", \"B\"], \"departureDate\": \"1.1.11\", \"passengers\": 1}"
-  customerRequest = "# fill both of them correctly"
+  for _ in range(pathLen):
+    path = path + numpy.random.choice(list_of_cities) + ", "
+
+  path = path + numpy.random.choice(list_of_cities)
+
+  ride = "{ \"firstName\": \"shai" + str(i) + "\", \"lastName\": \"porath\", \"phoneNumber\": \"0123\", \"startingPosition\": " + srcCity + ", \"endingPosition\": " + dstCity + ", \"departureDate\": \"1.19.21\", \"vacancies\": " + str(vac) + ", \"pd\": " + str(pd) + "}"
+  customerRequest = "{ \"name\": \"hagar" + str(i) + "\", \"path\": [" + path + "], \"departureDate\": \"1.19.21\"}"
+
 
   url = "http://localhost:9090/votes/"
   headers = {'Content-Type': 'application/json'}
-  r1 = ride.post('http://localhost:8080/rides', headers=headers, data=requestData)
-  r2 = customerRequest.post('http://localhost:8080/customerRequests', headers=headers, data=requestData)
-  print(r1.json())
-  print(r2.json())
+
+  print("Posting a post ride requests for ride:")
+  print(ride)
+  r1 = requests.post('http://localhost:8080/rides', headers=headers, data=ride)
+
+  print("reply:")
+  print(r1.text.encode())
+  print("------------------------------")
+
+  print("Posting a customer requests")
+  print(customerRequest)
+  r2 = requests.post('http://localhost:8080/customerRequests', headers=headers, data=customerRequest)
+  print("reply:")
+  print(r2.text.encode())
+  print("------------------------------")
 
 
-# do a get request after the for
+print("snapshot:")
+r = requests.get('http://localhost:8080/rides')
+print(r.text.encode('utf8'))
+r = requests.get('http://localhost:8080/customerRequests')
+print(r.text.encode('utf8'))
