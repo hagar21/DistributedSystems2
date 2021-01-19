@@ -3,7 +3,7 @@ import requests
 import numpy
 
 # make sure its the same as the cities we have in the system (its currently not)
-list_of_cities = ["\"a1\"", "\"a2\"", "\"a3\"", "\"b1\"", "\"b2\"", "\"c1\"", "\"c2\""]
+list_of_cities = ["\"a1\"", "\"a2\"", "\"b1\"", "\"b2\""]
 
 # ride = "{ \"firstName\": \"shai\", \"lastName\": \"porath\", \"phoneNumber\": \"0123\", \"startingPosition\": \"a1\", \"endingPosition\": \"a2\", \"departureDate\": \"1.19.21\", \"vacancies\": 4, \"pd\": 3}"
 # url = "http://localhost:9090/votes/"
@@ -20,7 +20,7 @@ list_of_cities = ["\"a1\"", "\"a2\"", "\"a3\"", "\"b1\"", "\"b2\"", "\"c1\"", "\
 
 for i in range(20):
   vac = numpy.random.choice(range(5))
-  pd = numpy.random.choice(range(3))
+  pd = numpy.random.choice(range(6))
   pathLen = numpy.random.choice(range(2, 4))
   srcCity = numpy.random.choice(list_of_cities)
   dstCity = numpy.random.choice(list_of_cities)

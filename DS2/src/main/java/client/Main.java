@@ -9,21 +9,21 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        String target1 = "localhost:8200";
-        ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
-        ShardClient clientA1 = new ShardClient(channel1);
+//        String target1 = "localhost:8200";
+//        ManagedChannel channel1 = ManagedChannelBuilder.forTarget(target1).usePlaintext().build();
+//        ShardClient clientA1 = new ShardClient(channel1);
 
-        String target3 = "localhost:8201";
+        String target3 = "localhost:8200";
         ManagedChannel channel3 = ManagedChannelBuilder.forTarget(target3).usePlaintext().build();
         ShardClient clientA2 = new ShardClient(channel3);
 
-        String target2 = "localhost:8202";
-        ManagedChannel channel2 = ManagedChannelBuilder.forTarget(target2).usePlaintext().build();
-        ShardClient clientB1 = new ShardClient(channel2);
+//        String target2 = "localhost:8202";
+//        ManagedChannel channel2 = ManagedChannelBuilder.forTarget(target2).usePlaintext().build();
+//        ShardClient clientB1 = new ShardClient(channel2);
 
-        String target4 = "localhost:8203";
-        ManagedChannel channel4 = ManagedChannelBuilder.forTarget(target3).usePlaintext().build();
-        ShardClient clientB2 = new ShardClient(channel3);
+//        String target4 = "localhost:8203";
+//        ManagedChannel channel4 = ManagedChannelBuilder.forTarget(target3).usePlaintext().build();
+//        ShardClient clientB2 = new ShardClient(channel3);
 
         // Call server streaming call
         Rest.entities.Ride restRide1 = new Rest.entities.Ride(
@@ -81,10 +81,8 @@ public class Main {
 //            System.out.println(ride.getFirstName() + " " + ride.getLastName());
 //        }
 
-        clientB1.snapshot();
-        clientB2.snapshot();
+//        clientB2.snapshot();
 
-        clientA1.snapshot();
         clientA2.snapshot();
 
         System.out.println("Waiting");

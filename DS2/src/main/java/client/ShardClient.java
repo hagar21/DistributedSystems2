@@ -141,6 +141,7 @@ public class ShardClient {
         System.out.println("-------------");
 
         CustomerRequest request = CustomerRequest.newBuilder()
+                .setName(customerRequest.getName())
                 .addAllPath(customerRequest.getPath())
                 .setDate(customerRequest.getDepartureDate())
                 .build();
