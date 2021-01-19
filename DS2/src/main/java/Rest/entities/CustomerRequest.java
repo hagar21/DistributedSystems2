@@ -19,6 +19,7 @@ public class CustomerRequest {
     private List<String> path;
     private String departureDate;
     private String name;
+    private List<String> satisfiedBy;
 
     public CustomerRequest() {}
 
@@ -27,6 +28,15 @@ public class CustomerRequest {
         this.path = path;
         this.departureDate = departureDate;
         this.name = name;
+        this.satisfiedBy = new ArrayList<>();
+    }
+
+    public CustomerRequest(String name, List<String> path,
+                           String departureDate, List<String> satisfiedBy) {
+        this.path = path;
+        this.departureDate = departureDate;
+        this.name = name;
+        this.satisfiedBy = satisfiedBy;
     }
 
     @Id
@@ -61,6 +71,13 @@ public class CustomerRequest {
 
     public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
+    }
+
+    public List<String> getSatisfiedBy() {
+        return this.satisfiedBy;
+    }
+    public void setSatisfiedBy(List<String> satisfiedBy) {
+        this.satisfiedBy = satisfiedBy;
     }
 
     @Override

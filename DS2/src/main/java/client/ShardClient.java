@@ -76,6 +76,7 @@ public class ShardClient {
                         ride.getDstCity(),
                         ride.getDate(),
                         ride.getOfferedPlaces(),
+                        ride.getTakenPlaces(),
                         ride.getPd()));
             }
         } catch (StatusRuntimeException e) {
@@ -95,10 +96,22 @@ public class ShardClient {
 
             while(grpcCr.hasNext()) {
                 CustomerRequest cr = grpcCr.next();
+
+                List<String> satisfiedBy = new ArrayList<>();
+                if (cr.getRidesList().isEmpty()) {
+                    satisfiedBy.add("CustomerRequest not satisfied");
+                }
+                else {
+                    for (Ride ride : cr.getRidesList()) {
+                        satisfiedBy.add(ride.getFirstName() + " " + ride.getLastName() + " phoneNum: " + ride.getPhoneNum());
+                    }
+                }
+
                 restCr.add(new Rest.entities.CustomerRequest(
                         cr.getName(),
                         cr.getPathList(),
-                        cr.getDate()));
+                        cr.getDate(),
+                        satisfiedBy));
             }
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
@@ -148,6 +161,7 @@ public class ShardClient {
                         ride.getDstCity(),
                         ride.getDate(),
                         ride.getOfferedPlaces(),
+                        ride.getTakenPlaces(),
                         ride.getPd()));
             }
         } catch (StatusRuntimeException e) {

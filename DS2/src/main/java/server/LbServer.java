@@ -162,6 +162,10 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         List<Rest.entities.CustomerRequest> requests = new ArrayList<>();
 
         for (String shard: shardNames) {
+            if (!shardConnections.get(shard).hasClients()) {
+                System.out.println("Shard " + shard + " has 0 servers");
+                continue;
+            }
             ShardClient destService = shardConnections.get(shard).getNextService();
             requests.addAll(destService.getAllCr());
         }
@@ -198,7 +202,10 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         }
 
         // updateShardMembers(shard).run();
-
+        if (!shardConnections.get(shard).hasClients()) {
+            System.out.println("PostPathPlanningRequest Shard " + shard + " has 0 servers");
+            return new ArrayList<>();
+        }
         ShardClient destService = shardConnections.get(shard).getNextService();
 
         return destService.postPathPlanningRequest(customerRequest);
@@ -215,7 +222,10 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         }
 
         // updateShardMembers(shard);
-
+        if (!shardConnections.get(shard).hasClients()) {
+            System.out.println("PostRide Shard " + shard + " has 0 servers");
+            return;
+        }
         ShardClient destService = shardConnections.get(shard).getNextService();
         destService.postRide(ride);
     }
@@ -234,6 +244,12 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         }
 
         // updateShardMembers(shard);
+        if (!shardConnections.get(shard).hasClients()) {
+            System.out.println("cityRequestRide Shard " + shard + " has 0 servers");
+            responseObserver.onNext(noRide());
+            responseObserver.onCompleted();
+            return ; // Shai Illegal ride - so it won't keep looking
+        }
 
         ShardClient destService = shardConnections.get(shard).getNextService();
         responseObserver.onNext(destService.cityRequestRide(cityRequest));
@@ -255,6 +271,13 @@ public class LbServer extends UberServiceGrpc.UberServiceImplBase {
         }
 
         // updateShardMembers(shard);
+        if (!shardConnections.get(shard).hasClients()) {
+            System.out.println("cityRequestRide Shard " + shard + " has 0 servers");
+            Result res = Result.newBuilder().setIsSuccess(false).build();
+            responseObserver.onNext(res);
+            responseObserver.onCompleted();
+            return;
+        }
 
         ShardClient destService = shardConnections.get(shard).getNextService();
         destService.cityRevertRequestRide(revertRequest);
