@@ -5,61 +5,85 @@ option java_package = "generated";
 option java_outer_classname = "CityProto";
 option objc_class_prefix = "RTG";
 
-// Interface exported by the server.
-service UberService {
+import "google/protobuf/empty.proto";
 
+service UberService {
   // Accept a user's ride and save it in the DB.
   rpc PostRide(Ride) returns (Result) {}
 
-  // Accept a user's request to join a ride and check if there is a relevant ride.
-  rpc PostPathPlanningRequest(stream CustomerRequest) returns (stream Ride) {}
+  // Accept a handled customer request and save it in the DB.
+  rpc PostCustomerRequest(CustomerRequest) returns (Result) {}
 
-  // Accept a list of routs and return all rides that have same date and same src or dst.
-  rpc GetExistingRides(stream Rout) returns (stream Ride) {}
+  // Accept a user's request to join a ride and check if there are relevant rides.
+  rpc PostPathPlanningRequest(CustomerRequest) returns (stream Ride) {}
 
-  // Save customer request to db
-  // If found a relevant ride, update it's current vacancies
-  rpc UpdateRide(InsertCustomerRequestToDb) returns (Result) {}
+  // Accept a user's request from other city
+  // return a compatible ride and update it in local db if found, otherwise noRide.
+  rpc ReserveRide(Rout) returns (Ride) {}
 
-  // Accept a user's ride and save it in the DB.
-  rpc InsertRideToDb(Ride) returns (Result) {}
+  // if part of the path couldn't be satisfied revert intermediate commits
+  rpc RevertCommit(Ride) returns (Result);
+
+  // prints all Rides in the database
+  rpc Snapshot(google.protobuf.Empty) returns (Result) {}
+
+  // Returns all Rides in the database
+  rpc GetAllRides(google.protobuf.Empty) returns (stream Ride) {}
+
+  // Returns all CustomerRequest in the database
+  rpc GetAllCr(google.protobuf.Empty) returns (stream CustomerRequest) {}
+
+  // City request Ride from different city
+  rpc CityRequestRide(CityRequest) returns (Ride) {}
+
+  // City revert request Ride from different city
+  rpc CityRevertRequestRide(CityRevertRequest) returns (Result) {}
+
+  rpc DeleteCustomerRequest(CustomerRequest) returns (Result) {}
 }
 
 message Ride {
-  int32 id = 1;
+  string id = 1;
   string firstName = 2;
   string lastName = 3;
-  int32 phoneNum = 4;
+  string phoneNum = 4;
   string srcCity = 5;
   string dstCity = 6;
   string date = 7;
-  int32 vacancies = 8;
-  int32 pd = 9;
+  int32 offeredPlaces = 8;
+  int32 takenPlaces = 9;
+  int32 pd = 10;
+  repeated string customers = 11;
+  bool sentByLeader = 12; // default = false
+  bool delete = 13; // 0: delete, 1: update
 }
 
 message CustomerRequest {
-  int32 id = 1;
-  string firstName = 2;
-  string lastName = 3;
-  int32 phoneNum = 4;
-  string srcCity = 5;
-  string dstCity = 6;
-  string date = 7;
-  int32 rideId = 8;
+  string id = 1;
+  string name = 2;
+  repeated string path = 3;
+  string date = 4;
+  repeated Ride rides = 5;
+  bool sentByLeader = 6; //default = false
 }
 
 message Rout {
-  string date = 1;
-  string srcCity = 2;
-  string dstCity = 3;
+  string name = 1;
+  string date = 2;
+  string srcCity = 3;
+  string dstCity = 4;
 }
 
 message Result {
   bool isSuccess = 1;
 }
 
-message InsertCustomerRequestToDb {
-  CustomerRequest customerReq = 1;
-  int32 rideId = 2;
-  int32 vacancies = 3;
+message CityRequest {
+  string destCityName = 1;
+  Rout rout = 2;
+}
+
+message CityRevertRequest {
+  string destCityName = 1;
+  Ride ride = 2;
 }
